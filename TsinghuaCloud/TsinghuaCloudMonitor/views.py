@@ -27,6 +27,14 @@ def homepage(request):
 
 
 def request(request, tenantid):
+    # Redirect to login page if not logged in
+    username = request.session['username']
+    usergroup = request.session['usergroup']
+    if username == None:
+        return HttpResponseRedirect('/login')
+    if username == '':
+        return HttpResponseRedirect('/login')
+
     flag = 1
     return render(request, 'TsinghuaCloudMonitor/submap.html', {'flag': flag, 'tenantid': tenantid})
 
@@ -36,9 +44,11 @@ def start_system(request):
     # Redirect to login page if not logged in
     username = request.session['username']
     usergroup = request.session['usergroup']
+    if username == None:
+        return HttpResponseRedirect('/login')
     if username == '':
         return HttpResponseRedirect('/login')
-    print username
+
     return render(request, 'TsinghuaCloudMonitor/start_system.html')
 
 
@@ -46,6 +56,8 @@ def start_input(request):
     # Redirect to login page if not logged in
     username = request.session['username']
     usergroup = request.session['usergroup']
+    if username == None:
+        return HttpResponseRedirect('/login')
     if username == '':
         return HttpResponseRedirect('/login')
 
@@ -165,10 +177,14 @@ def getinstances(request):
 
 
 def monitor(request):
-    if request.session['username'] == '':
-        return HttpResponseRedirect('/login')
+    # Redirect to login page if not logged in
     username = request.session['username']
     usergroup = request.session['usergroup']
+    if username == None:
+        return HttpResponseRedirect('/login')
+    if username == '':
+        return HttpResponseRedirect('/login')
+
     maxservice = Service.objects.all().values('HostName', 'ServiceName').order_by('HostName').annotate(
         max=Max('LastCheck')).filter(HostName__in=Host.objects.all().values('HostName'))
     service = []
@@ -191,8 +207,14 @@ def monitor(request):
 
 
 def doSearch(request):
-    if request.session['username'] == '':
+    # Redirect to login page if not logged in
+    username = request.session['username']
+    usergroup = request.session['usergroup']
+    if username == None:
         return HttpResponseRedirect('/login')
+    if username == '':
+        return HttpResponseRedirect('/login')
+
     select_service = request.POST.get('service')
     select_host = request.POST.get('host')
     print select_service
@@ -213,6 +235,8 @@ def hoststatus(request):
     # Redirect to login page if not logged in
     username = request.session['username']
     usergroup = request.session['usergroup']
+    if username == None:
+        return HttpResponseRedirect('/login')
     if username == '':
         return HttpResponseRedirect('/login')
 
@@ -240,297 +264,536 @@ def hoststatus(request):
 
     return render(request, 'TsinghuaCloudMonitor/hoststatus.html', {'host': host, 'usergroup': usergroup})
 
-
 def memory_external(request):
     # Redirect to login page if not logged in
     username = request.session['username']
     usergroup = request.session['usergroup']
+    if username == None:
+        return HttpResponseRedirect('/login')
     if username == '':
         return HttpResponseRedirect('/login')
 
     # Get parameters from URL
-    cur_page = request.GET.get('page')
+    cur_page_no = request.GET.get('page')
     filterby_user = request.GET.get('user')
-    if cur_page == None:
-        cur_page = 1
+    item_per_page = request.GET.get('pageelem')
+
+    # Get a correct page no, filterby_user(if needed), item_per_page(if needed)
+    if cur_page_no == '':
+        cur_page_no = 1
+    elif cur_page_no <= 0:
+        cur_page_no = 1
     else:
-        cur_page = int(cur_page)
-    if filterby_user != None:
+        cur_page_no = int(cur_page_no)
+
+    if filterby_user != '':
         if usergroup == 'user':                                         # Users can only get records of his own hosts
             filterby_user = username
     else:
         filterby_user = ''                                               # No filter has been set
 
-    memoryuse_name = []
-    memoryuse_total = []
-    memoryuse_used = []
-    memoryuse_object = []
-    memoryuse = Service.objects.all().values('ServiceName', 'HostName').annotate(max=Max('LastCheck')).filter(
-        ServiceName='MemoryUsage' ,HostName__in=Host.objects.all().values('HostName'))
-    size = len(memoryuse)
-    print size
-    p = re.compile(r'\d+')
-    insize = 0
-    for k in range(0, size):
-        temp_first = Service.objects.all().filter(HostName=memoryuse[k].get('HostName'), ServiceName='MemoryUsage',
-                                                  LastCheck=memoryuse[k].get('max'))
+    if item_per_page == None or item_per_page == '':
+        item_per_page = 4
+    else:
+        item_per_page = int(item_per_page)
+        if item_per_page <= 4:
+            item_per_page = 4
+        elif item_per_page >= 10:
+            item_per_page = 4
 
-        if len(temp_first) > 1:
-            temp = temp_first[0]
+    my_host_list = None
+    # Get all user's hosts
+    if usergroup == 'user':
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
+    # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
+    if usergroup == 'admin' and filterby_user != '':
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
+    # else (usergroup = admin and filterby_user == ''), show all hosts
+    else :
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
+
+    host_count = len(my_host_list)
+    start_pos = 0
+    end_pos = 0
+    print "host_count = " + str(host_count)
+
+    # Get start and end of consulting host
+    if (cur_page_no - 1) * item_per_page >= host_count:
+        start_pos = 0
+        if item_per_page > host_count:
+            end_pos = host_count
         else:
-            temp = get_object_or_404(Service, HostName=memoryuse[k].get('HostName'), ServiceName='MemoryUsage',
-                                     LastCheck=memoryuse[k].get('max'))
-        current_host = get_object_or_404(Host, HostName=temp.HostName)
-        temp.HostType = current_host.HostType
-        # If user.group = user, show his own hosts. If user.group = admin, show all hosts or filterby_user's hosts.
-        if usergroup == 'user' and current_host.Owner != username:
-            continue
-        if usergroup == 'admin' and filterby_user != '' and current_host.Owner != filterby_user:
-            continue
+            end_pos = item_per_page
+    else:
+        start_pos = (cur_page_no - 1) * item_per_page
+        if start_pos + item_per_page > host_count:
+            end_pos = host_count
+        else:
+            end_pos = start_pos + item_per_page
+    print "start = " + str(start_pos) + ' | end = ' + str(end_pos)
 
-        if temp.HostType == 'external':
-            print temp.HostType
-            memoryuse_name.append(temp.HostName)
-            if temp.PerformanceData == '':
-                memoryuse_used.append(0)
-                memoryuse_total.append(0)
+    memory_name = ''
+    memory_used = ''
+    memory_total = ''
+    memory_percentage = 0
+    memory_json_obj = []
+    # Get hosts' service records
+    for i in range(start_pos, end_pos):
+        # Get last check time for current host
+        latest_check = Service.objects.values('HostName').annotate(LastCheck = Max('LastCheck'))\
+            .filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'MemoryUsage')
 
+        # No record found.
+        if len(latest_check) == 0:
+            svc_rec_obj = None
+        else:
+            svc_rec_obj = get_object_or_404(Service, HostName = my_host_list[i].get('HostName'),ServiceName='MemoryUsage',
+                                        LastCheck=latest_check[0].get('LastCheck'))
+
+        # Form json object
+        if svc_rec_obj == None:                               # Got no such host's record
+            memory_name = my_host_list[i].get('HostName')
+            memory_used = 0
+            memory_total = 0
+            memory_percentage = 0
+        else:
+            memory_name = my_host_list[i].get('HostName')
+            if svc_rec_obj.PerformanceData == '':
+                memory_used = 0
+                memory_total = 0
+                memory_percentage = 0
             else:
-                memoryuse_used.append(p.findall(temp.PerformanceData)[1])
-                memoryuse_total.append(p.findall(temp.PerformanceData)[0])
+                p = re.compile(r'\d+')
+                memory_used = p.findall(svc_rec_obj.PerformanceData)[1]
+                memory_total = p.findall(svc_rec_obj.PerformanceData)[0]
+                if memory_total == 0:
+                    memory_percentage = 0
+                else:
+                    memory_percentage = format(float(memory_used) / float(memory_total), '.2%')
+        json_data = {'name': memory_name, 'used': memory_used, 'total': memory_total, 'percentage': memory_percentage}
+        memory_json_obj.append(json_data)
 
-            if memoryuse_total[insize] == 0:
-                temp = 0
-            else:
-                temp = format(float(memoryuse_used[insize]) / float(memoryuse_total[insize]), '.2%')
+    return HttpResponse(json.dumps(memory_json_obj), content_type="application/json")
 
-            memoryuse_dic = {'name': memoryuse_name[insize], 'used': memoryuse_used[insize],
-                             'total': memoryuse_total[insize], 'percentage': temp}
-            memoryuse_object.append(memoryuse_dic)
-            insize = insize + 1
-    print memoryuse_name
-    return HttpResponse(json.dumps(memoryuse_object), content_type="application/json")
 
+# Get external hosts' CPU operation records.
 def cpu_external(request):
     # Redirect to login page if not logged in
     username = request.session['username']
     usergroup = request.session['usergroup']
+    if username == None:
+        return HttpResponseRedirect('/login')
     if username == '':
         return HttpResponseRedirect('/login')
 
     # Get parameters from URL
-    cur_page = request.GET.get('page')
+    cur_page_no = request.GET.get('page')
     filterby_user = request.GET.get('user')
-    if cur_page == None:
-        cur_page = 1
+    item_per_page = request.GET.get('pageelem')
+
+    # Get a correct page no, filterby_user(if needed), item_per_page(if needed)
+    if cur_page_no == None or cur_page_no == '':
+        cur_page_no = 1
+    elif cur_page_no <= 0:
+        cur_page_no = 1
     else:
-        cur_page = int(cur_page)
-    if filterby_user != None:
+        cur_page_no = int(cur_page_no)
+
+    if filterby_user != '':
         if usergroup == 'user':                                         # Users can only get records of his own hosts
             filterby_user = username
     else:
         filterby_user = ''                                               # No filter has been set
 
-    cpuloaduse_name = []
-    cpuloaduse_used = []
-    cpuloaduse_object = []
-    cpuloaduse = Service.objects.all().values('ServiceName', 'HostName').annotate(max=Max('LastCheck')).filter(
-        ServiceName='cpuload' ,HostName__in=Host.objects.all().values('HostName'))
-    print cpuloaduse
-    size = len(cpuloaduse)
-    p = re.compile(r'(\d+)\.(\d*)')
-    insize = 0
-    for k in range(0, size):
-        temp = get_object_or_404(Service, HostName=cpuloaduse[k].get('HostName'), ServiceName='cpuload',
-                                 LastCheck=cpuloaduse[k].get('max'))
-        current_host = get_object_or_404(Host, HostName=temp.HostName)
-        temp.HostType = current_host.HostType
-        # If user.group = user, show his own hosts. If user.group = admin, show all hosts or filterby_user's hosts.
-        if usergroup == 'user' and current_host.Owner != username:
-            continue
-        if usergroup == 'admin' and filterby_user != '' and current_host.Owner != filterby_user:
-            continue
-        if temp.HostType == 'external':
-            cpuloaduse_name.append(temp.HostName)
-            if temp.PerformanceData == '':
-                cpuloaduse_used.append(0)
+    if item_per_page == None or item_per_page == '':
+        item_per_page = 4
+    else:
+        item_per_page = int(item_per_page)
+        if item_per_page <= 4:
+            item_per_page = 4
+        elif item_per_page >= 10:
+            item_per_page = 4
+
+    my_host_list = None
+    # Get all user's hosts
+    if usergroup == 'user':
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
+    # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
+    if usergroup == 'admin' and filterby_user != '':
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
+    # else (usergroup = admin and filterby_user == ''), show all hosts
+    else :
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
+
+    host_count = len(my_host_list)
+    start_pos = 0
+    end_pos = 0
+
+
+    # Get start and end of consulting host
+    if (cur_page_no - 1) * item_per_page >= host_count:
+        start_pos = 0
+        if item_per_page > host_count:
+            end_pos = host_count
+        else:
+            end_pos = item_per_page
+    else:
+        start_pos = (cur_page_no - 1) * item_per_page
+        if start_pos + item_per_page > host_count:
+            end_pos = host_count
+        else:
+            end_pos = start_pos + item_per_page
+
+    cpu_name = ''
+    cpu_used = ''
+    cpu_perc = ''
+    cpu_json_obj = []
+    # Get hosts' service records
+    for i in range(start_pos, end_pos):
+        # Get last check time for current host
+        latest_check = Service.objects.values('HostName').annotate(LastCheck = Max('LastCheck'))\
+            .filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'cpuload')
+
+        # No record found.
+        if len(latest_check) == 0:
+            svc_rec_obj = None
+        else:
+            svc_rec_obj = get_object_or_404(Service, HostName = my_host_list[i].get('HostName'),ServiceName='cpuload',
+                                        LastCheck=latest_check[0].get('LastCheck'))
+
+        # Form json object
+        if svc_rec_obj == None:                               # Got no such host's record
+            cpu_name = my_host_list[i].get('HostName')
+            cpu_used = '0.0'
+            cpu_perc = '0.0%'
+        else:
+            cpu_name = my_host_list[i].get('HostName')
+            if svc_rec_obj.PerformanceData == '':
+                cpu_used = '0.0'
+                cpu_perc = '0.0%'
             else:
-                cpuloaduse_used.append('.'.join(p.findall(temp.PerformanceData)[3]))
+                p = re.compile(r'\d+')
+                cpu_used = p.findall(svc_rec_obj.PerformanceData)[3]
+                cpu_perc = format(float(cpu_used), '.2%')
+        json_data = {'name': cpu_name, 'used': cpu_used, 'percentage': cpu_perc}
+        cpu_json_obj.append(json_data)
 
-            tem = format(float(cpuloaduse_used[insize]), '.2%')
-            cpuloaduse_dic = {'name': cpuloaduse_name[insize], 'used': cpuloaduse_used[insize], 'percentage': tem}
-            cpuloaduse_object.append(cpuloaduse_dic)
-            insize = insize + 1
-    return HttpResponse(json.dumps(cpuloaduse_object), content_type="application/json")
-
+    return HttpResponse(json.dumps(cpu_json_obj), content_type="application/json")
 
 def pro_external(request):
     # Redirect to login page if not logged in
     username = request.session['username']
     usergroup = request.session['usergroup']
+    if username == None:
+        return HttpResponseRedirect('/login')
     if username == '':
         return HttpResponseRedirect('/login')
 
     # Get parameters from URL
-    cur_page = request.GET.get('page')
+    cur_page_no = request.GET.get('page')
     filterby_user = request.GET.get('user')
-    if cur_page == None:
-        cur_page = 1
+    item_per_page = request.GET.get('pageelem')
+
+    # Get a correct page no, filterby_user(if needed), item_per_page(if needed)
+    if cur_page_no == None or cur_page_no == '':
+        cur_page_no = 1
+    elif cur_page_no <= 0:
+        cur_page_no = 1
     else:
-        cur_page = int(cur_page)
-    if filterby_user != None:
+        cur_page_no = int(cur_page_no)
+
+    if filterby_user != '':
         if usergroup == 'user':                                         # Users can only get records of his own hosts
             filterby_user = username
     else:
         filterby_user = ''                                               # No filter has been set
 
-    pro_name = []
-    pro_used = []
-    processusage_object = []
-    prousage = Service.objects.all().values('ServiceName', 'HostName').annotate(max=Max('LastCheck')).filter(
-        ServiceName='total-procs' ,HostName__in=Host.objects.all().values('HostName'))
-    size = len(prousage)
-    p = re.compile(r'\d+')
-    insize = 0
-    for k in range(0, size):
-        temp = get_object_or_404(Service, HostName=prousage[k].get('HostName'), ServiceName='total-procs',
-                                 LastCheck=prousage[k].get('max'))
-        current_host = get_object_or_404(Host, HostName=temp.HostName)
-        temp.HostType = current_host.HostType
-        # If user.group = user, show his own hosts. If user.group = admin, show all hosts or filterby_user's hosts.
-        if usergroup == 'user' and current_host.Owner != username:
-            continue
-        if usergroup == 'admin' and filterby_user != '' and current_host.Owner != filterby_user:
-            continue
+    if item_per_page == None or item_per_page == '':
+        item_per_page = 4
+    else:
+        item_per_page = int(item_per_page)
+        if item_per_page <= 4:
+            item_per_page = 4
+        elif item_per_page >= 10:
+            item_per_page = 4
 
-        if temp.HostType == 'external':
-            pro_name.append(temp.HostName)
-            if temp.PerformanceData == '':
-                pro_used.append(0)
+    my_host_list = None
+    # Get all user's hosts
+    if usergroup == 'user':
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
+    # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
+    if usergroup == 'admin' and filterby_user != '':
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
+    # else (usergroup = admin and filterby_user == ''), show all hosts
+    else :
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
+
+    host_count = len(my_host_list)
+    start_pos = 0
+    end_pos = 0
+    print "host_count = " + str(host_count)
+
+    # Get start and end of consulting host
+    if (cur_page_no - 1) * item_per_page >= host_count:
+        start_pos = 0
+        if item_per_page > host_count:
+            end_pos = host_count
+        else:
+            end_pos = item_per_page
+    else:
+        start_pos = (cur_page_no - 1) * item_per_page
+        if start_pos + item_per_page > host_count:
+            end_pos = host_count
+        else:
+            end_pos = start_pos + item_per_page
+    print "start = " + str(start_pos) + ' | end = ' + str(end_pos)
+
+    pro_name = ''
+    pro_used = ''
+    pro_json_obj = []
+    # Get hosts' service records
+    for i in range(start_pos, end_pos):
+        # Get last check time for current host
+        latest_check = Service.objects.values('HostName').annotate(LastCheck = Max('LastCheck'))\
+            .filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'total-procs')
+
+        print latest_check
+        print latest_check[0]
+        print latest_check[0].get('LastCheck')
+        # No record found.
+        if len(latest_check) == 0:
+            svc_rec_obj = None
+        else:
+            svc_rec_obj = get_object_or_404(Service, HostName = my_host_list[i].get('HostName'),ServiceName='total-procs',
+                                        LastCheck=latest_check[0].get('LastCheck'))
+
+        print 'svc.hostname = ' + svc_rec_obj.HostName
+        if svc_rec_obj == None:                               # Got no such host's record
+            pro_name = my_host_list[i].get('HostName')
+            pro_used = '0.0'
+        else:
+            pro_name = my_host_list[i].get('HostName')
+            if svc_rec_obj.PerformanceData == '':
+                pro_used = '0.0'
             else:
-                pro_used.append(p.findall(temp.PerformanceData)[0])
-            processusage_dic = {'name': pro_name[insize], 'used': pro_used[insize]}
-            processusage_object.append(processusage_dic)
-            insize = insize + 1
-    return HttpResponse(json.dumps(processusage_object), content_type="application/json")
+                p = re.compile(r'\d+')
+                pro_used = p.findall(svc_rec_obj.PerformanceData)[0]
+        json_data = {'name': pro_name, 'used': pro_used}
+        pro_json_obj.append(json_data)
 
+    return HttpResponse(json.dumps(pro_json_obj), content_type="application/json")
 
 def disk_external(request):
     # Redirect to login page if not logged in
     username = request.session['username']
     usergroup = request.session['usergroup']
+    if username == None:
+        return HttpResponseRedirect('/login')
     if username == '':
         return HttpResponseRedirect('/login')
 
     # Get parameters from URL
-    cur_page = request.GET.get('page')
+    cur_page_no = request.GET.get('page')
     filterby_user = request.GET.get('user')
-    if cur_page == None:
-        cur_page = 1
+    item_per_page = request.GET.get('pageelem')
+
+    # Get a correct page no, filterby_user(if needed), item_per_page(if needed)
+    if cur_page_no == None or cur_page_no == '':
+        cur_page_no = 1
+    elif cur_page_no <= 0:
+        cur_page_no = 1
     else:
-        cur_page = int(cur_page)
-    if filterby_user != None:
+        cur_page_no = int(cur_page_no)
+
+    if filterby_user != '':
         if usergroup == 'user':                                         # Users can only get records of his own hosts
             filterby_user = username
     else:
         filterby_user = ''                                               # No filter has been set
 
-    # Prepare Objects
-    diskusage_name = []
-    diskusage_used = []
-    diskusage_total = []
-    diskusage_object = []
-    diskusage = Service.objects.all().values('ServiceName', 'HostName').annotate(max=Max('LastCheck')).filter(
-        ServiceName='disk' ,HostName__in=Host.objects.all().values('HostName'))
-    size = len(diskusage)
-    p = re.compile(r'\d+')
-    insize = 0
-    for k in range(0, size):
-        temp = get_object_or_404(Service, HostName=diskusage[k].get('HostName'), ServiceName='disk',
-                                 LastCheck=diskusage[k].get('max'))
-        current_host = get_object_or_404(Host, HostName=temp.HostName)
-        temp.HostType = current_host.HostType
-        # If user.group = user, show his own hosts. If user.group = admin, show all hosts or filterby_user's hosts.
-        if usergroup == 'user' and current_host.Owner != username:
-            continue
-        if usergroup == 'admin' and filterby_user != '' and current_host.Owner != filterby_user:
-            continue
+    if item_per_page == None or item_per_page == '':
+        item_per_page = 4
+    else:
+        item_per_page = int(item_per_page)
+        if item_per_page <= 4:
+            item_per_page = 4
+        elif item_per_page >= 10:
+            item_per_page = 4
 
-        if temp.HostType == 'external':
-            diskusage_name.append(temp.HostName)
-            print temp.HostType
-            if temp.PerformanceData == '':
-                diskusage_used.append(0)
-                diskusage_total.append(0)
+    my_host_list = None
+    # Get all user's hosts
+    if usergroup == 'user':
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
+    # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
+    if usergroup == 'admin' and filterby_user != '':
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
+    # else (usergroup = admin and filterby_user == ''), show all hosts
+    else :
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
+
+    host_count = len(my_host_list)
+    start_pos = 0
+    end_pos = 0
+    print "host_count = " + str(host_count)
+
+    # Get start and end of consulting host
+    if (cur_page_no - 1) * item_per_page >= host_count:
+        start_pos = 0
+        if item_per_page > host_count:
+            end_pos = host_count
+        else:
+            end_pos = item_per_page
+    else:
+        start_pos = (cur_page_no - 1) * item_per_page
+        if start_pos + item_per_page > host_count:
+            end_pos = host_count
+        else:
+            end_pos = start_pos + item_per_page
+    print "start = " + str(start_pos) + ' | end = ' + str(end_pos)
+
+    disk_name = ''
+    disk_used = ''
+    disk_total = ''
+    disk_percentage = 0
+    disk_json_obj = []
+    # Get hosts' service records
+    for i in range(start_pos, end_pos):
+        # Get last check time for current host
+        latest_check = Service.objects.values('HostName').annotate(LastCheck = Max('LastCheck'))\
+            .filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'disk')
+
+        # No record found.
+        if len(latest_check) == 0:
+            svc_rec_obj = None
+        else:
+            svc_rec_obj = get_object_or_404(Service, HostName = my_host_list[i].get('HostName'),ServiceName='disk',
+                                        LastCheck=latest_check[0].get('LastCheck'))
+
+        if svc_rec_obj == None:                               # Got no such host's record
+            disk_name = my_host_list[i].get('HostName')
+            disk_used = 0
+            disk_total = 0
+            disk_percentage = 0
+        else:
+            disk_name = my_host_list[i].get('HostName')
+            if svc_rec_obj.PerformanceData == '':
+                disk_used = 0
+                disk_total = 0
+                disk_percentage = 0
             else:
-                diskusage_used.append(p.findall(temp.PerformanceData)[0])
-                diskusage_total.append(p.findall(temp.PerformanceData)[4])
-            if diskusage_total[insize] == 0:
-                tem = 0
-            else:
-                tem = format(float(diskusage_used[insize]) / float(diskusage_total[insize]), '.2%')
+                p = re.compile(r'\d+')
+                disk_used = p.findall(svc_rec_obj.PerformanceData)[0]
+                disk_total = p.findall(svc_rec_obj.PerformanceData)[4]
+                if disk_total == 0:
+                    disk_percentage = 0
+                else:
+                    disk_percentage = format(float(disk_used) / float(disk_total), '.2%')
+        json_data = {'name': disk_name, 'used': disk_used, 'total': disk_total, 'percentage': disk_percentage}
+        disk_json_obj.append(json_data)
 
-            diskusage_dic = {'name': diskusage_name[insize], 'used': diskusage_used[insize],
-                             'total': diskusage_total[insize], 'percentage': tem}
-            diskusage_object.append(diskusage_dic)
-            insize = insize + 1
-    return HttpResponse(json.dumps(diskusage_object), content_type="application/json")
-
+    return HttpResponse(json.dumps(disk_json_obj), content_type="application/json")
 
 def eth_external(request):
-    # Check login
+    # Redirect to login page if not logged in
     username = request.session['username']
     usergroup = request.session['usergroup']
+    if username == None:
+        return HttpResponseRedirect('/login')
     if username == '':
         return HttpResponseRedirect('/login')
 
     # Get parameters from URL
-    cur_page = request.GET.get('page')
+    cur_page_no = request.GET.get('page')
     filterby_user = request.GET.get('user')
-    if cur_page == None:
-        cur_page = 1
+    item_per_page = request.GET.get('pageelem')
+
+    # Get a correct page no, filterby_user(if needed), item_per_page(if needed)
+    if cur_page_no == None or cur_page_no == '':
+        cur_page_no = 1
+    elif cur_page_no <= 0:
+        cur_page_no = 1
     else:
-        cur_page = int(cur_page)
-    if filterby_user != None:
+        cur_page_no = int(cur_page_no)
+
+    if filterby_user != '':
         if usergroup == 'user':                                         # Users can only get records of his own hosts
             filterby_user = username
     else:
         filterby_user = ''                                               # No filter has been set
 
-    # Prepare objects
-    eth_name = []
-    eth_in = []
-    eth_out = []
-    eth_object = []
-    eth = Service.objects.all().values('ServiceName', 'HostName').annotate(max=Max('LastCheck')).filter(
-        ServiceName='Traffic_eth0' ,HostName__in=Host.objects.all().values('HostName'))
-    size = len(eth)
-    p = re.compile(r'\d+')
-    insize = 0
-    for k in range(0, size):
-        temp = get_object_or_404(Service, HostName=eth[k].get('HostName'), ServiceName='Traffic_eth0',
-                                 LastCheck=eth[k].get('max'))
-        current_host = get_object_or_404(Host, HostName=temp.HostName)
-        temp.HostType = current_host.HostType
-        # If user.group = user, show his own hosts. If user.group = admin, show all hosts or filterby_user's hosts.
-        if usergroup == 'user' and current_host.Owner != username:
-            continue
-        if usergroup == 'admin' and filterby_user != '' and current_host.Owner != filterby_user:
-            continue
+    if item_per_page == None or item_per_page == '':
+        item_per_page = 4
+    else:
+        item_per_page = int(item_per_page)
+        if item_per_page <= 4:
+            item_per_page = 4
+        elif item_per_page >= 10:
+            item_per_page = 4
 
-        if temp.HostType == 'external':
-            eth_name.append(temp.HostName)
-            if temp.PerformanceData == '':
-                eth_in.append(0)
-                eth_out.append(0)
+    my_host_list = None
+    # Get all user's hosts
+    if usergroup == 'user':
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
+    # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
+    if usergroup == 'admin' and filterby_user != '':
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
+    # else (usergroup = admin and filterby_user == ''), show all hosts
+    else :
+        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
+
+    host_count = len(my_host_list)
+    start_pos = 0
+    end_pos = 0
+    print "host_count = " + str(host_count)
+
+    # Get start and end of consulting host
+    if (cur_page_no - 1) * item_per_page >= host_count:
+        start_pos = 0
+        if item_per_page > host_count:
+            end_pos = host_count
+        else:
+            end_pos = item_per_page
+    else:
+        start_pos = (cur_page_no - 1) * item_per_page
+        if start_pos + item_per_page > host_count:
+            end_pos = host_count
+        else:
+            end_pos = start_pos + item_per_page
+    print "start = " + str(start_pos) + ' | end = ' + str(end_pos)
+
+    eth_name = ''
+    eth_in = ''
+    eth_out = ''
+    eth_json_obj = []
+    # Get hosts' service records
+    for i in range(start_pos, end_pos):
+        # Get last check time for current host
+        print my_host_list[i].get('HostName')
+        latest_check = Service.objects.values('HostName').annotate(last_check = Max('LastCheck'))\
+            .filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'Traffic_eth0')
+        if len(latest_check) == 0:
+            svc_rec_obj = None
+        else:
+            svc_rec_obj = get_object_or_404(Service, HostName = my_host_list[i].get('HostName'),ServiceName='Traffic_eth0',
+                                        LastCheck=latest_check[0].get('last_check'))
+
+        if svc_rec_obj == None:                               # Got no such host's record
+            eth_name = my_host_list[i].get('HostName')
+            eth_in = 0
+            eth_out = 0
+        else:
+            eth_name = my_host_list[i].get('HostName')
+            if svc_rec_obj.PerformanceData == '':
+                eth_in = 0
+                eth_out = 0
             else:
-                eth_in.append(p.findall(temp.PerformanceData)[0])
-                eth_out.append(p.findall(temp.PerformanceData)[5])
-            eth_dic = {'name': eth_name[insize], 'in': eth_in[insize], 'out': eth_out[insize]}
-            eth_object.append(eth_dic)
-            insize = insize + 1
-    return HttpResponse(json.dumps(eth_object), content_type="application/json")
+                p = re.compile(r'\d+')
+                eth_in = p.findall(svc_rec_obj.PerformanceData)[0]
+                eth_out = p.findall(svc_rec_obj.PerformanceData)[5]
+        json_data = {'name': eth_name, 'in': eth_in, 'out': eth_out}
+        eth_json_obj.append(json_data)
 
+    return HttpResponse(json.dumps(eth_json_obj), content_type="application/json")
 
 def totalcompare(request):
     if request.session['username'] == '':
@@ -713,8 +976,14 @@ def totalcompare(request):
 
 
 def hostdetail(request, serviceid):
-    if request.session['username'] == '':
+    # Redirect to login page if not logged in
+    username = request.session['username']
+    usergroup = request.session['usergroup']
+    if username == None:
         return HttpResponseRedirect('/login')
+    if username == '':
+        return HttpResponseRedirect('/login')
+
     service = get_object_or_404(Service, pk=serviceid)
     host = get_object_or_404(Host, HostName=service.HostName)
     memory = Service.objects.filter(HostName=service.HostName, ServiceName='MemoryUsage')
@@ -807,8 +1076,14 @@ def hostdetail(request, serviceid):
 
 
 def hostdetailmore(request, hostid):
-    if request.session['username'] == '':
+    # Redirect to login page if not logged in
+    username = request.session['username']
+    usergroup = request.session['usergroup']
+    if username == None:
         return HttpResponseRedirect('/login')
+    if username == '':
+        return HttpResponseRedirect('/login')
+
     hoststatus = get_object_or_404(HostStatus, pk=hostid)
     host = get_object_or_404(Host, HostName=hoststatus.HostName)
     memory = Service.objects.filter(HostName=host.HostName, ServiceName='MemoryUsage')
@@ -945,6 +1220,7 @@ def register(request):
     password = None
     password2 = None
     CompareFlag = False
+    ExistFlag = True
 
     if request.method == 'POST':
         if not request.POST.get('account'):
@@ -960,14 +1236,23 @@ def register(request):
         else:
             password2 = request.POST.get('password2')
 
+        # Test if passwords match
         if password and password2:
             if password == password2:
                 CompareFlag = True
             else:
                 errors.append('password2 is diff password ')
 
-        if account and password and password2 and CompareFlag:
-            user = User(username=account, password=password)
+        # Test if username exists
+        same_user = User.objects.filter(username = account)
+        print same_user
+        if len(same_user) == 0:
+            ExistFlag = False
+        else:
+            errors.append('Username exists.')
+
+        if account and password and password2 and CompareFlag and (not ExistFlag):
+            user = User(username=account, password=password, usergroup = 'user')
             user.save()
             return HttpResponseRedirect('/login')
 
@@ -1003,8 +1288,7 @@ def start_input(request):
         print now
         print request.session['username']
         schedule = Schedule(IP=ip, HostName=hostname, ArrivingTime=now, Owner=request.session['username'])
-        print schedule.ip
-        #schedule.save()
+        schedule.save()
         # p = sub.Popen('/home/django/TsinghuaCloud/TsinghuaCloud/schedule.py',stdout=sub.PIPE,shell=True)
         return HttpResponseRedirect('/hoststatus')
 
@@ -1012,7 +1296,8 @@ def start_input(request):
 
 
 def logout(request):
-    request.session['username'] = ''
+    request.session['username'] = None
+    request.session['group'] = None
     return HttpResponseRedirect('/login')
 
 

@@ -118,15 +118,24 @@
     <div>
         {% if usergroup == 'admin' %}
         <div style="color:#000066;padding-left: 10px">
-            <input id="search-user-input" type="input" style="width:150px"/>
-            <a id="search-user" class="easyui-linkbutton" style="width:130px">查看用户主机</a>
-            <a id="clear-filter" class="easyui-linkbutton" style="width:130px">清空查询条件</a>
+            <input id="search-user-input" style="width:150px"/>
+            <a id="search-user" class="easyui-linkbutton" style="width:100px">查看用户主机</a>
+            <a id="clear-filter" class="easyui-linkbutton" style="width:100px">清空</a>
+            <a style="padding-left: 100px">第</a>
+            <input id="page-num" style="width:50px"/>
+            <a>页</a>
+            <a style="padding-left: 10px">每页显示条数(4-10)</a>
+           <input id="item-per-page" style="width:50px"/>
+            <a id="page-change" class="easyui-linkbutton" style="width:50px">确认</a>
         </div>
         <script type="text/javascript">
             // filter_string restricts query conditions, e.g. page / user
-            var filter_string = ""
+            var filter_string = "";
+            var page_num = 1;
             $("#search-user").click( function(){
                 var filter_user = $("#search-user-input").val();
+                $("#page-num").empty();
+                 $("#item-per-page").empty();
                 filter_string = "?user=" + filter_user;
                 console.info(filter_string);
                 action();
@@ -136,7 +145,20 @@
                 eth();
             });
             $("#clear-filter").click( function(){
+                $("#search-user-input").empty();
                 filter_string = "";
+                action();
+                cpu();
+                pro();
+                disk();
+                eth();
+            });
+
+            $("#page-change").click( function(){
+                var filter_user = $("#search-user-input").val();
+                var pageno = $("#page-num").val();
+                var itemperpage = $("#item-per-page").val();
+                filter_string = "?user=" + filter_user + "&page=" + pageno + "&pageelem=" + itemperpage;
                 action();
                 cpu();
                 pro();
@@ -148,18 +170,29 @@
         {% endif %}
 
         {% if usergroup == 'user' %}
-        <div style="color:#000066;padding-left: 10px">只查看该用户主机：</div>
+        <div style="color:#000066;padding-left: 10px">
+            <a style="padding-left: 30px">第</a>
+            <input id="page-num" style="width:50px"/>
+            <a>页</a>
+            <a style="padding-left: 10px">每页显示条数(4-10)</a>
+           <input id="item-per-page" style="width:50px"/>
+            <a id="page-change" class="easyui-linkbutton" style="width:50px">确认</a>
+        </div>
         <script type="text/javascript">
-                var filter_string = ""
-                $("#search-user").click( function(){
-                    filter_string = ""
-                    console.info(filter_string);
-                    action();
-                    cpu();
-                    pro();
-                    disk();
-                    eth();
-                });
+            // filter_string restricts query conditions, e.g. page / user
+            var filter_string = "";
+            var page_num = 1;
+            $("#page-change").click( function(){
+                var pageno = $("#page-num").val();
+                var itemperpage = $("#item-per-page").val();
+                filter_string = "?page=" + pageno + "&pageelem=" + itemperpage;
+                action();
+                cpu();
+                pro();
+                disk();
+                eth();
+            });
+
         </script>
         {% endif %}
 
