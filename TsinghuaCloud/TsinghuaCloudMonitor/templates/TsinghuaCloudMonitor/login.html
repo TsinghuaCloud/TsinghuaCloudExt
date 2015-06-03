@@ -3,60 +3,64 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'cloudclient/homepage.css' %}">
 <script>
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-// DONE DJANGO HACK
-$(function () {
-var csrftoken = getCookie('csrftoken');
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    // DONE DJANGO HACK
+    $(function () {
+        var csrftoken = getCookie('csrftoken');
 
- $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        $.ajaxSetup({
+            crossDomain: false, // obviates need for sameOrigin test
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
             }
-        }
-    });
-}
+        });
+    }
     // END DJANGO AJAX
 </script>
 
 
 <div class="login">
-  <div style='width:310px;height:200px'>  </div>
-  <h1>Log In </h1>
-  
-  <form action="" method="post">
-  {% csrf_token %}
-    <p><input type="text" name="account" value="" placeholder="Username"></p>
-    <p><input type="password" name="password" value="" placeholder="Password"></p>
-    <p class="remember_me">
-      
-    </p>
-    <p class="submit"><input type="submit"  name="commit" value="Sign In"></p>
-  </form>
-  {% if errors %}
-        <ul>
-            {% for error in errors %}
-            <li style="color: red;">{{error}}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+    <div style='width:310px;height:100px'></div>
+    <h1>Log In </h1>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <p><input type="text" name="account" value="" placeholder="Username"></p>
+
+        <p><input type="password" name="password" value="" placeholder="Password"></p>
+
+        <p>
+        <input type="checkbox" name="remember_me" id="remember_me">
+        Remember me
+        </p>
+        <p><a href="../register" class="btn">新用户注册</a>
+        <input type="submit" name="commit" value="Sign In"></p>
+    </form>
+    {% if errors %}
+    <ul>
+        {% for error in errors %}
+        <li style="color: red;">{{error}}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 </div>

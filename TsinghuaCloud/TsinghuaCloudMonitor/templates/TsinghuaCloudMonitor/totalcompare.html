@@ -2,62 +2,58 @@
 {% load staticfiles %}
 
 <script>
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-// DONE DJANGO HACK
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    // DONE DJANGO HACK
 
-function get_site_prefix(){
-    var href = $(location).attr("href");
-    return href
-}
+    function get_site_prefix() {
+        var href = $(location).attr("href");
+        return href
+    }
 
-function cache_clear()
-    {
-    window.location.reload(true);
-    alert('refresh');
-}
+    function cache_clear() {
+        window.location.reload(true);
+        alert('refresh');
+    }
 
 
+    $(function () {
+        var csrftoken = getCookie('csrftoken');
+        $(document).ready(function () {
+            setInterval(function () {
+                cache_clear()
+            }, 1000000);
+        });
 
-
-
-        
-$(function () {
-var csrftoken = getCookie('csrftoken'); 
-    $(document).ready(function(){
-     setInterval(function(){cache_clear()},1000000);
-     });
-      
-    $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        $.ajaxSetup({
+            crossDomain: false, // obviates need for sameOrigin test
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
             }
-        }
+        });
+        // END DJANGO AJAX
+
     });
-    // END DJANGO AJAX
-
-});
-
 
 
 </script>
@@ -66,1407 +62,1141 @@ var csrftoken = getCookie('csrftoken');
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Basic Panel - jQuery EasyUI Demo</title>
-<script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
-<script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
+    <meta charset="UTF-8">
+    <title>Basic Panel - jQuery EasyUI Demo</title>
+    <script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
+    <script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
 </head>
 
 <style type="text/css">
-table.gridtable {
-    font-family: verdana,arial,sans-serif;
-    font-size:11px;
-    color:#333333;
-    border-width: 10px, 10px, 0, 10px;
-    border-color: #666666;
-    
-}
-table.gridtable th {
-    border-width: 2px;
-    color:#FFFFFF;
-    padding: 8px;
-    border-style: solid;
-    border-color: #666666;
-    background-color: #505247;
-}
-table.gridtable td {
-    border-width: 2px;
-    padding: 8px;
-    border-style: solid;
-    border-color: #666666;
-    background-color: #F7F7F7;
-}
+    table.gridtable {
+        font-family: verdana, arial, sans-serif;
+        font-size: 11px;
+        color: #333333;
+        border-width: 10px, 10px, 0, 10px;
+        border-color: #666666;
+
+    }
+
+    table.gridtable th {
+        border-width: 2px;
+        color: #FFFFFF;
+        padding: 8px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #505247;
+    }
+
+    table.gridtable td {
+        border-width: 2px;
+        padding: 8px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #F7F7F7;
+    }
 </style>
 
 <body class="easyui-layout">
-	 <div data-options="region:'north',border:false" style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
-        <a href="/login" class="easyui-linkbutton" style="background:#CCCCCC;width:60px;height:30px;position:relative;float:right;">登出</a>
-   </div>
-   <div data-options="region:'west',split:true,title:'菜单'" style="width:150px;padding:10px;">
-        <a href="/hoststatus" class="easyui-linkbutton" style="width:130px">首页</a>
-        <a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
-        <a href="/start_system" class="easyui-linkbutton" style="width:130px">网络服务</a>
-        <a href="/mapchart" class="easyui-linkbutton" style="width:130px">网络拓扑</a>
-        <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
-    </div>
-	<div data-options="region:'center',title:'全局监控图'" style="background:#F0F0F0;position:relative;">
-        <a id="physical"  class="easyui-linkbutton" style="width:130px">物理机</a>
-        <a id="virtual"  class="easyui-linkbutton" style="width:130px">虚拟机</a>
-        <a id="external"  class="easyui-linkbutton" style="width:130px">外部监控</a>
-        
-        <div style="position:relative;height:600px;width:1300px">
-        	<div id="memoryusage" style="height:600px;width:1000px;position:absolute;top:0;left:0; border:2px solid;border-color:#666666; "></div>
-            <div id='memoryusage_form' style='height:300px;width:280px;position:absolute;left:1003px'>
-                <table id='memoryusage-table' class="gridtable" toolbar="#tb"
-                                data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('memoryusage-table','itemid');}">
-                    <thead>
-                        <tr>
-                            <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
-                            <th data-options="field:'productid'" width="70">已用用量KB</th>
-                            <th data-options="field:'listprice'" width="80">总量KB</th>
-                            <th data-options="field:'unitcost'" width="40">使用率</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                            {% for memoryuse in memoryuse_object %}
-                            <tr>
-                            <td>{{memoryuse.name}}</td>
-                            <td>{{memoryuse.used}}</td>
-                            <td>{{memoryuse.total}}</td>
-                            <td>{{memoryuse.percentage}}</td>
-                            
-                            </tr>
-                            {% endfor %}
-                    </tbody>
-                </table> 
-            </div>
+<div data-options="region:'north',border:false"
+     style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
+    <a href="/logout" class="easyui-linkbutton"
+       style="background:#CCCCCC;width:60px;height:30px;position:relative;float:right;">登出</a>
+</div>
+<div data-options="region:'west',split:true,title:'菜单'" style="width:150px;padding:10px;">
+    <a href="/hoststatus" class="easyui-linkbutton" style="width:130px">首页</a>
+    <a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
+    {% if usergroup != 'admin' %}
+    <a href="/start_system" class="easyui-linkbutton" style="width:130px">网络服务</a>
+    {% endif %}
+    <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
+</div>
+<div data-options="region:'center',title:'全局监控图'" style="background:#F0F0F0;color:#000000;position:relative;">
+    <div>
+        {% if usergroup == 'admin' %}
+        <div style="color:#000066;padding-left: 10px">
+            <input id="search-user-input" type="input" style="width:150px"/>
+            <a id="search-user" class="easyui-linkbutton" style="width:130px">查看用户主机</a>
+            <a id="clear-filter" class="easyui-linkbutton" style="width:130px">清空查询条件</a>
         </div>
-                <!-- ECharts单文件引入 -->
-//         <script>
-//         memory_physical_form = function() {
-//     $('#memoryusage_form').datagrid({
-//         url : 'http://127.0.0.1:8000/memory_physical/',
-
-//         columns : [ [ {
-//             field : 'name',
-//             width : '30px',
-//             align : 'center',
-//             title : '主机'
-//         }, {
-//             field : 'used',
-//             width : '100px',
-//             align : 'center',
-//             title : '已用用量KB'
-//         }, {
-//             field : 'total',
-//             width : '100px',
-//             align : 'center',
-//             title : '总量KB'
-//         }, {
-//             field : 'percentage',
-//             width : '50px',
-//             align : 'center',
-//             title : '使用率'
-//         }] ]
-//     });
-//     //Newstar.rqRequirmentList.doApproveSearch();
-// };
-//         $('#memoryusage_form').datagrid('load','');
-//         </script>
-
-        <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
         <script type="text/javascript">
-        $(function () {
-        action();
-        cpu();
-        pro();
-        disk();
-        eth();
-        });
-        setInterval("action()", 3000); 
-        var choice = 0;
-        $("#virtual").click(function(){ 
-         choice = 1;
-         action();
-         cpu();
-         pro();
-        });
-        $("#external").click(function(){ 
-         choice = 2;
-         action();
-         cpu();
-         pro();
-        });
-        $("#physical").click(function(){ 
-         choice = 0;
-         action();
-         cpu();
-         pro();
-        });
+            // filter_string restricts query conditions, e.g. page / user
+            var filter_string = ""
+            $("#search-user").click( function(){
+                var filter_user = $("#search-user-input").val();
+                filter_string = "?user=" + filter_user;
+                console.info(filter_string);
+                action();
+                cpu();
+                pro();
+                disk();
+                eth();
+            });
+            $("#clear-filter").click( function(){
+                filter_string = "";
+                action();
+                cpu();
+                pro();
+                disk();
+                eth();
+            });
 
-action=function(){
-    if(choice == 0){
-    $.ajax({
-               url:'http://166.111.143.241:8080/memory_physical/',
-               success: function(result){
-                        if (result.length!=0){
-                        var memory_used_all =0;
-                        var memory_total_all = 0; 
-                        var memoryuse_name = new Array();
-                        console.info(result);
-                        console.info(result[0].name)
-                        for (var i=0;i<result.length;i++){
-                            memoryuse_name.push(result[i].name)
-                        }
-                        memoryuse_name.push('Overall');
-                        
+        </script>
+        {% endif %}
 
-                        var memoryuse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
-                            memoryuse_used.push(result[i].used);
-                            memory_used_all = parseFloat(memory_used_all) + parseFloat(result[i].used);
-                        }
-                        console.info(memory_used_all);
-                        memoryuse_used.push(memory_used_all.toString());
-
-                        var memoryuse_total = new Array();
-                        for (var i=0;i<result.length;i++){
-                            memoryuse_total.push(result[i].total);
-                            memory_total_all = parseFloat(memory_total_all) + parseFloat(result[i].total);
-                        }
-                        memoryuse_total.push(memory_total_all.toString());                        
-
-                        setMemory(memoryuse_name,memoryuse_used,memoryuse_total);
-                       }
-                        
-                       
-                    else{
-                        setMemory(' ', ' ',' '); 
-                    }
-                }
-        });
-    };
-    if (choice == 1){
-    $.ajax({
-               url:'http://166.111.143.241:8080/memory_virtual/',
-               success: function(result){
-                        if (result.length!=0){
-                        var memory_used_all =0;
-                        var memory_total_all = 0; 
-                        var memoryuse_name = new Array();
-                        console.info(result);
-                        console.info(result[0].name)
-                        for (var i=0;i<result.length;i++){
-                            memoryuse_name.push(result[i].name)
-                        }
-                        memoryuse_name.push('Overall');
-                        
-
-                        var memoryuse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
-                            memoryuse_used.push(result[i].used);
-                            memory_used_all = parseFloat(memory_used_all) + parseFloat(result[i].used);
-                        }
-                        console.info(memory_used_all);
-                        memoryuse_used.push(memory_used_all.toString());
-
-                        var memoryuse_total = new Array();
-                        for (var i=0;i<result.length;i++){
-                            memoryuse_total.push(result[i].total);
-                            memory_total_all = parseFloat(memory_total_all) + parseFloat(result[i].total);
-                        }
-                        memoryuse_total.push(memory_total_all.toString());                        
-
-                        setMemory(memoryuse_name,memoryuse_used,memoryuse_total);
-                     }  
-                        
-                
-                        else{
-                        setMemory(' ', ' ',' '); 
-                    }
-                }
-        });    
-    };
-     if (choice == 2){
-    $.ajax({
-               url:'http://166.111.143.241:8080/memory_external/',
-               success: function(result){
-                        console.info(result);
-                        if (result.length!=0){
-                        var memory_used_all =0;
-                        var memory_total_all = 0; 
-                        var memoryuse_name = new Array();
-                        console.info(result);
-                        console.info(result[0].name)
-                        for (var i=0;i<result.length;i++){
-                            memoryuse_name.push(result[i].name)
-                        }
-                        memoryuse_name.push('Overall');
-                        
-
-                        var memoryuse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
-                            memoryuse_used.push(result[i].used);
-                            memory_used_all = parseFloat(memory_used_all) + parseFloat(result[i].used);
-                        }
-                        console.info(memory_used_all);
-                        memoryuse_used.push(memory_used_all.toString());
-
-                        var memoryuse_total = new Array();
-                        for (var i=0;i<result.length;i++){
-                            memoryuse_total.push(result[i].total);
-                            memory_total_all = parseFloat(memory_total_all) + parseFloat(result[i].total);
-                        }
-                        memoryuse_total.push(memory_total_all.toString());                        
-
-                        setMemory(memoryuse_name,memoryuse_used,memoryuse_total);
-                       }
-                        
-                
-                     else{
-                        setMemory(' ', ' ',' '); 
-                    }
-                }
-        });    
-    };   
-};
-
-
-setMemory=function(memoryuse_name,memoryuse_used,memoryuse_total){
-
-                // 路径配置
-                require.config({
-                    paths: {
-                        echarts: 'http://echarts.baidu.com/build/dist'
-                    }
+        {% if usergroup == 'user' %}
+        <div style="color:#000066;padding-left: 10px">只查看该用户主机：</div>
+        <script type="text/javascript">
+                var filter_string = ""
+                $("#search-user").click( function(){
+                    filter_string = ""
+                    console.info(filter_string);
+                    action();
+                    cpu();
+                    pro();
+                    disk();
+                    eth();
                 });
-        // 使用
-                require(
+        </script>
+        {% endif %}
+
+    <div style="position:relative;height:600px;width:1300px">
+        <div id="memoryusage"
+             style="height:600px;width:1000px;position:absolute;top:0;left:0; border:2px solid;border-color:#666666; "></div>
+        <div id='memoryusage_form' style='height:300px;width:280px;position:absolute;left:1003px'>
+            <table id='memoryusage-table' class="gridtable" toolbar="#tb"
+                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('memoryusage-table','itemid');}">
+                <thead>
+                <tr>
+                    <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
+                    <th data-options="field:'productid'" width="70">已用用量KB</th>
+                    <th data-options="field:'listprice'" width="80">总量KB</th>
+                    <th data-options="field:'unitcost'" width="40">使用率</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for memoryuse in memoryuse_object %}
+                <tr>
+                    <td>{{memoryuse.name}}</td>
+                    <td>{{memoryuse.used}}</td>
+                    <td>{{memoryuse.total}}</td>
+                    <td>{{memoryuse.percentage}}</td>
+
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- ECharts单文件引入 -->
+
+    <script>
+        //         memory_physical_form = function() {
+        //     $('#memoryusage_form').datagrid({
+        //         url : 'http://127.0.0.1:8000/memory_physical/',
+
+        //         columns : [ [ {
+        //             field : 'name',
+        //             width : '30px',
+        //             align : 'center',
+        //             title : '主机'
+        //         }, {
+        //             field : 'used',
+        //             width : '100px',
+        //             align : 'center',
+        //             title : '已用用量KB'
+        //         }, {
+        //             field : 'total',
+        //             width : '100px',
+        //             align : 'center',
+        //             title : '总量KB'
+        //         }, {
+        //             field : 'percentage',
+        //             width : '50px',
+        //             align : 'center',
+        //             title : '使用率'
+        //         }] ]
+        //     });
+        //     //Newstar.rqRequirmentList.doApproveSearch();
+        // };
+        //         $('#memoryusage_form').datagrid('load','');
+        //         </script>
+
+    <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
+    <script type="text/javascript">
+        $(function () {
+            action();
+            cpu();
+            pro();
+            disk();
+            eth();
+        });
+        setInterval("action()", 30000);
+        action = function () {
+            $.ajax({
+                url: '/memory_external/' + filter_string ,
+                success: function (result) {
+                    if (result.length != 0) {
+                        var memory_used_all = 0;
+                        var memory_total_all = 0;
+                        var memoryuse_name = [];
+                        var memoryuse_used = [];
+                        var memoryuse_total = [];
+
+                        // Delete old table info
+                        var memory_table = document.getElementById("memoryusage-table");
+                        var old_body = memory_table.getElementsByTagName("tbody");
+                        old_body[0].remove();
+
+                        var new_memory_table = document.createElement("tbody");
+                        var new_tr = [];
+                        var new_td = [];
+                        for (var i = 0; i < result.length; i++) {
+
+                            memoryuse_name.push(result[i].name);
+                            memoryuse_used.push(result[i].used);
+                            memory_used_all = parseFloat(memory_used_all) + parseFloat(result[i].used);
+                            memoryuse_total.push(result[i].total);
+                            memory_total_all = parseFloat(memory_total_all) + parseFloat(result[i].total);
+
+                            // Create new table elements
+                            new_tr[i] = document.createElement("tr");
+
+                            new_td[0] = document.createElement("td");
+                            new_td[0].textContent = result[i].name;
+                            new_tr[i].appendChild(new_td[0]);
+
+                            new_td[1] = document.createElement("td");
+                            new_td[1].textContent = result[i].used;
+                            new_tr[i].appendChild(new_td[1]);
+
+                            new_td[2] = document.createElement("td");
+                            new_td[2].textContent = result[i].total;
+                            new_tr[i].appendChild(new_td[2]);
+
+                            new_td[3] = document.createElement("td");
+                            new_td[3].textContent = result[i].percentage;
+                            new_tr[i].appendChild(new_td[3]);
+
+                            new_memory_table.appendChild(new_tr[i]);
+                        }
+                        //memoryuse_name.push('Overall');
+                        //memoryuse_used.push(memory_used_all.toString());
+                        //memoryuse_total.push(memory_total_all.toString());
+                        memory_table.appendChild(new_memory_table);
+
+                            // Draw Charts based on records received
+                        setMemory(memoryuse_name, memoryuse_used, memoryuse_total);
+                    }
+
+
+                    else {
+                        setMemory(' ', ' ', ' ');
+                    }
+                }
+            });
+        };
+
+
+        setMemory = function (memoryuse_name, memoryuse_used, memoryuse_total) {
+
+            // 路径配置
+            require.config({
+                paths: {
+                    echarts: 'http://echarts.baidu.com/build/dist'
+                }
+            });
+            // 使用
+            require(
                     [
                         'echarts',
                         'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
-                       
+
                     ],
 
-                   
+
                     function (ec) {
-                    
+
                         // 基于准备好的dom，初始化echarts图表
-                        
+
 
                         var number = memoryuse_total.length;
                         //alert(number);
                         var mark = new Array();
-                        for(var i=0;i<number;i++){
-                            
+                        for (var i = 0; i < number; i++) {
+
                             var o = {
-                                
-                                value: memoryuse_total[i] ? (memoryuse_used[i]/memoryuse_total[i]).toFixed(2) : 0,
-                                xAxis:i,
-                                yAxis:(memoryuse_total[i]+5500000)
+
+                                value: memoryuse_total[i] ? (memoryuse_used[i] / memoryuse_total[i]).toFixed(2) : 0,
+                                xAxis: i,
+                                yAxis: (memoryuse_total[i] + 5500000)
                             }
                             //alert(o);
                             mark.push(o);
 
                         }
-                        var myChart = ec.init(document.getElementById('memoryusage')); 
+                        var myChart = ec.init(document.getElementById('memoryusage'));
                         var option = {
-                                title : {
-                                    text: '各主机内存使用情况',
-                                    subtext: 'by 清华云平台'
+                            title: {
+                                text: '各主机内存使用情况',
+                                subtext: 'by 清华云平台'
+                            },
+                            tooltip: {
+                                trigger: 'axis'
+                            },
+                            legend: {
+                                data: [
+                                    '内存使用情况－已用', '',
+                                    '内存使用情况－总量']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    mark: {show: true},
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            calculable: true,
+                            grid: {y: 70, y2: 30, x2: 20},
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    data: memoryuse_name
                                 },
-                                tooltip : {
-                                    trigger: 'axis'
-                                },
-                                legend: {
-                                    data:[
-                                        '内存使用情况－已用','',
-                                        '内存使用情况－总量'        ]
-                                },
-                                toolbox: {
-                                    show : true,
-                                    feature : {
-                                        mark : {show: true},
-                                        dataView : {show: true, readOnly: false},
-                                        magicType : {show: true, type: ['line', 'bar']},
-                                        restore : {show: true},
-                                        saveAsImage : {show: true}
-                                    }
-                                },
-                                calculable : true,
-                                grid: {y: 70, y2:30, x2:20},
-                                xAxis : [
-                                    {
-                                        type : 'category',
-                                        data : memoryuse_name
+                                {
+                                    type: 'category',
+                                    axisLine: {show: false},
+                                    axisTick: {show: false},
+                                    axisLabel: {show: false},
+                                    splitArea: {show: false},
+                                    splitLine: {show: false},
+                                    data: memoryuse_name
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value',
+                                    axisLabel: {formatter: '{value} KB'}
+                                }
+                            ],
+                            series: [
+
+                                {
+                                    name: '内存使用情况－已用',
+                                    type: 'bar',
+                                    itemStyle: {
+                                        normal: {
+                                            color: 'rgba(102,102,255,1)',
+                                            label: {show: true, textStyle: {color: '#27727B'}}
+                                        }
                                     },
-                                    {
-                                        type : 'category',
-                                        axisLine: {show:false},
-                                        axisTick: {show:false},
-                                        axisLabel: {show:false},
-                                        splitArea: {show:false},
-                                        splitLine: {show:false},
-                                        data : memoryuse_name
-                                    }
-                                ],
-                                yAxis : [
-                                    {
-                                        type : 'value',
-                                        axisLabel:{formatter:'{value} KB'}
-                                    }
-                                ],
-                                series : [
-                                  
-                                    {
-                                        name:'内存使用情况－已用',
-                                        type:'bar',
-                                        itemStyle: {normal: {color:'rgba(102,102,255,1)', label:{show:true,textStyle:{color:'#27727B'}}}},
-                                        data:memoryuse_used
+                                    data: memoryuse_used
+                                },
+
+
+                                {
+                                    name: '内存使用情况－总量',
+                                    type: 'bar',
+                                    xAxisIndex: 1,
+                                    itemStyle: {normal: {color: 'rgba(102,102,255,0.6)', label: {show: true}}},
+                                    data: memoryuse_total,
+
+                                    markPoint: {
+                                        data: mark,
+                                        itemStyle: {
+                                            normal: {
+                                                color: 'rgba(102,102,255,0.8)',
+                                                label: {show: true},
+                                                borderWidth: 10
+                                            }
+
+
+                                        }
+
                                     },
-                               
+                                },
 
-                                    {
-                                        name:'内存使用情况－总量',
-                                        type:'bar',
-                                        xAxisIndex:1,
-                                        itemStyle: {normal: {color:'rgba(102,102,255,0.6)', label:{show:true}}},
-                                        data:memoryuse_total,
-
-                                        markPoint : {
-                                            data : mark,
-                                            itemStyle: {normal: {color:'rgba(102,102,255,0.8)', label:{show:true},borderWidth:10}
-                                            
+                            ]
 
 
-                                           }
-                                                
-                                        },
-                                    },
-                
-                                ]
+                        };
 
-
-                            };
-           
-                           // 为echarts对象加载数据 
-                           console.info(option);
-                           myChart.setOption(option); 
-                        }
-                   );
-};
-        </script>
+                        // 为echarts对象加载数据
+                        console.info(option);
+                        myChart.setOption(option);
+                    }
+            );
+        };
+    </script>
     <br/>
     <br/>
     <br/>
     <br/>
     <br/>
-       <div style="position:relative;height:600px;">
-            <div id="cpuusage" style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
-            <div id='cpuusage_form' style='height:300px;width:280px;position:absolute;left:1003px'>
-                <table id='cpuusage-table' class="gridtable" toolbar="#tb"
-                                data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('cpuusage-table','itemid');}">
-                    <thead>
-                        <tr>
-                            <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
-                            <th data-options="field:'productid'" width="70">CPU利用率</th>                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                            {% for cpu in cpuloaduse_object %}
-                            <tr>
-                            <td>{{cpu.name}}</td>
-                            <td>{{cpu.percentage}}</td>
-                            </tr>
-                            {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+
+    <div style="position:relative;height:600px;">
+        <div id="cpuusage"
+             style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
+        <div id='cpuusage_form' style='height:300px;width:280px;position:absolute;left:1003px'>
+            <table id='cpuusage-table' class="gridtable" toolbar="#tb"
+                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('cpuusage-table','itemid');}">
+                <thead>
+                <tr>
+                    <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
+                    <th data-options="field:'productid'" width="70">CPU利用率</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for cpu in cpuloaduse_object %}
+                <tr>
+                    <td>{{cpu.name}}</td>
+                    <td>{{cpu.percentage}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
-                <!-- ECharts单文件引入 -->
-        <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-        <script type="text/javascript">
-   
-         setInterval("cpu()", 3000); 
+    </div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
+    <script type="text/javascript">
+
+        setInterval("cpu()", 30000);
 
 
-cpu=function(){
-    if(choice == 0){
-    $.ajax({
-               url:'http://166.111.143.241:8080/cpu_physical/',
-               success: function(result){
-                        if (result.length!=0){
- 
-                        var cpuuse_name = new Array();
+        cpu = function () {
+            $.ajax({
+                url: '/cpu_external/' + filter_string ,
+                success: function (result) {
+                    if (result.length != 0) {
+                        var cpuuse_name = [];
+                        var cpuuse_used = [];
+                        var cpuuse_percentage = [];
+                        var cpuuse_total = [];
 
-                        for (var i=0;i<result.length;i++){
-                            cpuuse_name.push(result[i].name)
-                        }
+                        // Delete old table info
+                        var cpu_table = document.getElementById("cpuusage-table");
+                        var old_body = cpu_table.getElementsByTagName("tbody");
+                        old_body[0].remove();
 
-                        
+                        // Prepare new table info
+                        var new_cpu_table = document.createElement("tbody");
+                        var new_tr = [];
+                        var new_td = [];
 
-                        var cpuuse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
+                        for (var i = 0; i < result.length; i++) {
+                            cpuuse_name.push(result[i].name);
                             cpuuse_used.push(result[i].used);
-                            
-                        }
-
-
-                        var cpuuse_percentage = new Array();
-                        for (var i=0;i<result.length;i++){
                             cpuuse_percentage.push(result[i].percentage);
-                           
-                        }
-                        
-                        var cpuuse_total = new Array();
-                        for (var i=0;i<result.length;i++){
                             cpuuse_total.push(0.999999);
-                           
-                        }                       
-                        setCpu(cpuuse_name,cpuuse_used,cpuuse_percentage,cpuuse_total);
-                       }
-                        
-                       
-                    else{
-                        setCpu(' ', ' ',' '); 
+
+                            // Create new table elements
+                            new_tr[i] = document.createElement("tr");
+
+                            new_td[0] = document.createElement("td");
+                            new_td[0].textContent = result[i].name;
+                            new_tr[i].appendChild(new_td[0]);
+
+                            new_td[1] = document.createElement("td");
+                            new_td[1].textContent = result[i].percentage.toString();
+                            new_tr[i].appendChild(new_td[1]);
+
+                            new_cpu_table.appendChild(new_tr[i]);
+                        }
+                        cpu_table.appendChild(new_cpu_table);
+                        setCpu(cpuuse_name, cpuuse_used, cpuuse_percentage, cpuuse_total);
+                    }
+
+
+                    else {
+                        setCpu(' ', ' ', ' ');
                     }
                 }
-        });
-    };
-    if (choice== 1){
-     $.ajax({
-               url:'http://166.111.143.241:8080/cpu_virtual/',
-               success: function(result){
-                        if (result.length!=0){
- 
-                        var cpuuse_name = new Array();
+            });
+        };
 
-                        for (var i=0;i<result.length;i++){
-                            cpuuse_name.push(result[i].name)
-                        }
-
-                        
-
-                        var cpuuse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
-                            cpuuse_used.push(result[i].used);
-                            
-                        }
-
-
-                        var cpuuse_percentage = new Array();
-                        for (var i=0;i<result.length;i++){
-                            cpuuse_percentage.push(result[i].percentage);
-                           
-                        }
-                        
-                        var cpuuse_total = new Array();
-                        for (var i=0;i<result.length;i++){
-                            cpuuse_total.push(0.999999);
-                           
-                        }                       
-                        setCpu(cpuuse_name,cpuuse_used,cpuuse_percentage,cpuuse_total);
-                       }
-                        
-                       
-                    else{
-                        setCpu(' ', ' ',' '); 
-                    }
+        setCpu = function (cpuuse_name, cpuuse_used, cpuuse_percentage, cpuuse_total) {
+            // 路径配置
+            require.config({
+                paths: {
+                    echarts: 'http://echarts.baidu.com/build/dist'
                 }
-        });  
-    };
-     if (choice == 2){
-     $.ajax({
-               url:'http://166.111.143.241:8080/cpu_external/',
-               success: function(result){
-                        if (result.length!=0){
- 
-                        var cpuuse_name = new Array();
-
-                        for (var i=0;i<result.length;i++){
-                            cpuuse_name.push(result[i].name)
-                        }
-
-                        
-
-                        var cpuuse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
-                            cpuuse_used.push(result[i].used);
-                            
-                        }
-
-
-                        var cpuuse_percentage = new Array();
-                        for (var i=0;i<result.length;i++){
-                            cpuuse_percentage.push(result[i].percentage);
-                           
-                        }
-                        
-                        var cpuuse_total = new Array();
-                        for (var i=0;i<result.length;i++){
-                            cpuuse_total.push(0.999999);
-                           
-                        }                       
-                        setCpu(cpuuse_name,cpuuse_used,cpuuse_percentage,cpuuse_total);
-                       }
-                        
-                       
-                    else{
-                        setCpu(' ', ' ',' '); 
-                    }
-                }
-        });    
-    };   
-};
-
-setCpu=function(cpuuse_name,cpuuse_used,cpuuse_percentage,cpuuse_total){
-                // 路径配置
-                require.config({
-                    paths: {
-                        echarts: 'http://echarts.baidu.com/build/dist'
-                    }
-                });
-        // 使用
-                require(
+            });
+            // 使用
+            require(
                     [
                         'echarts',
                         'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
-                       
+
                     ],
                     function (ec) {
                         // 基于准备好的dom，初始化echarts图表 
 
-                        var myChart = ec.init(document.getElementById('cpuusage')); 
+                        var myChart = ec.init(document.getElementById('cpuusage'));
                         var option = {
-                            title : {
+                            title: {
                                 text: '各主机CPU使用情况',
                                 subtext: 'by 清华云平台'
                             },
-                            tooltip : {
+                            tooltip: {
                                 trigger: 'axis'
                             },
                             legend: {
-                                data:[
-                                    'CPU使用情况－已用','',
-                                    'CPU使用情况－总量'        ]
+                                data: [
+                                    'CPU使用情况－已用', '',
+                                    'CPU使用情况－总量']
                             },
                             toolbox: {
-                                show : true,
-                                feature : {
-                                    mark : {show: true},
-                                    dataView : {show: true, readOnly: false},
-                                    magicType : {show: true, type: ['line', 'bar']},
-                                    restore : {show: true},
-                                    saveAsImage : {show: true}
+                                show: true,
+                                feature: {
+                                    mark: {show: true},
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
                                 }
                             },
-                            calculable : true,
-                            
-                            xAxis : [
+                            calculable: true,
+
+                            xAxis: [
                                 {
-                                    type : 'category',
-                                    data : cpuuse_name
+                                    type: 'category',
+                                    data: cpuuse_name
                                 },
                                 {
-                                    type : 'category',
-                                    axisLine: {show:false},
-                                    axisTick: {show:false},
-                                    axisLabel: {show:false},
-                                    splitArea: {show:false},
-                                    splitLine: {show:false},
-                                    data : cpuuse_name
+                                    type: 'category',
+                                    axisLine: {show: false},
+                                    axisTick: {show: false},
+                                    axisLabel: {show: false},
+                                    splitArea: {show: false},
+                                    splitLine: {show: false},
+                                    data: cpuuse_name
                                 }
                             ],
-                            yAxis : [
+                            yAxis: [
                                 {
-                                    type : 'value',
-                                    axisLabel:{formatter:'{value}'}
+                                    type: 'value',
+                                    axisLabel: {formatter: '{value}'}
                                 }
                             ],
-                            series : [
-                              
-                                {
-                                    name:'CPU使用情况－利用率',
-                                    type:'bar',
-                                    itemStyle: {normal: {color:'rgba(255,255,0,1)', label:{show:true,textStyle:{color:'#27727B'}}, formatter:'{c} %'}},
-                                    data:cpuuse_used
-                                },
-                           
+                            series: [
 
                                 {
-                                    name:'CPU使用情况－总量',
-                                    type:'bar',
-                                    xAxisIndex:1,
-                                    itemStyle: {normal: {color:'rgba(255,255,0,0.2)'}},
-                                    data:cpuuse_total
-                                       
-                                    
+                                    name: 'CPU使用情况－利用率',
+                                    type: 'bar',
+                                    itemStyle: {
+                                        normal: {
+                                            color: 'rgba(255,255,0,1)',
+                                            label: {show: true, textStyle: {color: '#27727B'}},
+                                            formatter: '{c} %'
+                                        }
+                                    },
+                                    data: cpuuse_used
                                 },
-                                
+
+
+                                {
+                                    name: 'CPU使用情况－总量',
+                                    type: 'bar',
+                                    xAxisIndex: 1,
+                                    itemStyle: {normal: {color: 'rgba(255,255,0,0.2)'}},
+                                    data: cpuuse_total
+
+
+                                },
+
                             ]
 
 
                         };
-           
+
                         // 为echarts对象加载数据 
-                        myChart.setOption(option); 
+                        myChart.setOption(option);
                     }
-                );
-    }
+            );
+        }
 
-        </script>        
+    </script>
     <br/>
     <br/>
     <br/>
     <br/>
     <br/>
-    
-        <div style="position:relative;height:600px;">
-            <div id="diskusage" style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
-            <div id='diskusage_form' style='height:300px;width:280px;position:absolute;left:1003px;'>
-                <table id='diskusage-table' class="gridtable" toolbar="#tb"
-                                data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('diskusage-table','itemid');}">
-                    <thead>
-                        <tr>
-                            <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
-                            <th data-options="field:'productid'" width="70">已用用量MB</th>
-                            <th data-options="field:'listprice'" width="80">总量MB</th>
-                            <th data-options="field:'unitcost'" width="40">使用率</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                            {% for diskuse in diskusage_object %}
-                            <tr>
-                            <td>{{diskuse.name}}</td>
-                            <td>{{diskuse.used}}</td>
-                            <td>{{diskuse.total}}</td>
-                            <td>{{diskuse.percentage}}</td>
-                            
-                            </tr>
-                            {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+
+    <div style="position:relative;height:600px;">
+        <div id="diskusage"
+             style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
+        <div id='diskusage_form' style='height:300px;width:280px;position:absolute;left:1003px;'>
+            <table id='diskusage-table' class="gridtable" toolbar="#tb"
+                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('diskusage-table','itemid');}">
+                <thead>
+                <tr>
+                    <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
+                    <th data-options="field:'productid'" width="70">已用用量MB</th>
+                    <th data-options="field:'listprice'" width="80">总量MB</th>
+                    <th data-options="field:'unitcost'" width="40">使用率</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for diskuse in diskusage_object %}
+                <tr>
+                    <td>{{diskuse.name}}</td>
+                    <td>{{diskuse.used}}</td>
+                    <td>{{diskuse.total}}</td>
+                    <td>{{diskuse.percentage}}</td>
+
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
-                <!-- ECharts单文件引入 -->
-        <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-        <script type="text/javascript">
-        setInterval("disk()", 3000);
-disk=function(){
-    if(choice == 0){
-    $.ajax({
-               url:'http://166.111.143.241:8080/disk_physical/',
-               success: function(result){
-                        if (result.length!=0){
-                        var disk_used_all =0;
-                        var disk_total_all = 0; 
-                        var diskuse_name = new Array();
-                        console.info(result);
-                        console.info(result[0].name)
-                        for (var i=0;i<result.length;i++){
-                            diskuse_name.push(result[i].name)
-                        }
-                        diskuse_name.push('Overall');
-                        
+    </div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
+    <script type="text/javascript">
+        setInterval("disk()", 30000);
+        disk = function () {
+            $.ajax({
+                url: '/disk_external/' + filter_string ,
+                success: function (result) {
+                    if (result.length != 0) {
+                        var disk_used_all = 0;
+                        var disk_total_all = 0;
+                        var diskuse_name = [];
+                        var diskuse_used = [];
+                        var diskuse_total = [];
 
-                        var diskuse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
+                        // Delete old table info
+                        var disk_table = document.getElementById("diskusage-table");
+                        var old_body = disk_table.getElementsByTagName("tbody");
+                        old_body[0].remove();
+                        // Prepare new table info
+                        var new_disk_table = document.createElement("tbody");
+                        var new_tr = [];
+                        var new_td = [];
+                        for (var i = 0; i < result.length; i++) {
+                            diskuse_name.push(result[i].name);
                             diskuse_used.push(result[i].used);
                             disk_used_all = parseFloat(disk_used_all) + parseFloat(result[i].used);
-                        }
-                        console.info(disk_used_all);
-                        diskuse_used.push(disk_used_all.toString());
-
-                        var diskuse_total = new Array();
-                        for (var i=0;i<result.length;i++){
                             diskuse_total.push(result[i].total);
                             disk_total_all = parseFloat(disk_total_all) + parseFloat(result[i].total);
-                        }
-                        diskuse_total.push(disk_total_all.toString());                        
 
-                        setDisk(diskuse_name,diskuse_used,diskuse_total);
-                       }
-                        
-                       
-                    else{
-                        setDisk(' ', ' ',' '); 
+                            // Create new table elements
+                            new_tr[i] = document.createElement("tr");
+
+                            new_td[0] = document.createElement("td");
+                            new_td[0].textContent = result[i].name;
+                            new_tr[i].appendChild(new_td[0]);
+
+                            new_td[1] = document.createElement("td");
+                            new_td[1].textContent = result[i].used;
+                            new_tr[i].appendChild(new_td[1]);
+
+                            new_td[2] = document.createElement("td");
+                            new_td[2].textContent = result[i].total.toString();
+                            new_tr[i].appendChild(new_td[2]);
+
+                            new_td[3] = document.createElement("td");
+                            new_td[3].textContent = result[i].percentage.toString();
+                            new_tr[i].appendChild(new_td[3]);
+
+                            new_disk_table.appendChild(new_tr[i]);
+                        }
+                        //diskuse_name.push('Overall');
+                        //diskuse_used.push(disk_used_all.toString());
+                        //diskuse_total.push(disk_total_all.toString());
+                        disk_table.appendChild(new_disk_table);
+
+                            // Draw Charts based on records received
+                        setDisk(diskuse_name, diskuse_used, diskuse_total);
+                    }
+
+
+                    else {
+                        setDisk(' ', ' ', ' ');
                     }
                 }
-        });
-    };
-    if (choice == 1){
-    $.ajax({
-               url:'http://166.111.143.241:8080/disk_virtual/',
-               success: function(result){
-                        if (result.length!=0){
-                        var disk_used_all =0;
-                        var disk_total_all = 0; 
-                        var diskuse_name = new Array();
-                        console.info(result);
-                        console.info(result[0].name)
-                        for (var i=0;i<result.length;i++){
-                            diskuse_name.push(result[i].name)
-                        }
-                        diskuse_name.push('Overall');
-                        
+            });
+        };
 
-                        var diskuse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
-                            diskuse_used.push(result[i].used);
-                            disk_used_all = parseFloat(disk_used_all) + parseFloat(result[i].used);
-                        }
-                        console.info(disk_used_all);
-                        diskuse_used.push(disk_used_all.toString());
-
-                        var diskuse_total = new Array();
-                        for (var i=0;i<result.length;i++){
-                            diskuse_total.push(result[i].total);
-                            disk_total_all = parseFloat(disk_total_all) + parseFloat(result[i].total);
-                        }
-                        diskuse_total.push(disk_total_all.toString());                        
-
-                        setDisk(diskuse_name,diskuse_used,diskuse_total);
-                       }
-                        
-                       
-                    else{
-                        setDisk(' ', ' ',' '); 
-                    }
+        setDisk = function (diskuse_name, diskuse_used, diskuse_total) {
+            // 路径配置
+            require.config({
+                paths: {
+                    echarts: 'http://echarts.baidu.com/build/dist'
                 }
-        });
-    };
-     if (choice == 2){
-    $.ajax({
-               url:'http://166.111.143.241:8080/disk_external/',
-               success: function(result){
-                        if (result.length!=0){
-                        var disk_used_all =0;
-                        var disk_total_all = 0; 
-                        var diskuse_name = new Array();
-                        console.info(result);
-                        console.info(result[0].name)
-                        for (var i=0;i<result.length;i++){
-                            diskuse_name.push(result[i].name)
-                            console.info(result[i].name)
-                        }
-                        diskuse_name.push('Overall');
-                        
-
-                        var diskuse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
-                            diskuse_used.push(result[i].used);
-                            disk_used_all = parseFloat(disk_used_all) + parseFloat(result[i].used);
-                        }
-                        console.info(disk_used_all);
-                        diskuse_used.push(disk_used_all.toString());
-
-                        var diskuse_total = new Array();
-                        for (var i=0;i<result.length;i++){
-                            diskuse_total.push(result[i].total);
-                            disk_total_all = parseFloat(disk_total_all) + parseFloat(result[i].total);
-                        }
-                        diskuse_total.push(disk_total_all.toString());                        
-
-                        setDisk(diskuse_name,diskuse_used,diskuse_total);
-                       }
-                        
-                       
-                    else{
-                        setDisk(' ', ' ',' '); 
-                    }
-                }
-        });
-     };   
- };   
-
-setDisk=function(diskuse_name,diskuse_used,diskuse_total){
-              // 路径配置
-                require.config({
-                    paths: {
-                        echarts: 'http://echarts.baidu.com/build/dist'
-                    }
-                });
-        // 使用
-                require(
+            });
+            // 使用
+            require(
                     [
                         'echarts',
                         'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
-                       
+
                     ],
                     function (ec) {
                         // 基于准备好的dom，初始化echarts图表
-                        
+
                         var number = diskuse_total.length;
                         //alert(number);
                         var mark = new Array();
-                        for(var i=0;i<number;i++){
+                        for (var i = 0; i < number; i++) {
                             var o = {
-                                value: diskuse_total[i] ? (diskuse_used[i]/diskuse_total[i]).toFixed(2) : 0,
-                                xAxis:i,
-                                yAxis:(diskuse_total[i]+200000)
+                                value: diskuse_total[i] ? (diskuse_used[i] / diskuse_total[i]).toFixed(2) : 0,
+                                xAxis: i,
+                                yAxis: (diskuse_total[i] + 200000)
                             }
                             //alert(o);
                             mark.push(o);
 
                         }
-                        var myChart = ec.init(document.getElementById('diskusage')); 
+                        var myChart = ec.init(document.getElementById('diskusage'));
                         var option = {
-                            title : {
+                            title: {
                                 text: '各主机磁盘使用情况',
                                 subtext: 'by 清华云平台'
                             },
-                            tooltip : {
+                            tooltip: {
                                 trigger: 'axis'
                             },
                             legend: {
-                                data:[
-                                    '磁盘使用情况－已用','',
-                                    '磁盘使用情况－总量'        ]
+                                data: [
+                                    '磁盘使用情况－已用', '',
+                                    '磁盘使用情况－总量']
                             },
                             toolbox: {
-                                show : true,
-                                feature : {
-                                    mark : {show: true},
-                                    dataView : {show: true, readOnly: false},
-                                    magicType : {show: true, type: ['line', 'bar']},
-                                    restore : {show: true},
-                                    saveAsImage : {show: true}
+                                show: true,
+                                feature: {
+                                    mark: {show: true},
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
                                 }
                             },
-                            calculable : true,
-                            grid: {y: 70, y2:30, x2:20},
-                            xAxis : [
+                            calculable: true,
+                            grid: {y: 70, y2: 30, x2: 20},
+                            xAxis: [
                                 {
-                                    type : 'category',
-                                    data : diskuse_name
+                                    type: 'category',
+                                    data: diskuse_name
                                 },
                                 {
-                                    type : 'category',
-                                    axisLine: {show:false},
-                                    axisTick: {show:false},
-                                    axisLabel: {show:false},
-                                    splitArea: {show:false},
-                                    splitLine: {show:false},
-                                    data : diskuse_name
+                                    type: 'category',
+                                    axisLine: {show: false},
+                                    axisTick: {show: false},
+                                    axisLabel: {show: false},
+                                    splitArea: {show: false},
+                                    splitLine: {show: false},
+                                    data: diskuse_name
                                 }
                             ],
-                            yAxis : [
+                            yAxis: [
                                 {
-                                    type : 'value',
-                                    axisLabel:{formatter:'{value} KB'}
+                                    type: 'value',
+                                    axisLabel: {formatter: '{value} KB'}
                                 }
                             ],
-                            series : [
-                              
+                            series: [
+
                                 {
-                                    name:'磁盘使用情况－已用',
-                                    type:'bar',
-                                    itemStyle: {normal: {color:'rgba(255,106,106,1)', label:{show:true,textStyle:{color:'#27727B'}}}},
-                                    data:diskuse_used
+                                    name: '磁盘使用情况－已用',
+                                    type: 'bar',
+                                    itemStyle: {
+                                        normal: {
+                                            color: 'rgba(255,106,106,1)',
+                                            label: {show: true, textStyle: {color: '#27727B'}}
+                                        }
+                                    },
+                                    data: diskuse_used
                                 },
-                           
+
 
                                 {
-                                    name:'磁盘使用情况－总量',
-                                    type:'bar',
-                                    xAxisIndex:1,
-                                    itemStyle: {normal: {color:'rgba(255,106,106,0.6)', label:{show:true}}},
-                                    data:diskuse_total,
+                                    name: '磁盘使用情况－总量',
+                                    type: 'bar',
+                                    xAxisIndex: 1,
+                                    itemStyle: {normal: {color: 'rgba(255,106,106,0.6)', label: {show: true}}},
+                                    data: diskuse_total,
 
-                                    markPoint : {
-                                        data : mark,
-                                        itemStyle: {normal: {color:'rgba(255,106,106,0.8)', label:{show:true},borderWidth:15},
-                                        
+                                    markPoint: {
+                                        data: mark,
+                                        itemStyle: {
+                                            normal: {
+                                                color: 'rgba(255,106,106,0.8)',
+                                                label: {show: true},
+                                                borderWidth: 15
+                                            },
 
 
-                                       }
-                                            
+                                        }
+
                                     },
                                 },
-                                
+
                             ]
 
 
                         };
-           
+
                         // 为echarts对象加载数据 
-                        myChart.setOption(option); 
+                        myChart.setOption(option);
                     }
-                );
-    }
-        </script>
+            );
+        }
+    </script>
     <br/>
     <br/>
     <br/>
     <br/>
     <br/>
-        <div style="position:relative;height:600px;">
-            <div id="processusage" style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
-            <div id='processusage_form' style='height:300px;width:280px;position:absolute;left:1003px;'>
-                <table id='processusage-table' class="gridtable" toolbar="#tb"
-                                data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('processusage-table','itemid');}">
-                    <thead>
-                        <tr>
-                            <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
-                            <th data-options="field:'productid'" width="70">进程数</th>
-                            
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                            {% for process in processusage_object %}
-                            <tr>
-                            <td>{{process.name}}</td>
-                            <td>{{process.used}}</td>
-                            
-                            
-                            </tr>
-                            {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div> 
-        <!-- ECharts单文件引入 -->
-        <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-        <script type="text/javascript">
-         setInterval("pro()", 3000); 
+
+    <div style="position:relative;height:600px;">
+        <div id="processusage"
+             style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
+        <div id='processusage_form' style='height:300px;width:280px;position:absolute;left:1003px;'>
+            <table id='processusage-table' class="gridtable" toolbar="#tb"
+                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('processusage-table','itemid');}">
+                <thead>
+                <tr>
+                    <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
+                    <th data-options="field:'productid'" width="70">进程数</th>
 
 
-pro=function(){
-    if(choice == 0){
-    $.ajax({
-               url:'http://166.111.143.241:8080/pro_physical/',
-               success: function(result){
-                        if (result.length!=0){
- 
-                        var prouse_name = new Array();
+                </tr>
+                </thead>
+                <tbody>
+                {% for process in processusage_object %}
+                <tr>
+                    <td>{{process.name}}</td>
+                    <td>{{process.used}}</td>
 
-                        for (var i=0;i<result.length;i++){
-                            prouse_name.push(result[i].name)
-                        }
-                        prouse_name.push('overall');
-                        
-                        var prouse_total = 0;
-                        var prouse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
+
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
+    <script type="text/javascript">
+        setInterval("pro()", 30000);
+
+
+        pro = function () {
+            $.ajax({
+                url: '/pro_external/' + filter_string ,
+                success: function (result) {
+                    if (result.length != 0) {
+                        var prouse_name = [];
+                        var prouse_used = [];
+                        var prouse_percentage = [];
+                        var prouse_total = [];
+
+                        // Delete old table info
+                        var pro_table = document.getElementById("processusage-table");
+                        var old_body = pro_table.getElementsByTagName("tbody");
+                        old_body[0].remove();
+
+                        // Prepare new table info
+                        var new_pro_table = document.createElement("tbody");
+                        var new_tr = [];
+                        var new_td = [];
+
+                        for (var i = 0; i < result.length; i++) {
+                            prouse_name.push(result[i].name);
                             prouse_used.push(result[i].used);
-                            prouse_total = parseFloat(prouse_total) + parseFloat(result[i].used);
-                            
-                        }
-                        prouse_used.push(prouse_total.toString());
+                            prouse_total.push(0.999999);
 
-                       
-                        setPro(prouse_name,prouse_used,prouse_total);
-                       }
-                        
-                       
-                    else{
-                        setPro(' ', ' ',' '); 
+                            // Create new table elements
+                            new_tr[i] = document.createElement("tr");
+
+                            new_td[0] = document.createElement("td");
+                            new_td[0].textContent = result[i].name;
+                            new_tr[i].appendChild(new_td[0]);
+
+                            new_td[1] = document.createElement("td");
+                            new_td[1].textContent = result[i].used;
+                            new_tr[i].appendChild(new_td[1]);
+
+                            new_pro_table.appendChild(new_tr[i]);
+                        }
+                        pro_table.appendChild(new_pro_table);
+                        setPro(prouse_name, prouse_used, prouse_percentage, prouse_total);
+                    }
+                    else {
+                        setPro(' ', ' ', ' ');
                     }
                 }
-        });
-    };
-    if (choice== 1){
-     $.ajax({
-               url:'http://166.111.143.241:8080/pro_virtual/',
-               success: function(result){
-                        if (result.length!=0){
- 
-                        var prouse_name = new Array();
+            });
+        };
 
-                        for (var i=0;i<result.length;i++){
-                            prouse_name.push(result[i].name)
-                        }
-                        prouse_name.push('overall');
-                        
-                        var prouse_total = 0;
-                        var prouse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
-                            prouse_used.push(result[i].used);
-                            prouse_total = parseFloat(prouse_total) + parseFloat(result[i].used);
-                            
-                        }
-                        prouse_used.push(prouse_total.toString());
-
-                       
-                        setPro(prouse_name,prouse_used,prouse_total);
-                       }
-                        
-                       
-                    else{
-                        setPro(' ', ' ',' '); 
-                    }
+        setPro = function (prouse_name, prouse_used, prouse_total) {         // 路径配置
+            require.config({
+                paths: {
+                    echarts: 'http://echarts.baidu.com/build/dist'
                 }
-        });
-    };
-     if (choice == 2){
-       $.ajax({
-               url:'http://166.111.143.241:8080/pro_external/',
-               success: function(result){
-                        if (result.length!=0){
- 
-                        var prouse_name = new Array();
-
-                        for (var i=0;i<result.length;i++){
-                            prouse_name.push(result[i].name)
-                        }
-                        prouse_name.push('overall');
-                        
-                        var prouse_total = 0;
-                        var prouse_used=new Array();
-                        console.info(result);
-                        //console.info(result[0].used)
-                        for (var i=0;i<result.length;i++){
-                            prouse_used.push(result[i].used);
-                            prouse_total = parseFloat(prouse_total) + parseFloat(result[i].used);
-                            
-                        }
-                        prouse_used.push(prouse_total.toString());
-
-                       
-                        setPro(prouse_name,prouse_used,prouse_total);
-                       }
-                        
-                       
-                    else{
-                        setPro(' ', ' ',' '); 
-                    }
-                }
-        });   
-    };   
-};       
-
-setPro=function(prouse_name,prouse_used,prouse_total){         // 路径配置
-                require.config({
-                    paths: {
-                        echarts: 'http://echarts.baidu.com/build/dist'
-                    }
-                });
-        // 使用
-                require(
+            });
+            // 使用
+            require(
                     [
                         'echarts',
                         'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
-                       
+
                     ],
                     function (ec) {
                         // 基于准备好的dom，初始化echarts图表
-                        var myChart = ec.init(document.getElementById('processusage')); 
-        
+                        var myChart = ec.init(document.getElementById('processusage'));
+
                         var option = {
-                            title : {
+                            title: {
                                 text: '进程数量统计',
                                 subtext: '',
-                                x:'left',
+                                x: 'left',
                             },
-                            tooltip : {
+                            tooltip: {
                                 trigger: 'axis'
                             },
-                            color : [ 
-                            '#3cb371', '#87cefa', '#da70d6', '#32cd32', '#6495ed', 
-                            '#ff69b4', '#ba55d3', '#cd5c5c', '#ffa500', '#40e0d0', 
-                            '#1e90ff', '#ff6347', '#7b68ee', '#00fa9a', '#ffd700', 
-                            '#6b8e23', '#ff00ff', '#3cb371', '#b8860b', '#30e0e0' 
-                             ],
-                            
+                            color: [
+                                '#3cb371', '#87cefa', '#da70d6', '#32cd32', '#6495ed',
+                                '#ff69b4', '#ba55d3', '#cd5c5c', '#ffa500', '#40e0d0',
+                                '#1e90ff', '#ff6347', '#7b68ee', '#00fa9a', '#ffd700',
+                                '#6b8e23', '#ff00ff', '#3cb371', '#b8860b', '#30e0e0'
+                            ],
+
                             legend: {
-                                data:['']
+                                data: ['']
                             },
                             toolbox: {
-                                show : true,
-                                feature : {
-                                    mark : {show: true},
-                                    dataView : {show: true, readOnly: false},
+                                show: true,
+                                feature: {
+                                    mark: {show: true},
+                                    dataView: {show: true, readOnly: false},
                                     magicType: {show: true, type: ['line', 'bar']},
-                                    restore : {show: true},
-                                    saveAsImage : {show: true}
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
                                 }
                             },
-                            calculable : true,
-                            yAxis : [
+                            calculable: true,
+                            yAxis: [
                                 {
-                                    type : 'value',
-                                    boundaryGap : [0, 0.01]
+                                    type: 'value',
+                                    boundaryGap: [0, 0.01]
                                 }
                             ],
-                            xAxis : [
+                            xAxis: [
                                 {
-                                    type : 'category',
-                                    data : prouse_name,
+                                    type: 'category',
+                                    data: prouse_name,
                                 }
                             ],
-                            series : [
+                            series: [
                                 {
-                                    name:'',
-                                    type:'bar',
+                                    name: '',
+                                    type: 'bar',
                                     data: prouse_used,
-                                    itemStyle: {normal: {color:'rgba(255,255,0,1)', label:{show:true,textStyle:{color:'#27727B'}}, formatter:'{c} %'}},
+                                    itemStyle: {
+                                        normal: {
+                                            color: 'rgba(255,255,0,1)',
+                                            label: {show: true, textStyle: {color: '#27727B'}},
+                                            formatter: '{c} %'
+                                        }
+                                    },
                                 },
-                                    ]
+                            ]
                         };
-                            
+
                         // 为echarts对象加载数据 
-                        myChart.setOption(option); 
+                        myChart.setOption(option);
                     }
-                );
-    }
+            );
+        }
 
-        </script>
+    </script>
     <br/>
     <br/>
     <br/>
     <br/>
     <br/>
-        <div style="position:relative;height:600px;">
-            <div id="ethusage" style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
-            <div id='ethusage_form' style='height:300px;width:280px;position:absolute;left:1003px;'>
-                <table id='ethusage-table' class="gridtable" toolbar="#tb"
-                                data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('ethusage-table','itemid');}">
-                    <thead>
-                        <tr>
-                            <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
-                            <th data-options="field:'productid'" width="70">In (Kbps)</th>
-                            <th data-options="field:'productid'" width="70">Out (Kbps)</th>
-                            
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                            {% for eth in eth_object %}
-                            <tr>
-                            <td>{{eth.name}}</td>
-                            <td>{{eth.in}}</td>
-                            <td>{{eth.out}}</td>
-                            
-                            
-                            </tr>
-                            {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div> 
-        <!-- ECharts单文件引入 -->
-        <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-        <script type="text/javascript">
-        setInterval("eth()", 3000);
-eth=function(){
-    if(choice == 0){
-    $.ajax({
-               url:'http://166.111.143.241:8080/eth_physical/',
-               success: function(result){
-                        if (result.length!=0){
 
-                        var eth_name = new Array();
+    <div style="position:relative;height:600px;">
+        <div id="ethusage"
+             style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
+        <div id='ethusage_form' style='height:300px;width:280px;position:absolute;left:1003px;'>
+            <table id='ethusage-table' class="gridtable" toolbar="#tb"
+                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('ethusage-table','itemid');}">
+                <thead>
+                <tr>
+                    <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
+                    <th data-options="field:'productid'" width="70">In (Kbps)</th>
+                    <th data-options="field:'productid'" width="70">Out (Kbps)</th>
 
-                        for (var i=0;i<result.length;i++){
-                            eth_name.push(result[i].name)
-                        }
 
-                        var eth_in=new Array();
-                        for (var i=0;i<result.length;i++){
+                </tr>
+                </thead>
+                <tbody>
+                {% for eth in eth_object %}
+                <tr>
+                    <td>{{eth.name}}</td>
+                    <td>{{eth.in}}</td>
+                    <td>{{eth.out}}</td>
+
+
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
+    <script type="text/javascript">
+        setInterval("eth()", 30000);
+        eth = function () {
+            $.ajax({
+                url: '/eth_external/' + filter_string,
+                success: function (result) {
+                    if (result.length != 0) {
+                        var eth_in = [];
+                        var eth_name = [];
+                        var eth_out = [];
+
+                        // Delete old table info
+                        var eth_table = document.getElementById("ethusage-table");
+                        var old_body = eth_table.getElementsByTagName("tbody");
+                        old_body[0].remove();
+
+                        // Prepare new table info
+                        var new_eth_table = document.createElement("tbody");
+                        var new_tr = [];
+                        var new_td = [];
+
+                        for (var i = 0; i < result.length; i++) {
+                            eth_name.push(result[i].name);
                             eth_in.push(result[i].in);
-                        }
-
-
-                        var eth_out = new Array();
-                        for (var i=0;i<result.length;i++){
                             eth_out.push(result[i].out);
-                        }
-                     
 
-                        setEth(eth_name,eth_in,eth_out);
-                       }
-                        
-                       
-                    else{
-                        setEth(' ', ' ',' '); 
+                            // Create new table elements
+                            new_tr[i] = document.createElement("tr");
+
+                            new_td[0] = document.createElement("td");
+                            new_td[0].textContent = result[i].name;
+                            new_tr[i].appendChild(new_td[0]);
+
+                            new_td[1] = document.createElement("td");
+                            new_td[1].textContent = result[i].in;
+                            new_tr[i].appendChild(new_td[1]);
+
+                            new_td[2] = document.createElement("td");
+                            new_td[2].textContent = result[i].in;
+                            new_tr[i].appendChild(new_td[2]);
+                            new_eth_table.appendChild(new_tr[i]);
+                        }
+                        eth_table.appendChild(new_eth_table);
+                        setEth(eth_name, eth_in, eth_out);
+                    }
+
+
+                    else {
+                        setEth(' ', ' ', ' ');
                     }
                 }
-        });
-    };
-    if (choice == 1){
-     $.ajax({
-               url:'http://166.111.143.241:8080/eth_virtual/',
-               success: function(result){
-                        if (result.length!=0){
+            });
+        };
 
-                        var eth_name = new Array();
-
-                        for (var i=0;i<result.length;i++){
-                            eth_name.push(result[i].name)
-                        }
-
-                        var eth_in=new Array();
-                        for (var i=0;i<result.length;i++){
-                            eth_in.push(result[i].in);
-                        }
-
-
-                        var eth_out = new Array();
-                        for (var i=0;i<result.length;i++){
-                            eth_out.push(result[i].out);
-                        }
-                     
-
-                        setEth(eth_name,eth_in,eth_out);
-                       }
-                        
-                       
-                    else{
-                        setEth(' ', ' ',' '); 
-                    }
+        setEth = function (eth_name, eth_in, eth_out) {                // 路径配置
+            require.config({
+                paths: {
+                    echarts: 'http://echarts.baidu.com/build/dist'
                 }
-        });
-    };
-     if (choice == 2){
-    $.ajax({
-               url:'http://166.111.143.241:8080/eth_external/',
-               success: function(result){
-                        if (result.length!=0){
-
-                        var eth_name = new Array();
-
-                        for (var i=0;i<result.length;i++){
-                            eth_name.push(result[i].name)
-                        }
-
-                        var eth_in=new Array();
-                        for (var i=0;i<result.length;i++){
-                            eth_in.push(result[i].in);
-                        }
-
-
-                        var eth_out = new Array();
-                        for (var i=0;i<result.length;i++){
-                            eth_out.push(result[i].out);
-                        }
-                     
-
-                        setEth(eth_name,eth_in,eth_out);
-                       }
-                        
-                       
-                    else{
-                        setEth(' ', ' ',' '); 
-                    }
-                }
-        });
-     };   
- };   
-
-setEth=function(eth_name,eth_in,eth_out){                // 路径配置
-                require.config({
-                    paths: {
-                        echarts: 'http://echarts.baidu.com/build/dist'
-                    }
-                });
-        // 使用
-                require(
+            });
+            // 使用
+            require(
                     [
                         'echarts',
                         'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
-                       
+
                     ],
                     function (ec) {
                         // 基于准备好的dom，初始化echarts图表
-                        var myChart = ec.init(document.getElementById('ethusage')); 
+                        var myChart = ec.init(document.getElementById('ethusage'));
 
                         var option = {
-                            title : {
+                            title: {
                                 text: '各主机网络I/O',
                                 subtext: 'by 清华云平台'
                             },
-                            tooltip : {
+                            tooltip: {
                                 trigger: 'axis'
                             },
                             legend: {
-                                data:['网络I/O-In','网络I/O-Out']
+                                data: ['网络I/O-In', '网络I/O-Out']
                             },
                             toolbox: {
-                                show : true,
-                                feature : {
-                                    mark : {show: true},
-                                    dataView : {show: true, readOnly: false},
-                                    magicType : {show: true, type: ['line', 'bar']},
-                                    restore : {show: true},
-                                    saveAsImage : {show: true}
+                                show: true,
+                                feature: {
+                                    mark: {show: true},
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
                                 }
                             },
-                            calculable : true,
-                            xAxis : [
+                            calculable: true,
+                            xAxis: [
                                 {
-                                    type : 'category',
-                                    data : eth_name
+                                    type: 'category',
+                                    data: eth_name
                                 }
                             ],
-                            yAxis : [
+                            yAxis: [
                                 {
-                                    type : 'value'
+                                    type: 'value'
                                 }
                             ],
-                            series : [
+                            series: [
                                 {
-                                    name:'网络I/O-IN',
-                                    type:'bar',
-                                    data:eth_in,
-                                    markPoint : {
-                                        data : [
-                                            {type : 'max', name: '最大值'},
-                                            {type : 'min', name: '最小值'}
+                                    name: '网络I/O-IN',
+                                    type: 'bar',
+                                    data: eth_in,
+                                    markPoint: {
+                                        data: [
+                                            {type: 'max', name: '最大值'},
+                                            {type: 'min', name: '最小值'}
                                         ]
                                     }
-                                    
+
                                 },
                                 {
-                                    name:'网络I/O-Out',
-                                    type:'bar',
-                                    data:eth_out,
-                                    markPoint : {
-                                        data : [
-                                            {type : 'max', name: '最大值'},
-                                            {type : 'min', name: '最小值'}
+                                    name: '网络I/O-Out',
+                                    type: 'bar',
+                                    data: eth_out,
+                                    markPoint: {
+                                        data: [
+                                            {type: 'max', name: '最大值'},
+                                            {type: 'min', name: '最小值'}
                                         ]
-                                    }                                   
-                                    
+                                    }
+
                                 }
                             ]
                         };
-           
-                        // 为echarts对象加载数据 
-                        myChart.setOption(option); 
-                    }
-                );
-        }                
 
-        </script>
-    </div>
+                        // 为echarts对象加载数据 
+                        myChart.setOption(option);
+                    }
+            );
+        }
+
+    </script>
+</div>
 </body>
 </html>

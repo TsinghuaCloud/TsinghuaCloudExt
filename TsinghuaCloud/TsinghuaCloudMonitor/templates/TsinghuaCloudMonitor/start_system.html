@@ -144,15 +144,16 @@ var csrftoken = getCookie('csrftoken');
 
 <body class="easyui-layout">
     <div data-options="region:'north',border:false" style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
-        <a href="/login" class="easyui-linkbutton" style="background:#CCCCCC;width:60px;height:30px;position:relative;float:right;">登出</a>
+        <a href="/logout" class="easyui-linkbutton" style="background:#CCCCCC;width:60px;height:30px;position:relative;float:right;">登出</a>
 
     </div>
 
     <div data-options="region:'west',split:true,title:'菜单'" style="width:150px;padding:10px;">
         <a href="/hoststatus" class="easyui-linkbutton" style="width:130px">首页</a>
         <a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
+        {% if usergroup != 'admin' %}
         <a href="/start_system" class="easyui-linkbutton" style="width:130px">网络服务</a>
-        <a href="/mapchart" class="easyui-linkbutton" style="width:130px">网络拓扑</a>
+        {% endif %}
         <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
     </div>
     <div data-options="region:'east',split:true,collapsed:true,title:'East'" style="width:100px;padding:10px;">其他</div>

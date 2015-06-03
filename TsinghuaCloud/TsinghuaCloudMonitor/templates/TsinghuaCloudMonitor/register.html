@@ -1,8 +1,8 @@
 {% csrf_token %}
 {% load staticfiles %}
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+    <script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
+    <script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
+
 <link rel="stylesheet" type="text/css" href="{% static 'cloudclient/homepage.css' %}">
 <script>
 function getCookie(name) {
@@ -28,19 +28,17 @@ function csrfSafeMethod(method) {
 
 </script>
 <div class="login">
-  <h1>PLEASE LOG UP A NEW ACCOUNT.</h1>
+  <h1>新用户注册</h1>
   <form action="" method="post">
     <p><input type="text" name="account" value="" placeholder="Username"></p>
     <p><input type="password" name="password" value="" placeholder="Password"></p>
     <p><input type="password" name="password2" value="" placeholder="Password Again"></p>
 
-    <p class="remember_me">
-      <label>
+    <p>
         <input type="checkbox" name="remember_me" id="remember_me">
-        Remember me 
-      </label>
+        Remember me
     </p>
-    <p class="submit"><input type="submit"  name="commit" value="LOG IN"></p>
+    <p class="submit"><input type="submit"  name="commit" value="注册"></p>
   </form>
   {% if errors %}
         <ul>

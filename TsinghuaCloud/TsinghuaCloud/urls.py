@@ -13,8 +13,6 @@ urlpatterns = patterns('',
     url(r'^start_input/$', views.start_input, name='start_input'),
     url(r'^', include('TsinghuaCloudMonitor.urls')),
     url(r'^login/$', views.login, name='login'),
+    url(r'^logout/$', views.logout, name = 'logout'),
     url(r'^monitor/$', views.monitor, name='monitor'),
-    
-   
-
 )
