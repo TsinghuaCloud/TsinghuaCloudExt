@@ -306,10 +306,10 @@ def memory_external(request):
     if usergroup == 'user':
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
     # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
-    if usergroup == 'admin' and filterby_user != '':
+    elif usergroup == 'admin' and filterby_user != '':
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
     # else (usergroup = admin and filterby_user == ''), show all hosts
-    else :
+    else:
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
 
     host_count = len(my_host_list)
@@ -392,20 +392,27 @@ def cpu_external(request):
     item_per_page = request.GET.get('pageelem')
 
     # Get a correct page no, filterby_user(if needed), item_per_page(if needed)
-    if cur_page_no == None or cur_page_no == '':
+    if cur_page_no == None:
+        cur_page_no = 1
+    elif cur_page_no == '':
         cur_page_no = 1
     elif cur_page_no <= 0:
         cur_page_no = 1
     else:
         cur_page_no = int(cur_page_no)
 
-    if filterby_user != '':
-        if usergroup == 'user':                                         # Users can only get records of his own hosts
-            filterby_user = username
-    else:
-        filterby_user = ''                                               # No filter has been set
+    # Get a correct user filter
+    if filterby_user== None:
+        filterby_user = ''
+    elif filterby_user == '':
+        filterby_user = ''
+    elif usergroup == 'user':                                         # Users can only get records of his own hosts
+        filterby_user = username
 
-    if item_per_page == None or item_per_page == '':
+    # Get a correct item_per_page
+    if item_per_page == None:
+        item_per_page = 4
+    elif item_per_page == '':
         item_per_page = 4
     else:
         item_per_page = int(item_per_page)
@@ -419,16 +426,15 @@ def cpu_external(request):
     if usergroup == 'user':
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
     # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
-    if usergroup == 'admin' and filterby_user != '':
+    elif usergroup == 'admin' and filterby_user != '':
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
     # else (usergroup = admin and filterby_user == ''), show all hosts
-    else :
+    else:
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
 
     host_count = len(my_host_list)
     start_pos = 0
     end_pos = 0
-
 
     # Get start and end of consulting host
     if (cur_page_no - 1) * item_per_page >= host_count:
@@ -495,20 +501,27 @@ def pro_external(request):
     item_per_page = request.GET.get('pageelem')
 
     # Get a correct page no, filterby_user(if needed), item_per_page(if needed)
-    if cur_page_no == None or cur_page_no == '':
+    if cur_page_no == None:
+        cur_page_no = 1
+    elif cur_page_no == '':
         cur_page_no = 1
     elif cur_page_no <= 0:
         cur_page_no = 1
     else:
         cur_page_no = int(cur_page_no)
+    
+    # Get a correct user filter 
+    if filterby_user== None:
+        filterby_user = ''
+    elif filterby_user == '':
+        filterby_user = ''
+    elif usergroup == 'user':                                         # Users can only get records of his own hosts
+        filterby_user = username
 
-    if filterby_user != '':
-        if usergroup == 'user':                                         # Users can only get records of his own hosts
-            filterby_user = username
-    else:
-        filterby_user = ''                                               # No filter has been set
-
-    if item_per_page == None or item_per_page == '':
+    # Get a correct item_per_page
+    if item_per_page == None:
+        item_per_page = 4
+    elif item_per_page == '':
         item_per_page = 4
     else:
         item_per_page = int(item_per_page)
@@ -520,12 +533,15 @@ def pro_external(request):
     my_host_list = None
     # Get all user's hosts
     if usergroup == 'user':
+        print "ext+usr"
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
     # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
     if usergroup == 'admin' and filterby_user != '':
+        print "ext+admin+filter"
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
     # else (usergroup = admin and filterby_user == ''), show all hosts
     else :
+        print "ext+admin+nofilter"
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
 
     host_count = len(my_host_list)
@@ -598,20 +614,29 @@ def disk_external(request):
     item_per_page = request.GET.get('pageelem')
 
     # Get a correct page no, filterby_user(if needed), item_per_page(if needed)
-    if cur_page_no == None or cur_page_no == '':
+    if cur_page_no == None:
+        cur_page_no = 1
+    elif cur_page_no == '':
         cur_page_no = 1
     elif cur_page_no <= 0:
         cur_page_no = 1
     else:
         cur_page_no = int(cur_page_no)
+    
+    # Get a correct user filter 
+    if filterby_user== None:
+        filterby_user = ''
+    elif filterby_user == '':
+        filterby_user = ''
+    elif usergroup == 'user':                                         # Users can only get records of his own hosts
+        filterby_user = username
 
-    if filterby_user != '':
-        if usergroup == 'user':                                         # Users can only get records of his own hosts
-            filterby_user = username
-    else:
-        filterby_user = ''                                               # No filter has been set
+    print "filter = " + filterby_user
 
-    if item_per_page == None or item_per_page == '':
+    # Get a correct item_per_page
+    if item_per_page == None:
+        item_per_page = 4
+    elif item_per_page == '':
         item_per_page = 4
     else:
         item_per_page = int(item_per_page)
@@ -625,10 +650,10 @@ def disk_external(request):
     if usergroup == 'user':
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
     # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
-    if usergroup == 'admin' and filterby_user != '':
+    elif usergroup == 'admin' and filterby_user != '':
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
     # else (usergroup = admin and filterby_user == ''), show all hosts
-    else :
+    else:
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
 
     host_count = len(my_host_list)
@@ -708,20 +733,29 @@ def eth_external(request):
     item_per_page = request.GET.get('pageelem')
 
     # Get a correct page no, filterby_user(if needed), item_per_page(if needed)
-    if cur_page_no == None or cur_page_no == '':
+    if cur_page_no == None:
+        cur_page_no = 1
+    elif cur_page_no == '':
         cur_page_no = 1
     elif cur_page_no <= 0:
         cur_page_no = 1
     else:
         cur_page_no = int(cur_page_no)
+    
+    # Get a correct user filter 
+    if filterby_user== None:
+        filterby_user = ''
+    elif filterby_user == '':
+        filterby_user = ''
+    elif usergroup == 'user':                                         # Users can only get records of his own hosts
+        filterby_user = username
 
-    if filterby_user != '':
-        if usergroup == 'user':                                         # Users can only get records of his own hosts
-            filterby_user = username
-    else:
-        filterby_user = ''                                               # No filter has been set
+    print "filter = " + filterby_user
 
-    if item_per_page == None or item_per_page == '':
+    # Get a correct item_per_page
+    if item_per_page == None:
+        item_per_page = 4
+    elif item_per_page == '':
         item_per_page = 4
     else:
         item_per_page = int(item_per_page)
@@ -735,10 +769,10 @@ def eth_external(request):
     if usergroup == 'user':
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
     # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
-    if usergroup == 'admin' and filterby_user != '':
+    elif usergroup == 'admin' and filterby_user != '':
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
     # else (usergroup = admin and filterby_user == ''), show all hosts
-    else :
+    else:
         my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
 
     host_count = len(my_host_list)
