@@ -63,13 +63,16 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Basic Panel - jQuery EasyUI Demo</title>
+    <title>Tsinghua Cloud - OverallView Page</title>
     <script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
     <script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
+    <script src="{% static 'js/totalcompare-pagination.js'%}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/totalcompare-pagination.css' %}">
+
 </head>
 
 <style type="text/css">
@@ -116,54 +119,89 @@
 </div>
 <div data-options="region:'center',title:'全局监控图'" style="background:#F0F0F0;color:#000000;position:relative;">
     <div>
-        {% if usergroup == 'admin' %}
         <div style="color:#000066;padding-left: 10px">
+            <a id="mem_usage"  class="easyui-linkbutton" style="width:130px">内存使用</a>
+            <a id="cpu_usage"  class="easyui-linkbutton" style="width:130px">CPU使用</a>
+            <a id="disk_usage"  class="easyui-linkbutton" style="width:130px">磁盘使用</a>
+            <a id="pro_count"  class="easyui-linkbutton" style="width:130px">进程数量</a>
+            <a id="eth_io"  class="easyui-linkbutton" style="width:130px">网络I/O</a>
+        </div>
+        <script type="text/javascript">
+            // Monitor type selection
+            var monitor_choice = 1;
+            $("#mem_usage").click(function () {
+                monitor_choice = 1;
+                memory();
+            });
+            $("#cpu_usage").click(function () {
+                monitor_choice = 2;
+                cpu();
+            });
+            $("#disk_usage").click(function () {
+                monitor_choice = 3;
+                disk();
+            });
+            $("#pro_count").click(function () {
+                monitor_choice = 4;
+                pro();
+            });
+            $("#eth_io").click(function () {
+                monitor_choice = 5;
+                eth();
+            });
+
+            action = function(){
+                switch(monitor_choice){
+                    case 1:
+                        memory();
+                        break;
+                    case 2:
+                        cpu();
+                        break;
+                    case 3:
+                        disk();
+                        break;
+                    case 4:
+                        pro();
+                        break;
+                    case 5:
+                        eth();
+                        break;
+                };
+            }
+        </script>
+        {% if usergroup == 'admin' %}
+        <div style="color:#000066;padding-left: 10px;padding-top: 10px">
             <input id="search-user-input" style="width:150px"/>
             <a id="search-user" class="easyui-linkbutton" style="width:100px">查看用户主机</a>
             <a id="clear-filter" class="easyui-linkbutton" style="width:100px">清空</a>
-            <a style="padding-left: 100px">第</a>
-            <input id="page-num" style="width:50px"/>
-            <a>页</a>
-            <a style="padding-left: 10px">每页显示条数(4-10)</a>
-           <input id="item-per-page" style="width:50px"/>
-            <a id="page-change" class="easyui-linkbutton" style="width:50px">确认</a>
+            <div id="pagination" style="padding-left: 10px"></div>
+
         </div>
         <script type="text/javascript">
-            // filter_string restricts query conditions, e.g. page / user
+           // filter_string restricts query conditions, e.g. page / user
             var filter_string = "";
             var page_num = 1;
+            var item_per_page = 4;
             $("#search-user").click( function(){
                 var filter_user = $("#search-user-input").val();
                 $("#page-num").empty();
-                 $("#item-per-page").empty();
                 filter_string = "?user=" + filter_user;
                 console.info(filter_string);
                 action();
-                cpu();
-                pro();
-                disk();
-                eth();
             });
             $("#clear-filter").click( function(){
                 $("#search-user-input").empty();
                 filter_string = "";
                 action();
-                cpu();
-                pro();
-                disk();
-                eth();
             });
 
-            $("#page-change").click( function(){
+            $("#pagination").click( function(){
                 var filter_user = $("#search-user-input").val();
-                var pageno = $("#page-num").val();
-                var itemperpage = $("#item-per-page").val();
-                filter_string = "?user=" + filter_user + "&page=" + pageno + "&pageelem=" + itemperpage;
+                var pageno = Pagination.page;
+                console.info(pageno);
+                filter_string = "?user=" + filter_user + "&page=" + pageno + "&pageelem=" + item_per_page;
                 action();
-                cpu();
-                pro();
-                disk();
-                eth();
             });
 
         </script>
@@ -171,37 +209,26 @@
 
         {% if usergroup == 'user' %}
         <div style="color:#000066;padding-left: 10px">
-            <a style="padding-left: 30px">第</a>
-            <input id="page-num" style="width:50px"/>
-            <a>页</a>
-            <a style="padding-left: 10px">每页显示条数(4-10)</a>
-           <input id="item-per-page" style="width:50px"/>
-            <a id="page-change" class="easyui-linkbutton" style="width:50px">确认</a>
+            <div id="pagination"></div>
         </div>
         <script type="text/javascript">
             // filter_string restricts query conditions, e.g. page / user
             var filter_string = "";
             var page_num = 1;
-            $("#page-change").click( function(){
-                var pageno = $("#page-num").val();
-                var itemperpage = $("#item-per-page").val();
-                filter_string = "?page=" + pageno + "&pageelem=" + itemperpage;
+            $("#pagination").click( function(){
+                var pageno = Pagination.page;
+                filter_string = "?page=" + pageno;
                 action();
-                cpu();
-                pro();
-                disk();
-                eth();
             });
 
         </script>
         {% endif %}
-
-    <div style="position:relative;height:600px;width:1300px">
-        <div id="memoryusage"
+        <div style="position:relative;height:600px;width:1300px">
+        <div id="data-chart"
              style="height:600px;width:1000px;position:absolute;top:0;left:0; border:2px solid;border-color:#666666; "></div>
-        <div id='memoryusage_form' style='height:300px;width:280px;position:absolute;left:1003px'>
-            <table id='memoryusage-table' class="gridtable" toolbar="#tb"
-                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('memoryusage-table','itemid');}">
+        <div id='data-form' style='height:300px;width:280px;position:absolute;left:1003px'>
+            <table id='data-table' class="gridtable" toolbar="#tb"
+                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('data-table','itemid');}">
                 <thead>
                 <tr>
                     <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
@@ -212,68 +239,25 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for memoryuse in memoryuse_object %}
-                <tr>
-                    <td>{{memoryuse.name}}</td>
-                    <td>{{memoryuse.used}}</td>
-                    <td>{{memoryuse.total}}</td>
-                    <td>{{memoryuse.percentage}}</td>
-
-                </tr>
-                {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
     <!-- ECharts单文件引入 -->
 
-    <script>
-        //         memory_physical_form = function() {
-        //     $('#memoryusage_form').datagrid({
-        //         url : 'http://127.0.0.1:8000/memory_physical/',
-
-        //         columns : [ [ {
-        //             field : 'name',
-        //             width : '30px',
-        //             align : 'center',
-        //             title : '主机'
-        //         }, {
-        //             field : 'used',
-        //             width : '100px',
-        //             align : 'center',
-        //             title : '已用用量KB'
-        //         }, {
-        //             field : 'total',
-        //             width : '100px',
-        //             align : 'center',
-        //             title : '总量KB'
-        //         }, {
-        //             field : 'percentage',
-        //             width : '50px',
-        //             align : 'center',
-        //             title : '使用率'
-        //         }] ]
-        //     });
-        //     //Newstar.rqRequirmentList.doApproveSearch();
-        // };
-        //         $('#memoryusage_form').datagrid('load','');
-        //         </script>
-
     <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
     <script type="text/javascript">
         $(function () {
+            Pagination.Init( document.getElementById('pagination'), {size: {{ totalpage }}, page: 1, step: 1});
             action();
-            cpu();
-            pro();
-            disk();
-            eth();
         });
-        setInterval("action()", 30000);
-        action = function () {
+        setInterval("action()", 3000);
+        memory = function () {
             $.ajax({
                 url: '/memory_external/' + filter_string ,
                 success: function (result) {
-                    if (result.length != 0) {
+                    Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
+                    if (result.memorylist.length != 0) {
                         var memory_used_all = 0;
                         var memory_total_all = 0;
                         var memoryuse_name = [];
@@ -281,48 +265,76 @@
                         var memoryuse_total = [];
 
                         // Delete old table info
-                        var memory_table = document.getElementById("memoryusage-table");
-                        var old_body = memory_table.getElementsByTagName("tbody");
+                        var data_table = document.getElementById("data-table");
+                        var old_head = data_table.getElementsByTagName("thead");
+                        old_head[0].innerHTML = "";
+
+                        // Create new table head
+                        var new_head_tr = document.createElement("tr");
+                        var new_head_th = [];
+                        new_head_th[0] = document.createElement("th");
+                        new_head_th[0].setAttribute("data-options", "field:'itemid'");
+                        new_head_th[0].setAttribute("width", 60);
+                        new_head_th[0].setAttribute("sortable", "true");
+                        new_head_th[0].textContent = "主机";
+
+                        new_head_th[1] = document.createElement("th");
+                        new_head_th[1].setAttribute("data-options", "field:'productid'");
+                        new_head_th[1].setAttribute("width", 70);
+                        new_head_th[1].textContent = "已用用量KB";
+
+                        new_head_th[2] = document.createElement("th");
+                        new_head_th[2].setAttribute("data-options", "field:'listprice'");
+                        new_head_th[2].setAttribute("width", 80);
+                        new_head_th[2].textContent = "总量KB";
+
+                        new_head_th[3] = document.createElement("th");
+                        new_head_th[3].setAttribute("data-options", "field:'unitcost'");
+                        new_head_th[3].setAttribute("width", 40);
+                        new_head_th[3].textContent = "使用率";
+
+                        new_head_tr.appendChild(new_head_th[0]);
+                        new_head_tr.appendChild(new_head_th[1]);
+                        new_head_tr.appendChild(new_head_th[2]);
+                        new_head_tr.appendChild(new_head_th[3]);
+                        old_head[0].appendChild(new_head_tr);
+
+                        var old_body = data_table.getElementsByTagName("tbody");
                         old_body[0].remove();
 
-                        var new_memory_table = document.createElement("tbody");
+                        var new_data_table = document.createElement("tbody");
                         var new_tr = [];
                         var new_td = [];
-                        for (var i = 0; i < result.length; i++) {
+                        for (var i = 0; i < result.memorylist.length; i++) {
 
-                            memoryuse_name.push(result[i].name);
-                            memoryuse_used.push(result[i].used);
-                            memory_used_all = parseFloat(memory_used_all) + parseFloat(result[i].used);
-                            memoryuse_total.push(result[i].total);
-                            memory_total_all = parseFloat(memory_total_all) + parseFloat(result[i].total);
+                            memoryuse_name.push(result.memorylist[i].name);
+                            memoryuse_used.push(result.memorylist[i].used);
+                            memory_used_all = parseFloat(memory_used_all) + parseFloat(result.memorylist[i].used);
+                            memoryuse_total.push(result.memorylist[i].total);
+                            memory_total_all = parseFloat(memory_total_all) + parseFloat(result.memorylist[i].total);
 
                             // Create new table elements
                             new_tr[i] = document.createElement("tr");
 
                             new_td[0] = document.createElement("td");
-                            new_td[0].textContent = result[i].name;
+                            new_td[0].textContent = result.memorylist[i].name;
                             new_tr[i].appendChild(new_td[0]);
 
                             new_td[1] = document.createElement("td");
-                            new_td[1].textContent = result[i].used;
+                            new_td[1].textContent = result.memorylist[i].used;
                             new_tr[i].appendChild(new_td[1]);
 
                             new_td[2] = document.createElement("td");
-                            new_td[2].textContent = result[i].total;
+                            new_td[2].textContent = result.memorylist[i].total;
                             new_tr[i].appendChild(new_td[2]);
 
                             new_td[3] = document.createElement("td");
-                            new_td[3].textContent = result[i].percentage;
+                            new_td[3].textContent = result.memorylist[i].percentage;
                             new_tr[i].appendChild(new_td[3]);
 
-                            new_memory_table.appendChild(new_tr[i]);
+                            new_data_table.appendChild(new_tr[i]);
                         }
-                        //memoryuse_name.push('Overall');
-                        //memoryuse_used.push(memory_used_all.toString());
-                        //memoryuse_total.push(memory_total_all.toString());
-                        memory_table.appendChild(new_memory_table);
-
-                            // Draw Charts based on records received
+                        data_table.appendChild(new_data_table);
                         setMemory(memoryuse_name, memoryuse_used, memoryuse_total);
                     }
 
@@ -333,11 +345,8 @@
                 }
             });
         };
-
-
         setMemory = function (memoryuse_name, memoryuse_used, memoryuse_total) {
-
-            // 路径配置
+           // 路径配置
             require.config({
                 paths: {
                     echarts: 'http://echarts.baidu.com/build/dist'
@@ -372,7 +381,7 @@
                             mark.push(o);
 
                         }
-                        var myChart = ec.init(document.getElementById('memoryusage'));
+                        var myChart = ec.init(document.getElementById('data-chart'));
                         var option = {
                             title: {
                                 text: '各主机内存使用情况',
@@ -453,7 +462,7 @@
 
                                         }
 
-                                    },
+                                    }
                                 },
 
                             ]
@@ -467,56 +476,42 @@
                     }
             );
         };
-    </script>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-
-    <div style="position:relative;height:600px;">
-        <div id="cpuusage"
-             style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
-        <div id='cpuusage_form' style='height:300px;width:280px;position:absolute;left:1003px'>
-            <table id='cpuusage-table' class="gridtable" toolbar="#tb"
-                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('cpuusage-table','itemid');}">
-                <thead>
-                <tr>
-                    <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
-                    <th data-options="field:'productid'" width="70">CPU利用率</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for cpu in cpuloaduse_object %}
-                <tr>
-                    <td>{{cpu.name}}</td>
-                    <td>{{cpu.percentage}}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- ECharts单文件引入 -->
-    <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-    <script type="text/javascript">
-
-        setInterval("cpu()", 30000);
-
-
         cpu = function () {
             $.ajax({
                 url: '/cpu_external/' + filter_string ,
-                success: function (result) {
-                    if (result.length != 0) {
+                success: function (result){
+                    Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
+                    if (result.cpulist.length != 0) {
                         var cpuuse_name = [];
                         var cpuuse_used = [];
                         var cpuuse_percentage = [];
                         var cpuuse_total = [];
 
+                        // Delete old table head info
+                        var data_table = document.getElementById("data-table");
+                        var old_head = data_table.getElementsByTagName("thead");
+                        old_head[0].innerHTML = "";
+
+                        // Create new table head
+                        var new_head_tr = document.createElement("tr");
+                        var new_head_th = [];
+                        new_head_th[0] = document.createElement("th");
+                        new_head_th[0].setAttribute("data-options", "field:'itemid'");
+                        new_head_th[0].setAttribute("width", 60);
+                        new_head_th[0].setAttribute("sortable", "true");
+                        new_head_th[0].textContent = "主机";
+
+                        new_head_th[1] = document.createElement("th");
+                        new_head_th[1].setAttribute("data-options", "field:'productid'");
+                        new_head_th[1].setAttribute("width", 70);
+                        new_head_th[1].textContent = "CPU利用率";
+
+                        new_head_tr.appendChild(new_head_th[0]);
+                        new_head_tr.appendChild(new_head_th[1]);
+                        old_head[0].appendChild(new_head_tr);
+
                         // Delete old table info
-                        var cpu_table = document.getElementById("cpuusage-table");
-                        var old_body = cpu_table.getElementsByTagName("tbody");
+                        var old_body = data_table.getElementsByTagName("tbody");
                         old_body[0].remove();
 
                         // Prepare new table info
@@ -524,26 +519,26 @@
                         var new_tr = [];
                         var new_td = [];
 
-                        for (var i = 0; i < result.length; i++) {
-                            cpuuse_name.push(result[i].name);
-                            cpuuse_used.push(result[i].used);
-                            cpuuse_percentage.push(result[i].percentage);
+                        for (var i = 0; i < result.cpulist.length; i++) {
+                            cpuuse_name.push(result.cpulist[i].name);
+                            cpuuse_used.push(result.cpulist[i].used);
+                            cpuuse_percentage.push(result.cpulist[i].percentage);
                             cpuuse_total.push(0.999999);
 
                             // Create new table elements
                             new_tr[i] = document.createElement("tr");
 
                             new_td[0] = document.createElement("td");
-                            new_td[0].textContent = result[i].name;
+                            new_td[0].textContent = result.cpulist[i].name;
                             new_tr[i].appendChild(new_td[0]);
 
                             new_td[1] = document.createElement("td");
-                            new_td[1].textContent = result[i].percentage.toString();
+                            new_td[1].textContent = result.cpulist[i].percentage.toString();
                             new_tr[i].appendChild(new_td[1]);
 
                             new_cpu_table.appendChild(new_tr[i]);
                         }
-                        cpu_table.appendChild(new_cpu_table);
+                        data_table.appendChild(new_cpu_table);
                         setCpu(cpuuse_name, cpuuse_used, cpuuse_percentage, cpuuse_total);
                     }
 
@@ -570,9 +565,9 @@
 
                     ],
                     function (ec) {
-                        // 基于准备好的dom，初始化echarts图表 
+                        // 基于准备好的dom，初始化echarts图表
 
-                        var myChart = ec.init(document.getElementById('cpuusage'));
+                        var myChart = ec.init(document.getElementById('data-chart'));
                         var option = {
                             title: {
                                 text: '各主机CPU使用情况',
@@ -650,103 +645,96 @@
 
                         };
 
-                        // 为echarts对象加载数据 
+                        // 为echarts对象加载数据
                         myChart.setOption(option);
                     }
             );
         }
-
-    </script>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-
-    <div style="position:relative;height:600px;">
-        <div id="diskusage"
-             style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
-        <div id='diskusage_form' style='height:300px;width:280px;position:absolute;left:1003px;'>
-            <table id='diskusage-table' class="gridtable" toolbar="#tb"
-                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('diskusage-table','itemid');}">
-                <thead>
-                <tr>
-                    <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
-                    <th data-options="field:'productid'" width="70">已用用量MB</th>
-                    <th data-options="field:'listprice'" width="80">总量MB</th>
-                    <th data-options="field:'unitcost'" width="40">使用率</th>
-
-                </tr>
-                </thead>
-                <tbody>
-                {% for diskuse in diskusage_object %}
-                <tr>
-                    <td>{{diskuse.name}}</td>
-                    <td>{{diskuse.used}}</td>
-                    <td>{{diskuse.total}}</td>
-                    <td>{{diskuse.percentage}}</td>
-
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- ECharts单文件引入 -->
-    <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-    <script type="text/javascript">
-        setInterval("disk()", 30000);
         disk = function () {
             $.ajax({
                 url: '/disk_external/' + filter_string ,
                 success: function (result) {
-                    if (result.length != 0) {
+                    Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
+                    if (result.disklist.length != 0) {
                         var disk_used_all = 0;
                         var disk_total_all = 0;
                         var diskuse_name = [];
                         var diskuse_used = [];
                         var diskuse_total = [];
 
+                        // Delete old table head info
+                        var data_table = document.getElementById("data-table");
+                        var old_head = data_table.getElementsByTagName("thead");
+                        old_head[0].innerHTML = "";
+
+                        // Create new table head
+                        var new_head_tr = document.createElement("tr");
+                        var new_head_th = [];
+                        new_head_th[0] = document.createElement("th");
+                        new_head_th[0].setAttribute("data-options", "field:'itemid'");
+                        new_head_th[0].setAttribute("width", 60);
+                        new_head_th[0].setAttribute("sortable", "true");
+                        new_head_th[0].textContent = "主机";
+
+                        new_head_th[1] = document.createElement("th");
+                        new_head_th[1].setAttribute("data-options", "field:'productid'");
+                        new_head_th[1].setAttribute("width", 70);
+                        new_head_th[1].textContent = "已用用量MB";
+
+                        new_head_th[2] = document.createElement("th");
+                        new_head_th[2].setAttribute("data-options", "field:'listprice'");
+                        new_head_th[2].setAttribute("width", 80);
+                        new_head_th[2].textContent = "总量MB";
+
+                        new_head_th[3] = document.createElement("th");
+                        new_head_th[3].setAttribute("data-options", "field:'unitcost'");
+                        new_head_th[3].setAttribute("width", 40);
+                        new_head_th[3].textContent = "使用率";
+
+                        new_head_tr.appendChild(new_head_th[0]);
+                        new_head_tr.appendChild(new_head_th[1]);
+                        new_head_tr.appendChild(new_head_th[2]);
+                        new_head_tr.appendChild(new_head_th[3]);
+                        old_head[0].appendChild(new_head_tr);
+
                         // Delete old table info
-                        var disk_table = document.getElementById("diskusage-table");
-                        var old_body = disk_table.getElementsByTagName("tbody");
+                        var old_body = data_table.getElementsByTagName("tbody");
                         old_body[0].remove();
+
                         // Prepare new table info
                         var new_disk_table = document.createElement("tbody");
                         var new_tr = [];
                         var new_td = [];
-                        for (var i = 0; i < result.length; i++) {
-                            diskuse_name.push(result[i].name);
-                            diskuse_used.push(result[i].used);
-                            disk_used_all = parseFloat(disk_used_all) + parseFloat(result[i].used);
-                            diskuse_total.push(result[i].total);
-                            disk_total_all = parseFloat(disk_total_all) + parseFloat(result[i].total);
+                        for (var i = 0; i < result.disklist.length; i++) {
+                            diskuse_name.push(result.disklist[i].name);
+                            diskuse_used.push(result.disklist[i].used);
+                            disk_used_all = parseFloat(disk_used_all) + parseFloat(result.disklist[i].used);
+                            diskuse_total.push(result.disklist[i].total);
+                            disk_total_all = parseFloat(disk_total_all) + parseFloat(result.disklist[i].total);
 
                             // Create new table elements
                             new_tr[i] = document.createElement("tr");
 
                             new_td[0] = document.createElement("td");
-                            new_td[0].textContent = result[i].name;
+                            new_td[0].textContent = result.disklist[i].name;
                             new_tr[i].appendChild(new_td[0]);
 
                             new_td[1] = document.createElement("td");
-                            new_td[1].textContent = result[i].used;
+                            new_td[1].textContent = result.disklist[i].used;
                             new_tr[i].appendChild(new_td[1]);
 
                             new_td[2] = document.createElement("td");
-                            new_td[2].textContent = result[i].total.toString();
+                            new_td[2].textContent = result.disklist[i].total.toString();
                             new_tr[i].appendChild(new_td[2]);
 
                             new_td[3] = document.createElement("td");
-                            new_td[3].textContent = result[i].percentage.toString();
+                            new_td[3].textContent = result.disklist[i].percentage.toString();
                             new_tr[i].appendChild(new_td[3]);
 
                             new_disk_table.appendChild(new_tr[i]);
                         }
-                        //diskuse_name.push('Overall');
-                        //diskuse_used.push(disk_used_all.toString());
-                        //diskuse_total.push(disk_total_all.toString());
-                        disk_table.appendChild(new_disk_table);
+
+                        data_table.appendChild(new_disk_table);
 
                             // Draw Charts based on records received
                         setDisk(diskuse_name, diskuse_used, diskuse_total);
@@ -790,7 +778,7 @@
                             mark.push(o);
 
                         }
-                        var myChart = ec.init(document.getElementById('diskusage'));
+                        var myChart = ec.init(document.getElementById('data-chart'));
                         var option = {
                             title: {
                                 text: '各主机磁盘使用情况',
@@ -879,64 +867,47 @@
 
                         };
 
-                        // 为echarts对象加载数据 
+                        // 为echarts对象加载数据
                         myChart.setOption(option);
                     }
             );
         }
-    </script>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-
-    <div style="position:relative;height:600px;">
-        <div id="processusage"
-             style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
-        <div id='processusage_form' style='height:300px;width:280px;position:absolute;left:1003px;'>
-            <table id='processusage-table' class="gridtable" toolbar="#tb"
-                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('processusage-table','itemid');}">
-                <thead>
-                <tr>
-                    <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
-                    <th data-options="field:'productid'" width="70">进程数</th>
-
-
-                </tr>
-                </thead>
-                <tbody>
-                {% for process in processusage_object %}
-                <tr>
-                    <td>{{process.name}}</td>
-                    <td>{{process.used}}</td>
-
-
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- ECharts单文件引入 -->
-    <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-    <script type="text/javascript">
-        setInterval("pro()", 30000);
-
-
         pro = function () {
             $.ajax({
                 url: '/pro_external/' + filter_string ,
                 success: function (result) {
-                    if (result.length != 0) {
+                    Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
+                    if (result.prolist.length != 0) {
                         var prouse_name = [];
                         var prouse_used = [];
                         var prouse_percentage = [];
                         var prouse_total = [];
 
+                        // Delete old table head info
+                        var data_table = document.getElementById("data-table");
+                        var old_head = data_table.getElementsByTagName("thead");
+                        old_head[0].innerHTML = "";
+
+                        // Create new table head
+                        var new_head_tr = document.createElement("tr");
+                        var new_head_th = [];
+                        new_head_th[0] = document.createElement("th");
+                        new_head_th[0].setAttribute("data-options", "field:'itemid'");
+                        new_head_th[0].setAttribute("width", 60);
+                        new_head_th[0].setAttribute("sortable", "true");
+                        new_head_th[0].textContent = "主机";
+
+                        new_head_th[1] = document.createElement("th");
+                        new_head_th[1].setAttribute("data-options", "field:'productid'");
+                        new_head_th[1].setAttribute("width", 70);
+                        new_head_th[1].textContent = "CPU利用率";
+
+                        new_head_tr.appendChild(new_head_th[0]);
+                        new_head_tr.appendChild(new_head_th[1]);
+                        old_head[0].appendChild(new_head_tr);
+
                         // Delete old table info
-                        var pro_table = document.getElementById("processusage-table");
-                        var old_body = pro_table.getElementsByTagName("tbody");
+                        var old_body = data_table.getElementsByTagName("tbody");
                         old_body[0].remove();
 
                         // Prepare new table info
@@ -944,25 +915,25 @@
                         var new_tr = [];
                         var new_td = [];
 
-                        for (var i = 0; i < result.length; i++) {
-                            prouse_name.push(result[i].name);
-                            prouse_used.push(result[i].used);
+                        for (var i = 0; i < result.prolist.length; i++) {
+                            prouse_name.push(result.prolist[i].name);
+                            prouse_used.push(result.prolist[i].used);
                             prouse_total.push(0.999999);
 
                             // Create new table elements
                             new_tr[i] = document.createElement("tr");
 
                             new_td[0] = document.createElement("td");
-                            new_td[0].textContent = result[i].name;
+                            new_td[0].textContent = result.prolist[i].name;
                             new_tr[i].appendChild(new_td[0]);
 
                             new_td[1] = document.createElement("td");
-                            new_td[1].textContent = result[i].used;
+                            new_td[1].textContent = result.prolist[i].used;
                             new_tr[i].appendChild(new_td[1]);
 
                             new_pro_table.appendChild(new_tr[i]);
                         }
-                        pro_table.appendChild(new_pro_table);
+                        data_table.appendChild(new_pro_table);
                         setPro(prouse_name, prouse_used, prouse_percentage, prouse_total);
                     }
                     else {
@@ -987,7 +958,7 @@
                     ],
                     function (ec) {
                         // 基于准备好的dom，初始化echarts图表
-                        var myChart = ec.init(document.getElementById('processusage'));
+                        var myChart = ec.init(document.getElementById('data-chart'));
 
                         var option = {
                             title: {
@@ -1047,64 +1018,53 @@
                             ]
                         };
 
-                        // 为echarts对象加载数据 
+                        // 为echarts对象加载数据
                         myChart.setOption(option);
                     }
             );
         }
-
-    </script>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-
-    <div style="position:relative;height:600px;">
-        <div id="ethusage"
-             style="height:600px;width:1000px;position:absolute;top:0;left:0;border:2px solid;border-color:#666666;"></div>
-        <div id='ethusage_form' style='height:300px;width:280px;position:absolute;left:1003px;'>
-            <table id='ethusage-table' class="gridtable" toolbar="#tb"
-                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('ethusage-table','itemid');}">
-                <thead>
-                <tr>
-                    <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
-                    <th data-options="field:'productid'" width="70">In (Kbps)</th>
-                    <th data-options="field:'productid'" width="70">Out (Kbps)</th>
-
-
-                </tr>
-                </thead>
-                <tbody>
-                {% for eth in eth_object %}
-                <tr>
-                    <td>{{eth.name}}</td>
-                    <td>{{eth.in}}</td>
-                    <td>{{eth.out}}</td>
-
-
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- ECharts单文件引入 -->
-    <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-    <script type="text/javascript">
-        setInterval("eth()", 30000);
         eth = function () {
             $.ajax({
                 url: '/eth_external/' + filter_string,
                 success: function (result) {
-                    if (result.length != 0) {
+                    Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
+                    if (result.ethlist.length != 0) {
                         var eth_in = [];
                         var eth_name = [];
                         var eth_out = [];
 
+                        // Delete old table head info
+                        var data_table = document.getElementById("data-table");
+                        var old_head = data_table.getElementsByTagName("thead");
+                        old_head[0].innerHTML = "";
+
+                        // Create new table head
+                        var new_head_tr = document.createElement("tr");
+                        var new_head_th = [];
+                        new_head_th[0] = document.createElement("th");
+                        new_head_th[0].setAttribute("data-options", "field:'itemid'");
+                        new_head_th[0].setAttribute("width", 60);
+                        new_head_th[0].setAttribute("sortable", "true");
+                        new_head_th[0].textContent = "主机";
+
+                        new_head_th[1] = document.createElement("th");
+                        new_head_th[1].setAttribute("data-options", "field:'productid'");
+                        new_head_th[1].setAttribute("width", 70);
+                        new_head_th[1].textContent = "In (Kbps)";
+
+                        new_head_th[2] = document.createElement("th");
+                        new_head_th[2].setAttribute("data-options", "field:'listprice'");
+                        new_head_th[2].setAttribute("width", 70);
+                        new_head_th[2].textContent = "Out (Kbps)";
+
+
+                        new_head_tr.appendChild(new_head_th[0]);
+                        new_head_tr.appendChild(new_head_th[1]);
+                        new_head_tr.appendChild(new_head_th[2]);
+                        old_head[0].appendChild(new_head_tr);
+
                         // Delete old table info
-                        var eth_table = document.getElementById("ethusage-table");
-                        var old_body = eth_table.getElementsByTagName("tbody");
+                        var old_body = data_table.getElementsByTagName("tbody");
                         old_body[0].remove();
 
                         // Prepare new table info
@@ -1112,28 +1072,28 @@
                         var new_tr = [];
                         var new_td = [];
 
-                        for (var i = 0; i < result.length; i++) {
-                            eth_name.push(result[i].name);
-                            eth_in.push(result[i].in);
-                            eth_out.push(result[i].out);
+                        for (var i = 0; i < result.ethlist.length; i++) {
+                            eth_name.push(result.ethlist[i].name);
+                            eth_in.push(result.ethlist[i].in);
+                            eth_out.push(result.ethlist[i].out);
 
                             // Create new table elements
                             new_tr[i] = document.createElement("tr");
 
                             new_td[0] = document.createElement("td");
-                            new_td[0].textContent = result[i].name;
+                            new_td[0].textContent = result.ethlist[i].name;
                             new_tr[i].appendChild(new_td[0]);
 
                             new_td[1] = document.createElement("td");
-                            new_td[1].textContent = result[i].in;
+                            new_td[1].textContent = result.ethlist[i].in;
                             new_tr[i].appendChild(new_td[1]);
 
                             new_td[2] = document.createElement("td");
-                            new_td[2].textContent = result[i].in;
+                            new_td[2].textContent = result.ethlist[i].in;
                             new_tr[i].appendChild(new_td[2]);
                             new_eth_table.appendChild(new_tr[i]);
                         }
-                        eth_table.appendChild(new_eth_table);
+                        data_table.appendChild(new_eth_table);
                         setEth(eth_name, eth_in, eth_out);
                     }
 
@@ -1160,7 +1120,7 @@
                     ],
                     function (ec) {
                         // 基于准备好的dom，初始化echarts图表
-                        var myChart = ec.init(document.getElementById('ethusage'));
+                        var myChart = ec.init(document.getElementById('data-chart'));
 
                         var option = {
                             title: {
@@ -1223,7 +1183,7 @@
                             ]
                         };
 
-                        // 为echarts对象加载数据 
+                        // 为echarts对象加载数据
                         myChart.setOption(option);
                     }
             );

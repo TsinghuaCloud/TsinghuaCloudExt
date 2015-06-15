@@ -182,9 +182,13 @@ var csrftoken = getCookie('csrftoken');
 				<tbody>
                         {% for service in service %}
                         <tr>
-                        <td class='detail'><a href="{% url 'hostdetail' service.id%}">{{service.HostName}}</a></td>
+                        <td class='detail'>
+                        {% if service.ServiceName != 'N/A' %}
+                            <a href="{% url 'hostdetail' service.id %}">{{service.HostName}}</a></td>
+                        {% else %}
+                            <a>{{ service.HostName }}</a></td>
+                        {% endif %}
                         <td>{{service.ServiceName}}</td>
-                        <!-- <td>{{service.Status}}</td> -->
                         <td>{{service.LastCheck}}</td>
                         <td>{{service.Duration}}</td>
                         <td>{{service.PluginOutput}}</td>
