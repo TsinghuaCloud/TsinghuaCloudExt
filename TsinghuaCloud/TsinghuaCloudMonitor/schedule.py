@@ -23,7 +23,7 @@ class DBConn:
             port = 3306,
             user='root',
             passwd='tsinghua',
-            db ='TsinghuaCloud',
+            db ='monitorService',
             cursorclass = MySQLdb.cursors.DictCursor
             )
     def cursor(self):
@@ -125,7 +125,7 @@ def line2(x):
 
 
 def test():
-    sql = 'select * from s'
+    sql = 'select * from externalService_schedule'
     results = selectData(sql)
     sort=[]
 

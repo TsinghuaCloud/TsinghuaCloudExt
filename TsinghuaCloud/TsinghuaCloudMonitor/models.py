@@ -10,6 +10,7 @@ class User(models.Model):
 class Service(models.Model):
     ServiceName = models.CharField(max_length=50)               # Description of service
     HostName = models.CharField(max_length=50)                  # The host where service record got from
+    HostId = models.IntegerField()
     Status = models.CharField(max_length=50)                    # Status of the host
     Attempt = models.CharField(max_length=50)
     Duration = models.CharField(max_length=50)
@@ -20,6 +21,7 @@ class Service(models.Model):
     
 class HostStatus(models.Model):
     HostName = models.CharField(max_length=50)
+    HostId = models.IntegerField()
     PluginOutput = models.CharField(max_length=50)
     Duration = models.CharField(max_length=50)
     PerformanceData = models.CharField(max_length=100)
@@ -29,6 +31,7 @@ class HostStatus(models.Model):
 
 
 class Host(models.Model):
+    pk = True
     IP = models.CharField(max_length=50)
     HostName = models.CharField(max_length=50)
     Owner = models.CharField(max_length=50)
