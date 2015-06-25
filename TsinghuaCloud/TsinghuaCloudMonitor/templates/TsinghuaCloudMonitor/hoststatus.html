@@ -2,121 +2,120 @@
 {% load staticfiles %}
 
 <script>
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-// DONE DJANGO HACK
-
-function get_site_prefix(){
-    var href = $(location).attr("href");
-    return href
-}
-
-function cache_clear()
-    {
-    window.location.reload(true);
-    alert('refresh');
-}
-
-function doSearch(){
-    var prefix= get_site_prefix();
-    $.ajax({
-        type: "POST",
-        url: prefix + "doSearch/", 
-        data: { 
-            service: $('#itemid').val(),
-            host: $('#productid').val(),
-        },
-	});
-}
-/**
-        * EasyUI DataGrid根据字段动态合并单元格
-        * @param fldList 要合并table的id
-        * @param fldList 要合并的列,用逗号分隔(例如："name,department,office");
-        */
-        function MergeCells(tableID, fldList) {
-            
-            var Arr = fldList.split(",");
-            var dg = $('#' + tableID);
-            var fldName;
-            var RowCount = dg.datagrid("getRows").length;
-            var span;
-            var PerValue = "";
-            var CurValue = "";
-            var length = Arr.length - 1;
-            for (i = length; i >= 0; i--) {
-                fldName = Arr[i];
-                PerValue = "";
-                span = 1;
-                for (row = 0; row <= RowCount; row++) {
-                    if (row == RowCount) {
-                        CurValue = "";
-                    }
-                    else {
-                        CurValue1 = dg.datagrid("getRows")[row][fldName].split('>');
-                        CurValue = CurValue1[1];
-                 
-                        
-                        
-                    }
-                    if (PerValue == CurValue) {
-                        span += 1;
-                    }
-                    else {
-                        var index = row - span;
-                        dg.datagrid('mergeCells', {
-                            index: index,
-                            field: fldName,
-                            rowspan: span,
-                            colspan: null
-                        });
-                        span = 1;
-                        PerValue = CurValue;
-                    }
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-             $('.datagrid-td-merged').find('a').css('font-size','15px');
-             $('.datagrid-td-merged').css('background-color','#7B7B7B'); 
-             
-             
-         }
-        
-$(function () {
-var csrftoken = getCookie('csrftoken'); 
-    $(document).ready(function(){
-     setInterval(function(){cache_clear()},1000000);
-     });
-      
-    $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+        return cookieValue;
+    }
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    // DONE DJANGO HACK
+
+    function get_site_prefix() {
+        var href = $(location).attr("href");
+        return href
+    }
+
+    function cache_clear() {
+        window.location.reload(true);
+        alert('refresh');
+    }
+
+    function doSearch() {
+        var prefix = get_site_prefix();
+        $.ajax({
+            type: "POST",
+            url: prefix + "doSearch/",
+            data: {
+                service: $('#itemid').val(),
+                host: $('#productid').val(),
+            },
+        });
+    }
+    /**
+     * EasyUI DataGrid根据字段动态合并单元格
+     * @param fldList 要合并table的id
+     * @param fldList 要合并的列,用逗号分隔(例如："name,department,office");
+     */
+    function MergeCells(tableID, fldList) {
+
+        var Arr = fldList.split(",");
+        var dg = $('#' + tableID);
+        var fldName;
+        var RowCount = dg.datagrid("getRows").length;
+        var span;
+        var PerValue = "";
+        var CurValue = "";
+        var length = Arr.length - 1;
+        for (i = length; i >= 0; i--) {
+            fldName = Arr[i];
+            PerValue = "";
+            span = 1;
+            for (row = 0; row <= RowCount; row++) {
+                if (row == RowCount) {
+                    CurValue = "";
+                }
+                else {
+                    CurValue1 = dg.datagrid("getRows")[row][fldName].split('>');
+                    CurValue = CurValue1[1];
+
+
+                }
+                if (PerValue == CurValue) {
+                    span += 1;
+                }
+                else {
+                    var index = row - span;
+                    dg.datagrid('mergeCells', {
+                        index: index,
+                        field: fldName,
+                        rowspan: span,
+                        colspan: null
+                    });
+                    span = 1;
+                    PerValue = CurValue;
+                }
             }
         }
-    });
-    // END DJANGO AJAX
-  
-          
-});
+        $('.datagrid-td-merged').find('a').css('font-size', '15px');
+        $('.datagrid-td-merged').css('background-color', '#7B7B7B');
 
+
+    }
+
+    $(function () {
+        var csrftoken = getCookie('csrftoken');
+        $(document).ready(function () {
+            setInterval(function () {
+                cache_clear()
+            }, 1000000);
+        });
+
+        $.ajaxSetup({
+            crossDomain: false, // obviates need for sameOrigin test
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        // END DJANGO AJAX
+
+
+    });
 
 
 </script>
@@ -125,68 +124,73 @@ var csrftoken = getCookie('csrftoken');
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Tsinghua Cloud - HostStatus Page</title>
-<script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
-<script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
-<script src="{% static 'js/group.js'%}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
+    <meta charset="UTF-8">
+    <title>Tsinghua Cloud - HostStatus Page</title>
+    <script src="{% static 'jquery-easyui-1/jquery.min.js' %}"></script>
+    <script src="{% static 'jquery-easyui-1/jquery.easyui.min.js' %}"></script>
+    <script src="{% static 'js/group.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
 </head>
 
 <body class="easyui-layout">
-     <div data-options="region:'north',border:false" style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
-        <a href="/logout" class="easyui-linkbutton" style="background:#CCCCCC;width:60px;height:30px;position:relative;float:right;">登出</a>
-     </div>
-     <div data-options="region:'west',split:true,title:'菜单'" style="width:150px;padding:10px;">
-        <a href="/hoststatus" class="easyui-linkbutton" style="width:130px">首页</a>
-        <a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
-        {% if usergroup != 'admin' %}
+<div data-options="region:'north',border:false"
+     style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
+    <a href="/logout" class="easyui-linkbutton"
+       style="background:#CCCCCC;width:60px;height:30px;position:relative;float:right;">登出</a>
+</div>
+<div data-options="region:'west',split:true,title:'菜单'" style="width:150px;padding:10px;">
+    <a href="/hoststatus" class="easyui-linkbutton" style="width:130px">首页</a>
+    <a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
+    {% if usergroup != 'admin' %}
         <a href="/start_system" class="easyui-linkbutton" style="width:130px">网络服务</a>
-        {% endif %}
-        <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
-    </div>	
-	
-	
-	<div data-options="region:'center',title:'各主机情况'">
-	    
-		<table id='service-table' class="easyui-datagrid" toolbar="#tb"
-					data-options="border:false,singleSelect:true,fit:true,view:groupview,
+    {% endif %}
+    <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
+</div>
+
+
+<div data-options="region:'center',title:'各主机情况'">
+
+    <table id='service-table' class="easyui-datagrid" toolbar="#tb"
+           data-options="border:false,singleSelect:true,fit:true,view:groupview,
                 groupField:'type',
                 groupFormatter:function(value,rows){
                     return value + ' - ' + rows.length + ' Item(s)';
                 },fitColumns:true,onLoadSuccess:function(data){ MergeCells('service-table','itemid');}">
-				<thead>
-					<tr>
-						<th data-options="field:'itemid'" width="50" sortable="true">主机名</th>
-                        <th data-options="field:'type'" width="40">类型</th>
-						<th data-options="field:'listprice'" width="50">状态</th>
-						<th data-options="field:'unitcost'" width="80">上次监控时间</th>
-						<th data-options="field:'attr1'" width="180">状态信息</th>
-						<th data-options="field:'status'" width="150">持续时间</th>
-					</tr>
-				</thead>
-				<tbody>
-                       
-                       {% for host in host %}
-                       
-                       <tr>
-                       <td class='detail'><a href="{% url 'hostdetailmore' host.id%}" style="color:white">{{host.HostName}}</a></td>
-                       <td>{{host.HostType}}</td>
-                       <td>{{host.Status}}</td>
-                       <td>{{host.LastCheck}}</td>
-                       <td>{{host.PluginOutput}}</td>
-                       <td>{{host.Duration}}</td>
-                       </tr>
-                    
-                       {% endfor %}
-                       
-	    </table>
+        <thead>
+        <tr>
+            <th data-options="field:'itemid'" width="50" sortable="true">主机名</th>
+            <th data-options="field:'listprice'" width="50">状态</th>
+            <th data-options="field:'unitcost'" width="80">上次监控时间</th>
+            <th data-options="field:'attr1'" width="180">状态信息</th>
+            <th data-options="field:'status'" width="150">持续时间</th>
+        </tr>
+        </thead>
+        <tbody>
 
-        
-	</div>
+        {% for host in host %}
+
+            <tr>
+                {% if host.HostId != 0 %}
+                    <td class='detail'><a href="{% url 'hostdetail' host.HostId %}"
+                                          style="color:white">{{ host.HostName }}</a></td>
+                {% else %}
+                    <td class='detail'><a style="color:white">{{ host.HostName }}</a></td>
+                {% endif %}
+                <td>{{ host.Status }}</td>
+                <td>{{ host.LastCheck }}</td>
+                <td>{{ host.PluginOutput }}</td>
+                <td>{{ host.Duration }}</td>
+            </tr>
+
+        {% endfor %}
+
+    </table>
+
+
+</div>
 </body>
 </html>
 

@@ -176,7 +176,6 @@ var csrftoken = getCookie('csrftoken');
 						<th data-options="field:'duration'" width="70">持续时间</th>
 						<th data-options="field:'attr1'" width="180">状态信息</th>
 						<th data-options="field:'status'" width="220">详细运行数据</th>
-                        <th data-options="field:'type'" width="50">主机类型</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -184,7 +183,7 @@ var csrftoken = getCookie('csrftoken');
                         <tr>
                         <td class='detail'>
                         {% if service.ServiceName != 'N/A' %}
-                            <a href="{% url 'hostdetail' service.id %}">{{service.HostName}}</a></td>
+                            <a href="{% url 'hostdetail' service.HostId %}">{{service.HostName}}</a></td>
                         {% else %}
                             <a>{{ service.HostName }}</a></td>
                         {% endif %}
@@ -193,7 +192,6 @@ var csrftoken = getCookie('csrftoken');
                         <td>{{service.Duration}}</td>
                         <td>{{service.PluginOutput}}</td>
                         <td>{{service.PerformanceData}}</td>
-                        <td>{{service.HostType}}</td>
                         </tr>
                         {% endfor %}
 

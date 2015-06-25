@@ -33,7 +33,7 @@ def request(request, tenantid):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -49,7 +49,7 @@ def start_system(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -63,7 +63,7 @@ def start_input(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -189,30 +189,26 @@ def monitor(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
-
 
     # Get hosts belonging to username
     monitor_host_list = Host.objects.all().values('id', 'HostName').filter(HostType='external')
     if usergroup == 'user':                                         # Users can only get records of his own hosts
-        monitor_host_list.filter(Owner=username)
+        monitor_host_list = monitor_host_list.filter(Owner=username)
     host_count = len(monitor_host_list)
     print "host_count = " + str(host_count)
-
-
 
     # Get service records for each host
     service = []
     for k in range(0, host_count):
-        last_check_date_list = Service.objects.values('HostId','ServiceName')\
-            .filter(HostId=monitor_host_list[k].get('id')).annotate(lastCheck = Max('LastCheck'))             # Get lastcheck of each servicename
-        if len(last_check_date_list) == 0:
+        last_check_rec_list = Service.objects.values('HostId','ServiceName')\
+            .filter(HostId=monitor_host_list[k].get('id')).annotate(lastCheck = Max('LastCheck'))             # Get lastest record of each host
+        if len(last_check_rec_list) == 0:
             # Create empty service record
             service_na = Service()
             service_na.ServiceName = 'N/A'
-            service_na.HostType = 'external'
             service_na.LastCheck = 'N/A'
             service_na.Duration = 0
             service_na.PerformanceData = 'N/A'
@@ -220,10 +216,9 @@ def monitor(request):
             service_na.HostId = monitor_host_list[k].get('id')
             service_na.HostName = monitor_host_list[k].get('HostName')
             service.append(service_na)
-        for single_last_check in last_check_date_list:
+        for single_last_check in last_check_rec_list:
             service_record = Service.objects.filter(HostId=monitor_host_list[k].get('id'), LastCheck = single_last_check.get('lastCheck'),
                                                      ServiceName = single_last_check.get('ServiceName'))
-            service_record[0].HostType = 'external'
             service.append(service_record[0])
 
     # print service
@@ -237,7 +232,7 @@ def doSearch(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -264,33 +259,35 @@ def hoststatus(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
-    host = []
-    maxhost = HostStatus.objects.all().values('HostName').annotate(max=Max('LastCheck')).filter(HostName__in=Host.objects.all().values('HostName'))
-    for i in range(0, len(maxhost)):
-        current_host = get_object_or_404(Host, HostName=maxhost[i].get('HostName'))
-        # Only showing external host
-        if current_host.HostType != 'external':
-            continue
-        # If user.group = user, show his own hosts. If user.group = admin, show all hosts.
-        if usergroup == 'user' and current_host.Owner != username:
-            continue
-        temp = HostStatus.objects.filter(HostName=maxhost[i].get('HostName'), LastCheck=maxhost[i].get('max'))        # temp stores all hosts' info
-        for i in range(0, len(temp)):
-            temp[i].HostType = current_host.HostType
-            status = temp[i].PluginOutput
-            print status[0:5]
-            if status[0:6] != 'PINGOK':
-                temp[i].Status = 'DOWN'
-            else:
-                temp[i].Status = 'UP'
-            print temp[i].HostType
-            host.append(temp[i])
+    # Get hosts belonging to username
+    host_list = Host.objects.all().values('id', 'HostName').filter(HostType='external')
+    if usergroup == 'user':                                         # Users can only get records of his own hosts
+        host_list = host_list.filter(Owner=username)
+    host_count = len(host_list)
 
-    return render(request, 'TsinghuaCloudMonitor/hoststatus.html', {'host': host, 'usergroup': usergroup})
+    # Get status records for each host
+    host_status_rec_obj = []
+    for cur_host in host_list:
+        check_records = HostStatus.objects.filter(HostId=cur_host.get('id'))
+        if len(check_records) == 0:
+            empty_status_rec = HostStatus()
+            empty_status_rec.HostName = cur_host.get('HostName')
+            empty_status_rec.HostId = 0
+            empty_status_rec.Status = 'N/A'
+            empty_status_rec.LastCheck = 'N/A'
+            empty_status_rec.PluginOutput = 'N/A'
+            empty_status_rec.Duration = '0'
+            host_status_rec_obj.append(empty_status_rec)
+            print "added"
+        else:
+            status_rec =  HostStatus.objects.filter(HostId=cur_host.get('id')).latest('LastCheck')
+            host_status_rec_obj.append(status_rec)
+
+    return render(request, 'TsinghuaCloudMonitor/hoststatus.html', {'host': host_status_rec_obj, 'usergroup': usergroup})
 
 def memory_external(request):
     # Redirect to login page if not logged in
@@ -299,7 +296,7 @@ def memory_external(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
     print usergroup
@@ -423,7 +420,7 @@ def cpu_external(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -521,8 +518,8 @@ def cpu_external(request):
                 cpu_used = '0.0'
                 cpu_perc = '0.0%'
             else:
-                p = re.compile(r'\d+')
-                cpu_used = p.findall(svc_rec_obj.PerformanceData)[3]
+                p = re.compile(r'0\.\d+')
+                cpu_used = p.findall(svc_rec_obj.PerformanceData)[0]
                 cpu_perc = format(float(cpu_used), '.2%')
         json_data = {'name': cpu_name, 'used': cpu_used, 'percentage': cpu_perc}
         cpu_list.append(json_data)
@@ -538,7 +535,7 @@ def pro_external(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -650,7 +647,7 @@ def disk_external(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -774,7 +771,7 @@ def eth_external(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -891,7 +888,8 @@ def totalcompare(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+        return HttpResponseRedirect('/login')
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
 
     # username = request.session['username']
@@ -910,20 +908,19 @@ def totalcompare(request):
     return render(request, 'TsinghuaCloudMonitor/totalcompare.html',  {'usergroup': usergroup, 'totalpage': total_page})
 
 
-def hostdetail(request, serviceid):
+def hostdetail(request, hostid):
     # Redirect to login page if not logged in
     username = ''
     try:
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
-    service = get_object_or_404(Service, pk=serviceid)
-    host = get_object_or_404(Host, HostName=service.HostName)
-    memory = Service.objects.filter(HostName=service.HostName, ServiceName='MemoryUsage')
+    host = get_object_or_404(Host, pk=hostid)
+    memory = Service.objects.filter(HostId=host.id, ServiceName='MemoryUsage')
     p = re.compile(r'\d+')
     memory_total = []
     memory_used = []
@@ -946,7 +943,7 @@ def hostdetail(request, serviceid):
                         memory_timestamp.append(memory[k].LastCheck)
     print memory_timestamp
     print memory_used
-    cpuload = Service.objects.filter(HostName=service.HostName, ServiceName='cpuload')
+    cpuload = Service.objects.filter(HostId=host.id, ServiceName='cpuload')
     p = re.compile(r'(\d+)\.(\d*)')
     cpu_one = []
     cpu_five = []
@@ -970,7 +967,7 @@ def hostdetail(request, serviceid):
                     cpu_five.append('.'.join(p.findall(cpuload[k].PerformanceData)[3]))
                     cpu_timestamp.append(cpuload[k].LastCheck)
 
-    disk = Service.objects.filter(HostName=service.HostName, ServiceName='disk')
+    disk = Service.objects.filter(HostId=host.id, ServiceName='disk')
     p = re.compile(r'\d+')
     diskuse = []
     disk_timestamp = []
@@ -978,7 +975,6 @@ def hostdetail(request, serviceid):
         if disk[k].PerformanceData == '':
             diskuse.append(0)
             disk_timestamp.append(disk[k].LastCheck)
-
         else:
             if k == (len(disk) - 1):
                 diskuse.append(p.findall(disk[k].PerformanceData)[0])
@@ -989,7 +985,7 @@ def hostdetail(request, serviceid):
                     diskuse.append(p.findall(disk[k].PerformanceData)[0])
                     disk_timestamp.append(disk[k].LastCheck)
 
-    process = Service.objects.filter(HostName=service.HostName, ServiceName='total-procs')
+    process = Service.objects.filter(HostId=host.id, ServiceName='total-procs')
     p = re.compile(r'\d+')
     pro = []
     pro_timestamp = []
@@ -1010,111 +1006,6 @@ def hostdetail(request, serviceid):
                                    'pro': pro, 'pro_timestamp': pro_timestamp})
     else:
         return HttpResponse("ERROR")
-
-
-def hostdetailmore(request, hostid):
-    # Redirect to login page if not logged in
-    username = ''
-    try:
-        username = request.session['username']
-    except:
-        print "username error" +  str(Exception)
-    if username == '':
-        return HttpResponseRedirect('/login')
-    usergroup = request.session['usergroup']
-
-    hoststatus = get_object_or_404(HostStatus, pk=hostid)
-    host = get_object_or_404(Host, HostName=hoststatus.HostName)
-    memory = Service.objects.filter(HostName=host.HostName, ServiceName='MemoryUsage')
-    p = re.compile(r'\d+')
-    memory_total = []
-    memory_used = []
-    memory_timestamp = []
-    for k in range(len(memory) - 1, 0, -1):
-        if p.findall(memory[k].PerformanceData):
-            memory_total.append(p.findall(memory[k].PerformanceData)[0])
-            if memory[k].PerformanceData == '':
-                memory_used.append(0)
-                memory_timestamp.append(memory[k].LastCheck)
-            else:
-                if k == (len(memory) - 1):
-                    memory_used.append(p.findall(memory[k].PerformanceData)[1])
-                    memory_timestamp.append(memory[k].LastCheck)
-
-                else:
-                    if (memory[k + 1].PerformanceData != '') and (
-                                p.findall(memory[k].PerformanceData)[1] != p.findall(memory[k + 1].PerformanceData)[1]):
-                        memory_used.append(p.findall(memory[k].PerformanceData)[1])
-                        memory_timestamp.append(memory[k].LastCheck)
-    print memory_timestamp
-    print memory_used
-
-    cpuload = Service.objects.filter(HostName=host.HostName, ServiceName='cpuload')
-    p = re.compile(r'(\d+)\.(\d*)')
-    cpu_one = []
-    cpu_five = []
-    cpu_timestamp = []
-    for k in range(len(cpuload) - 1, 0, -1):
-        if cpuload[k].PerformanceData == '':
-            cpu_one.append(0)
-            cpu_five.append(0)
-            cpu_timestamp.append(cpuload[k].LastCheck)
-        else:
-            if k == (len(cpuload) - 1):
-                cpu_one.append('.'.join(p.findall(cpuload[k].PerformanceData)[0]))
-                cpu_five.append('.'.join(p.findall(cpuload[k].PerformanceData)[3]))
-                cpu_timestamp.append(cpuload[k].LastCheck)
-
-
-            else:
-                if (cpuload[k + 1].PerformanceData != '') and (
-                            '.'.join(p.findall(cpuload[k].PerformanceData)[0]) != '.'.join(
-                                p.findall(cpuload[k + 1].PerformanceData)[0])):
-                    cpu_one.append('.'.join(p.findall(cpuload[k].PerformanceData)[0]))
-                    cpu_five.append('.'.join(p.findall(cpuload[k].PerformanceData)[3]))
-                    cpu_timestamp.append(cpuload[k].LastCheck)
-
-    disk = Service.objects.filter(HostName=host.HostName, ServiceName='disk')
-    p = re.compile(r'\d+')
-    diskuse = []
-    disk_timestamp = []
-    for k in range(len(disk) - 1, 0, -1):
-        if disk[k].PerformanceData == '':
-            diskuse.append(0)
-            disk_timestamp.append(disk[k].LastCheck)
-
-        else:
-            if k == (len(disk) - 1):
-                diskuse.append(p.findall(disk[k].PerformanceData)[0])
-                disk_timestamp.append(disk[k].LastCheck)
-            else:
-                if (disk[k + 1].PerformanceData != '') and (
-                            p.findall(disk[k].PerformanceData)[0] != p.findall(disk[k + 1].PerformanceData)[0]):
-                    diskuse.append(p.findall(disk[k].PerformanceData)[0])
-                    disk_timestamp.append(disk[k].LastCheck)
-
-    process = Service.objects.filter(HostName=host.HostName, ServiceName='total-procs')
-    p = re.compile(r'\d+')
-    pro = []
-    pro_timestamp = []
-    for k in range(len(process) - 1, 0, -1):
-        if process[k].PerformanceData == '':
-            pro.append(0)
-            pro_timestamp.append(process[k].LastCheck)
-
-        else:
-            pro.append(p.findall(process[k].PerformanceData)[0])
-            pro_timestamp.append(process[k].LastCheck)
-
-    if host:
-        return render_to_response('TsinghuaCloudMonitor/hostdetail.html',
-                                  {'host': host, 'memory_total': memory_total, 'memory_used': memory_used,
-                                   'memory_timestamp': memory_timestamp, 'cpu_one': cpu_one, 'cpu_five': cpu_five,
-                                   'cpu_timestamp': cpu_timestamp, 'diskuse': diskuse, 'disk_timestamp': disk_timestamp,
-                                   'pro': pro, 'pro_timestamp': pro_timestamp})
-    else:
-        return HttpResponse("ERROR")
-
 
 def login(request):
     errors = []
@@ -1205,7 +1096,7 @@ def start_input(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -1253,7 +1144,7 @@ def download_first(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -1283,7 +1174,7 @@ def download_second(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -1313,7 +1204,7 @@ def download_third(request):
         username = request.session['username']
     except:
         print "username error" +  str(Exception)
-    if username == '':
+    if username == '' or username == None:
         return HttpResponseRedirect('/login')
     usergroup = request.session['usergroup']
 
@@ -1333,5 +1224,3 @@ def download_third(request):
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format(the_file_name)
 
     return response
-  
-
