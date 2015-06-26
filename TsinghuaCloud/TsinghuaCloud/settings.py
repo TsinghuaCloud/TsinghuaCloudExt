@@ -59,14 +59,13 @@ WSGI_APPLICATION = 'TsinghuaCloud.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tsinghuacloud',
+        'NAME': 'TsinghuaCloud',
         'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
+        'PASSWORD': 'tsinghua',
+        'HOST': '166.111.143.241',
         #django admin login: tsinghuacloud tsinghua
     }
 }
