@@ -1,4 +1,4 @@
-var graph = new Q.Graph(canvas);;
+var graph = new Q.Graph(canvas);
 
 function createText(name, x, y, fontSize, color, parent) {
     var text = graph.createText(name, x, y);
@@ -13,26 +13,15 @@ function createText(name, x, y, fontSize, color, parent) {
     return text;
 }
 
-var VPNFlexEdgeUI = function (edge, graph) {
-    Q.doSuperConstructor(this, VPNFlexEdgeUI, arguments);
-}
-VPNFlexEdgeUI.prototype = {
-    drawEdge: function (path, fromUI, toUI, edgeType, fromBounds, toBounds) {
-        var from = fromBounds.center;
-    }
-}
-
-Q.extend(VPNFlexEdgeUI, Q.EdgeUI);
-
 graph_init = function() {
-    graph.clear();
+    graph.destroy();
     graph.styles = {};
     graph.styles[Q.Styles.ARROW_TO_STYLES] = {
         lineWidth: 1,
         lineJoin: "round"//"miter"
     };
+    graph = new Q.Graph(canvas);
     createText("监控实例图", 0, -200, 20, "#F00");
-    var model = graph.graphModel;
     createText("图例", 300, -200, 15, "#00");
     var cloudmodel = graph.createNode("监控云", 300, -110);
     cloudmodel.setStyle(Q.Styles.LABEL_POSITION, Q.Position.RIGHT_MIDDLE);
@@ -58,9 +47,7 @@ tenants = function () {
             var len = result.length;
             console.info(result);
             var cur_left = -200;
-            var cur_height = -110;
             var server = [];
-            //console.info(result['projects'][0].name);
             for (var k = 0; k < len; k++) {
                 server[k] = graph.createNode(result[k]['ServerName'], -50 + 100 * k, -10);
                 server[k].image = "Q-server";
@@ -72,42 +59,7 @@ tenants = function () {
                     graph.createEdge(server[k], host[i]);
                 }
             }
+            graph.moveToCenter(1);
         }
-    });
+    })
 };
-
-var setSelectionStyle = function (element) {
-    if (!(element instanceof Q.Node)) {
-        return;
-    }
-    var selected = graph.isSelected(element);
-    if (selected) {
-        //directSubmap(element);
-        //console.info(element);
-        if (element.toString().length > 20) {
-            directSubmap(element.toString());
-            //alert('dddss');
-        }
-    } else {
-        element.setStyle(Q.Styles.RENDER_COLOR, null);
-        element.setStyle(Q.Styles.PADDING, 0);
-        element.setStyle(Q.Styles.BORDER, 0);
-    }
-}
-graph.selectionChangeDispatcher.addListener(function (evt) {
-    if (window.onselectionchange) {
-        window.onselectionchange(evt, graph);
-    }
-    var data = evt.data;
-    if (!data) {
-        return;
-    }
-    if (Q.isArray(data)) {
-        for (var i = 0, l = data.length; i < l; i++) {
-            setSelectionStyle(data[i]);
-        }
-    } else {
-        setSelectionStyle(data);
-    }
-});
-
