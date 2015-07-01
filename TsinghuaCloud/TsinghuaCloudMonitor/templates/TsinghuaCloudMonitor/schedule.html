@@ -90,20 +90,17 @@
     <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
 </div>
 
+
 <div data-options="region:'east',split:true" title="详细信息" style="width:300px;">
-    <table class="easyui-datagrid">
+    <table class="easyui-datagrid" id="monitor-table" url="scheduledatatable/">
         <thead>
         <tr>
-            <th data-options="field:'host'" width="200">调度分配</th>
+            <th data-options="field:'Name'" width="200">主机名</th>
+            <th data-options="field:'IP'" width="200">IP</th>
         </tr>
         </thead>
         <tbody>
-            {%  for server in server_table %}
-            <tr><td>监控：{{ server.ServerName }}</td></tr>
-            {% for host in server.Host %}
-            <tr><td>{{ host }}</td></tr>
-            {% endfor %}
-            {% endfor %}
+
         </tbody>
     </table>
 </div>
@@ -114,5 +111,23 @@
 <div style="height: 650px;width:1300px;" id="canvas">
         <script src="{% static 'js/schedulegraph.js' %}"></script>
 </div>
-	
-	
+
+
+<script type="text/javascript">
+    $(function () {
+        action();
+        tenants();
+    });
+
+    action = function(){
+        $('#monitor-table').datagrid({
+            url:'scheduledatatable/'
+        });
+        console.info("123");
+    };
+    setInterval("action()", 3000);
+    setInterval("tenants()", 3000);
+</script>
+
+</body>
+</html>

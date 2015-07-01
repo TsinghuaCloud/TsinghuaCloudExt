@@ -220,6 +220,47 @@ def schedule_data(request):
     print server_table
     return HttpResponse(json.dumps(server_table), content_type="application/json")
 
+def schedule_data_table(request):
+        # Redirect to login page if not logged in
+    username = ''
+    try:
+        username = request.session['username']
+    except:
+        print "username error" +  str(Exception)
+    if username == '' or username == None:
+        return HttpResponseRedirect('/login')
+    usergroup = request.session['usergroup']
+
+    # Refuse all user(not admin)s' requests
+    if usergroup != 'admin':
+        return HttpResponseRedirect('/hoststatus')
+
+    # Get all hosts
+    host_list = Host.objects.values('HostName').filter(HostType='external')
+
+    # Get all monitor servers
+    nagios_monitors = Nagios.objects.values('Server').distinct()
+
+    # Monitor server records stored in server_table
+    json_result = {'total': 0, 'rows':[]}
+    total_row = 0
+
+    for server in nagios_monitors:
+        server_rec = {"Name": "Monitor " + server.get("Server")}
+        json_result['rows'].append(server_rec)
+        monitor_list = Nagios.objects.filter(Target_HostName__in=host_list, Server=server.get("Server"))
+        for host in monitor_list:
+            cur_rec = {}
+            cur_rec['Name'] = host.Target_HostName
+            cur_rec['IP'] = host.Target_IP
+            json_result['rows'].append(cur_rec)
+        total_row += 1 + len(monitor_list)
+
+    json_result['total'] = total_row
+    print json_result
+    return HttpResponse(json.dumps(json_result), content_type="application/json")
+
+
 def check_schedule(request):
     # Redirect to login page if not logged in
     username = ''

@@ -34,8 +34,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="19535" max-vertical-offset="24282">
-              <caret line="1051" column="56" selection-start-line="1051" selection-start-column="56" selection-end-line="1051" selection-end-column="56" />
+            <state vertical-scroll-proportion="3.7931035" vertical-offset="4822" max-vertical-offset="25061">
+              <caret line="248" column="63" selection-start-line="248" selection-start-column="63" selection-end-line="248" selection-end-column="63" />
               <folding>
                 <element signature="e#0#46#0" expanded="true" />
               </folding>
@@ -46,18 +46,85 @@
       <file leaf-file-name="schedule.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/schedule.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.508772" vertical-offset="978" max-vertical-offset="2337">
-              <caret line="92" column="56" selection-start-line="92" selection-start-column="56" selection-end-line="92" selection-end-column="56" />
+            <state vertical-scroll-proportion="-3.2280703" vertical-offset="2058" max-vertical-offset="2622">
+              <caret line="118" column="18" selection-start-line="118" selection-start-column="18" selection-end-line="118" selection-end-column="18" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#a#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#a#4;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#5;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="schedulegraph.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/static/js/schedulegraph.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1659" max-vertical-offset="2261">
+              <caret line="27" column="18" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="18" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="schedulegraph.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/static/js/schedulegraph.js">
+      <file leaf-file-name="totalcompare.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/totalcompare.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.5987055" vertical-offset="0" max-vertical-offset="1957">
-              <caret line="52" column="34" selection-start-line="52" selection-start-column="34" selection-end-line="52" selection-end-column="34" />
+            <state vertical-scroll-proportion="0.40413535" vertical-offset="10634" max-vertical-offset="22819">
+              <caret line="571" column="38" selection-start-line="571" selection-start-column="38" selection-end-line="571" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="456" max-vertical-offset="1235">
+              <caret line="50" column="19" selection-start-line="50" selection-start-column="4" selection-end-line="50" selection-end-column="19" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="589">
+              <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="admin.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/admin.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="171">
+              <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TsinghuaCloud/settings.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="228" max-vertical-offset="1862">
+              <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="start_system.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/start_system.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.178572" vertical-offset="3059" max-vertical-offset="4598">
+              <caret line="176" column="83" selection-start-line="176" selection-start-column="83" selection-end-line="176" selection-end-column="83" />
               <folding />
             </state>
           </provider>
@@ -88,15 +155,15 @@
         <option value="$PROJECT_DIR$/TsinghuaCloud/settings.py" />
         <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/models.py" />
         <option value="$PROJECT_DIR$/TsinghuaCloud/urls.py" />
-        <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/urls.py" />
         <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/start_system.html" />
         <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/hostdetail.html" />
         <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/hoststatus.html" />
         <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/monitor.html" />
-        <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/totalcompare.html" />
+        <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/urls.py" />
         <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/views.py" />
-        <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/schedule.html" />
+        <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/totalcompare.html" />
         <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/static/js/schedulegraph.js" />
+        <option value="$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/schedule.html" />
       </list>
     </option>
   </component>
@@ -104,10 +171,8 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1382" />
-    <option name="height" value="754" />
+    <option name="width" value="1366" />
+    <option name="height" value="738" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -558,11 +623,11 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="754" extended-state="7" />
+    <frame x="0" y="0" width="1366" height="738" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17789166" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3374613" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -852,30 +917,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="171">
-          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TsinghuaCloud/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1244" max-vertical-offset="1862">
-          <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="456" max-vertical-offset="1235">
-          <caret line="50" column="19" selection-start-line="50" selection-start-column="4" selection-end-line="50" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TsinghuaCloud/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="494">
@@ -883,14 +924,6 @@
           <folding>
             <element signature="e#0#51#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="608">
-          <caret line="23" column="20" selection-start-line="23" selection-start-column="20" selection-end-line="23" selection-end-column="20" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -909,32 +942,6 @@
           <folding>
             <element signature="n#style#0;n#a#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#a#3;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/totalcompare.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36568457" vertical-offset="1917" max-vertical-offset="22838">
-          <caret line="112" column="18" selection-start-line="112" selection-start-column="14" selection-end-line="112" selection-end-column="18" />
-          <folding>
-            <element signature="n#style#0;n#a#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#a#3;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#a#3;n#div#0;n#div#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/start_system.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.25762713" vertical-offset="3059" max-vertical-offset="4598">
-          <caret line="153" column="0" selection-start-line="153" selection-start-column="0" selection-end-line="157" selection-end-column="15" />
-          <folding>
-            <element signature="n#style#0;n#a#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#a#1;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#a#2;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#a#3;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#a#4;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -982,10 +989,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/start_system.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.178572" vertical-offset="3059" max-vertical-offset="4598">
+          <caret line="176" column="83" selection-start-line="176" selection-start-column="83" selection-end-line="176" selection-end-column="83" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="589">
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="171">
+          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TsinghuaCloud/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="228" max-vertical-offset="1862">
+          <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="456" max-vertical-offset="1235">
+          <caret line="50" column="19" selection-start-line="50" selection-start-column="4" selection-end-line="50" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="19535" max-vertical-offset="24282">
-          <caret line="1051" column="56" selection-start-line="1051" selection-start-column="56" selection-end-line="1051" selection-end-column="56" />
+        <state vertical-scroll-proportion="3.7931035" vertical-offset="4822" max-vertical-offset="25061">
+          <caret line="248" column="63" selection-start-line="248" selection-start-column="63" selection-end-line="248" selection-end-column="63" />
           <folding>
             <element signature="e#0#46#0" expanded="true" />
           </folding>
@@ -994,16 +1041,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/schedule.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.508772" vertical-offset="978" max-vertical-offset="2337">
-          <caret line="92" column="56" selection-start-line="92" selection-start-column="56" selection-end-line="92" selection-end-column="56" />
-          <folding />
+        <state vertical-scroll-proportion="-3.2280703" vertical-offset="2058" max-vertical-offset="2622">
+          <caret line="118" column="18" selection-start-line="118" selection-start-column="18" selection-end-line="118" selection-end-column="18" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#a#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#a#4;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#5;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/static/js/schedulegraph.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.5987055" vertical-offset="0" max-vertical-offset="1957">
-          <caret line="52" column="34" selection-start-line="52" selection-start-column="34" selection-end-line="52" selection-end-column="34" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1659" max-vertical-offset="2261">
+          <caret line="27" column="18" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TsinghuaCloudMonitor/templates/TsinghuaCloudMonitor/totalcompare.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.40413535" vertical-offset="10634" max-vertical-offset="22819">
+          <caret line="571" column="38" selection-start-line="571" selection-start-column="38" selection-end-line="571" selection-end-column="38" />
           <folding />
         </state>
       </provider>

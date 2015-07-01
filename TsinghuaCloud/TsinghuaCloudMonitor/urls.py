@@ -22,6 +22,5 @@ urlpatterns = patterns('',
     url(r'^start_system/$', views.start_system, name='start_system'),
     url(r'^monitor/doSearch/$', views.doSearch, name='doSearch'),
     url(r'^schedule/scheduledata/$', views.schedule_data, name='scheduledata'),
-
-
+    url(r'^schedule/scheduledatatable/$', views.schedule_data_table, name='scheduledatatable'),
 )
