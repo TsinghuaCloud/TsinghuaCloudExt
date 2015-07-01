@@ -255,7 +255,7 @@ def check_schedule(request):
                 server_rec['Host'].append(monitor_item.Target_IP)
 
     print server_table
-    return render(request, 'TsinghuaCloudMonitor/schedule.html', {'server_table': server_table })
+    return render(request, 'TsinghuaCloudMonitor/schedule.html', {'server_table': server_table, 'usergroup': usergroup })
 
 def monitor(request):
     # Redirect to login page if not logged in
