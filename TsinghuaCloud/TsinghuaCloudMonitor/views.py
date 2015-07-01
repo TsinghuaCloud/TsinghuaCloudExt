@@ -9,6 +9,8 @@ from TsinghuaCloudMonitor.models import Service
 from TsinghuaCloudMonitor.models import HostStatus
 from TsinghuaCloudMonitor.models import Host
 from TsinghuaCloudMonitor.models import Schedule
+from TsinghuaCloudMonitor.models import Nagios
+
 from django.template.defaulttags import csrf_token
 from django.db.models import Count, Max
 from django.template import RequestContext
@@ -181,6 +183,79 @@ def getinstances(request):
     else:
         print "not get getinstances request!"
 
+def schedule_data(request):
+        # Redirect to login page if not logged in
+    username = ''
+    try:
+        username = request.session['username']
+    except:
+        print "username error" +  str(Exception)
+    if username == '' or username == None:
+        return HttpResponseRedirect('/login')
+    usergroup = request.session['usergroup']
+
+    # Refuse all user(not admin)s' requests
+    if usergroup != 'admin':
+        return HttpResponseRedirect('/hoststatus')
+
+    # Get all hosts
+    host_list = Host.objects.values('HostName').filter(HostType='external')
+
+    # Get all monitor servers
+    nagios_monitors = Nagios.objects.values('Server').distinct()
+    print "nagios servers = " + str(len(nagios_monitors))
+
+    # Monitor server records stored in server_table
+    server_table = []
+    for server in nagios_monitors:
+        server_rec = {'ServerName': server.get('Server'), 'Host': []}
+        server_table.append(server_rec)
+
+    monitor_list = Nagios.objects.filter(Target_HostName__in=host_list)
+    for monitor_item in monitor_list:
+        for server_rec in server_table:
+            if server_rec['ServerName'] == monitor_item.Server:
+                server_rec['Host'].append(monitor_item.Target_IP)
+
+    print server_table
+    return HttpResponse(json.dumps(server_table), content_type="application/json")
+
+def check_schedule(request):
+    # Redirect to login page if not logged in
+    username = ''
+    try:
+        username = request.session['username']
+    except:
+        print "username error" +  str(Exception)
+    if username == '' or username == None:
+        return HttpResponseRedirect('/login')
+    usergroup = request.session['usergroup']
+
+    # Refuse all user(not admin)s' requests
+    if usergroup != 'admin':
+        return HttpResponseRedirect('/hoststatus')
+
+    # Get all hosts
+    host_list = Host.objects.values('HostName').filter(HostType='external')
+
+    # Get all monitor servers
+    nagios_monitors = Nagios.objects.values('Server').distinct()
+    print "nagios servers = " + str(len(nagios_monitors))
+
+    # Monitor server records stored in server_table
+    server_table = []
+    for server in nagios_monitors:
+        server_rec = {'ServerName': server.get('Server'), 'Host': []}
+        server_table.append(server_rec)
+
+    monitor_list = Nagios.objects.filter(Target_HostName__in=host_list)
+    for monitor_item in monitor_list:
+        for server_rec in server_table:
+            if server_rec['ServerName'] == monitor_item.Server:
+                server_rec['Host'].append(monitor_item.Target_IP)
+
+    print server_table
+    return render(request, 'TsinghuaCloudMonitor/schedule.html', {'server_table': server_table })
 
 def monitor(request):
     # Redirect to login page if not logged in
@@ -201,10 +276,13 @@ def monitor(request):
     print "host_count = " + str(host_count)
 
     # Get service records for each host
-    service = []
+
+    service_table = []
+    print "Run to 1"
     for k in range(0, host_count):
-        last_check_rec_list = Service.objects.values('HostId','ServiceName')\
-            .filter(HostId=monitor_host_list[k].get('id')).annotate(lastCheck = Max('LastCheck'))             # Get lastest record of each host
+        print "Run to 2"
+        last_check_rec_list = Service.objects.values('HostId', 'ServiceName').filter(HostId=monitor_host_list[k].get('id'), id__gt=700000).distinct()
+        print "Run to 3"
         if len(last_check_rec_list) == 0:
             # Create empty service record
             service_na = Service()
@@ -215,14 +293,19 @@ def monitor(request):
             service_na.PluginOutput = 'N/A'
             service_na.HostId = monitor_host_list[k].get('id')
             service_na.HostName = monitor_host_list[k].get('HostName')
-            service.append(service_na)
+            service_table.append(service_na)
         for single_last_check in last_check_rec_list:
-            service_record = Service.objects.filter(HostId=monitor_host_list[k].get('id'), LastCheck = single_last_check.get('lastCheck'),
-                                                     ServiceName = single_last_check.get('ServiceName'))
-            service.append(service_record[0])
+            print "Run to 4"
+            cur_id = monitor_host_list[k].get('id')
+            svc_name = single_last_check.get('ServiceName')
+            service_record = Service.objects.all().filter(HostId=cur_id, ServiceName=svc_name, id__gt=700000).last()
+            print "Run to 5a"
+            service_table.append(service_record)
+            print "Run to 5b"
 
+    print "Run to 6"
     # print service
-    return render(request, 'TsinghuaCloudMonitor/monitor.html', {'service': service, 'usergroup': usergroup})
+    return render(request, 'TsinghuaCloudMonitor/monitor.html', {'service': service_table, 'usergroup': usergroup})
 
 
 def doSearch(request):
@@ -269,11 +352,12 @@ def hoststatus(request):
         host_list = host_list.filter(Owner=username)
     host_count = len(host_list)
 
+    print "Run to 1"
     # Get status records for each host
     host_status_rec_obj = []
     for cur_host in host_list:
-        check_records = HostStatus.objects.filter(HostId=cur_host.get('id'))
-        if len(check_records) == 0:
+        check_record = HostStatus.objects.filter(HostId=cur_host.get('id')).last()
+        if check_record == None:
             empty_status_rec = HostStatus()
             empty_status_rec.HostName = cur_host.get('HostName')
             empty_status_rec.HostId = 0
@@ -284,8 +368,7 @@ def hoststatus(request):
             host_status_rec_obj.append(empty_status_rec)
             print "added"
         else:
-            status_rec =  HostStatus.objects.filter(HostId=cur_host.get('id')).latest('LastCheck')
-            host_status_rec_obj.append(status_rec)
+            host_status_rec_obj.append(check_record)
 
     return render(request, 'TsinghuaCloudMonitor/hoststatus.html', {'host': host_status_rec_obj, 'usergroup': usergroup})
 
@@ -373,32 +456,24 @@ def memory_external(request):
     # Get hosts' service records
     for i in range(start_pos, end_pos):
         # Get last check time for current host
-        latest_check = Service.objects.values('HostName').annotate(LastCheck = Max('LastCheck'))\
-            .filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'MemoryUsage')
-
-        # No record found.
-        if len(latest_check) == 0:
-            svc_rec_obj = None
-        else:
-            svc_rec_obj = get_object_or_404(Service, HostName = my_host_list[i].get('HostName'),ServiceName='MemoryUsage',
-                                        LastCheck=latest_check[0].get('LastCheck'))
-
+        latest_check = Service.objects.filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'MemoryUsage')\
+            .last()
         # Form json object
-        if svc_rec_obj == None:                               # Got no such host's record
+        if latest_check == None:                               # Got no such host's record
             memory_name = my_host_list[i].get('HostName')
             memory_used = 0
             memory_total = 0
             memory_percentage = 0
         else:
             memory_name = my_host_list[i].get('HostName')
-            if svc_rec_obj.PerformanceData == '':
+            if latest_check.PerformanceData == '':
                 memory_used = 0
                 memory_total = 0
                 memory_percentage = 0
             else:
                 p = re.compile(r'\d+')
-                memory_used = p.findall(svc_rec_obj.PerformanceData)[1]
-                memory_total = p.findall(svc_rec_obj.PerformanceData)[0]
+                memory_used = p.findall(latest_check.PerformanceData)[1]
+                memory_total = p.findall(latest_check.PerformanceData)[0]
                 if memory_total == 0:
                     memory_percentage = 0
                 else:
@@ -462,13 +537,13 @@ def cpu_external(request):
     my_host_list = None
     # Get all user's hosts
     if usergroup == 'user':
-        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
+        my_host_list = Host.objects.values('HostName', 'HostType').filter(HostType = 'external', Owner = username)
     # If usergroup = admin and with filterby_user set, show #filterby_user's hosts.
     elif usergroup == 'admin' and filterby_user != '':
-        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
+        my_host_list = Host.objects.values('HostName', 'HostType').filter(HostType = 'external', Owner = filterby_user)
     # else (usergroup = admin and filterby_user == ''), show all hosts
     else:
-        my_host_list = Host.objects.all().values('HostName', 'HostType').filter(HostType = 'external')
+        my_host_list = Host.objects.values('HostName', 'HostType').filter(HostType = 'external')
 
     host_count = len(my_host_list)
     start_pos = 0
@@ -497,29 +572,22 @@ def cpu_external(request):
     # Get hosts' service records
     for i in range(start_pos, end_pos):
         # Get last check time for current host
-        latest_check = Service.objects.values('HostName').annotate(LastCheck = Max('LastCheck'))\
-            .filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'cpuload')
+        latest_check = Service.objects.filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'cpuload')\
+            .last()
 
-        # No record found.
-        if len(latest_check) == 0:
-            svc_rec_obj = None
-        else:
-            svc_rec_obj = get_object_or_404(Service, HostName = my_host_list[i].get('HostName'),ServiceName='cpuload',
-                                        LastCheck=latest_check[0].get('LastCheck'))
-
-        # Form json object
-        if svc_rec_obj == None:                               # Got no such host's record
+         # Form json object
+        if latest_check == None:                               # Got no such host's record
             cpu_name = my_host_list[i].get('HostName')
             cpu_used = '0.0'
             cpu_perc = '0.0%'
         else:
             cpu_name = my_host_list[i].get('HostName')
-            if svc_rec_obj.PerformanceData == '':
+            if latest_check.PerformanceData == '':
                 cpu_used = '0.0'
                 cpu_perc = '0.0%'
             else:
                 p = re.compile(r'0\.\d+')
-                cpu_used = p.findall(svc_rec_obj.PerformanceData)[0]
+                cpu_used = p.findall(latest_check.PerformanceData)[0]
                 cpu_perc = format(float(cpu_used), '.2%')
         json_data = {'name': cpu_name, 'used': cpu_used, 'percentage': cpu_perc}
         cpu_list.append(json_data)
@@ -612,26 +680,18 @@ def pro_external(request):
     # Get hosts' service records
     for i in range(start_pos, end_pos):
         # Get last check time for current host
-        latest_check = Service.objects.values('HostName').annotate(LastCheck = Max('LastCheck'))\
-            .filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'total-procs')
-
-        # No record found.
-        if len(latest_check) == 0:
-            svc_rec_obj = None
-        else:
-            svc_rec_obj = get_object_or_404(Service, HostName = my_host_list[i].get('HostName'),ServiceName='total-procs',
-                                        LastCheck=latest_check[0].get('LastCheck'))
-
-        if svc_rec_obj == None:                               # Got no such host's record
+        latest_check = Service.objects.filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'total-procs')\
+            .last()
+        if latest_check == None:                               # Got no such host's record
             pro_name = my_host_list[i].get('HostName')
             pro_used = '0.0'
         else:
             pro_name = my_host_list[i].get('HostName')
-            if svc_rec_obj.PerformanceData == '':
+            if latest_check.PerformanceData == '':
                 pro_used = '0.0'
             else:
                 p = re.compile(r'\d+')
-                pro_used = p.findall(svc_rec_obj.PerformanceData)[0]
+                pro_used = p.findall(latest_check.PerformanceData)[0]
         json_data = {'name': pro_name, 'used': pro_used}
         pro_list.append(json_data)
 
@@ -727,31 +787,23 @@ def disk_external(request):
     # Get hosts' service records
     for i in range(start_pos, end_pos):
         # Get last check time for current host
-        latest_check = Service.objects.values('HostName').annotate(LastCheck = Max('LastCheck'))\
-            .filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'disk')
-
-        # No record found.
-        if len(latest_check) == 0:
-            svc_rec_obj = None
-        else:
-            svc_rec_obj = get_object_or_404(Service, HostName = my_host_list[i].get('HostName'),ServiceName='disk',
-                                        LastCheck=latest_check[0].get('LastCheck'))
-
-        if svc_rec_obj == None:                               # Got no such host's record
+        latest_check = Service.objects.filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'disk')\
+            .last()
+        if latest_check == None:                               # Got no such host's record
             disk_name = my_host_list[i].get('HostName')
             disk_used = 0
             disk_total = 0
             disk_percentage = 0
         else:
             disk_name = my_host_list[i].get('HostName')
-            if svc_rec_obj.PerformanceData == '':
+            if latest_check.PerformanceData == '':
                 disk_used = 0
                 disk_total = 0
                 disk_percentage = 0
             else:
                 p = re.compile(r'\d+')
-                disk_used = p.findall(svc_rec_obj.PerformanceData)[0]
-                disk_total = p.findall(svc_rec_obj.PerformanceData)[4]
+                disk_used = p.findall(latest_check.PerformanceData)[0]
+                disk_total = p.findall(latest_check.PerformanceData)[4]
                 if disk_total == 0:
                     disk_percentage = 0
                 else:
@@ -852,27 +904,21 @@ def eth_external(request):
     for i in range(start_pos, end_pos):
         # Get last check time for current host
         print my_host_list[i].get('HostName')
-        latest_check = Service.objects.values('HostName').annotate(last_check = Max('LastCheck'))\
-            .filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'Traffic_eth0')
-        if len(latest_check) == 0:
-            svc_rec_obj = None
-        else:
-            svc_rec_obj = get_object_or_404(Service, HostName = my_host_list[i].get('HostName'),ServiceName='Traffic_eth0',
-                                        LastCheck=latest_check[0].get('last_check'))
-
-        if svc_rec_obj == None:                               # Got no such host's record
+        latest_check = Service.objects.filter(HostName = my_host_list[i].get('HostName'), ServiceName = 'Traffic_eth0')\
+            .last()
+        if latest_check == None:                               # Got no such host's record
             eth_name = my_host_list[i].get('HostName')
             eth_in = 0
             eth_out = 0
         else:
             eth_name = my_host_list[i].get('HostName')
-            if svc_rec_obj.PerformanceData == '':
+            if latest_check.PerformanceData == '':
                 eth_in = 0
                 eth_out = 0
             else:
                 p = re.compile(r'\d+')
-                eth_in = p.findall(svc_rec_obj.PerformanceData)[0]
-                eth_out = p.findall(svc_rec_obj.PerformanceData)[5]
+                eth_in = p.findall(latest_check.PerformanceData)[0]
+                eth_out = p.findall(latest_check.PerformanceData)[5]
         json_data = {'name': eth_name, 'in': eth_in, 'out': eth_out}
         eth_list.append(json_data)
 
@@ -920,7 +966,7 @@ def hostdetail(request, hostid):
     usergroup = request.session['usergroup']
 
     host = get_object_or_404(Host, pk=hostid)
-    memory = Service.objects.filter(HostId=host.id, ServiceName='MemoryUsage')
+    memory = Service.objects.filter(HostId=host.id, ServiceName='MemoryUsage', id__gt=700000)
     p = re.compile(r'\d+')
     memory_total = []
     memory_used = []
@@ -943,7 +989,7 @@ def hostdetail(request, hostid):
                         memory_timestamp.append(memory[k].LastCheck)
     print memory_timestamp
     print memory_used
-    cpuload = Service.objects.filter(HostId=host.id, ServiceName='cpuload')
+    cpuload = Service.objects.filter(HostId=host.id, ServiceName='cpuload', id__gt=700000)
     p = re.compile(r'(\d+)\.(\d*)')
     cpu_one = []
     cpu_five = []
@@ -967,7 +1013,7 @@ def hostdetail(request, hostid):
                     cpu_five.append('.'.join(p.findall(cpuload[k].PerformanceData)[3]))
                     cpu_timestamp.append(cpuload[k].LastCheck)
 
-    disk = Service.objects.filter(HostId=host.id, ServiceName='disk')
+    disk = Service.objects.filter(HostId=host.id, ServiceName='disk', id__gt=700000)
     p = re.compile(r'\d+')
     diskuse = []
     disk_timestamp = []
@@ -985,7 +1031,7 @@ def hostdetail(request, hostid):
                     diskuse.append(p.findall(disk[k].PerformanceData)[0])
                     disk_timestamp.append(disk[k].LastCheck)
 
-    process = Service.objects.filter(HostId=host.id, ServiceName='total-procs')
+    process = Service.objects.filter(HostId=host.id, ServiceName='total-procs', id__gt=700000)
     p = re.compile(r'\d+')
     pro = []
     pro_timestamp = []
@@ -1003,7 +1049,7 @@ def hostdetail(request, hostid):
                                   {'host': host, 'memory_total': memory_total, 'memory_used': memory_used,
                                    'memory_timestamp': memory_timestamp, 'cpu_one': cpu_one, 'cpu_five': cpu_five,
                                    'cpu_timestamp': cpu_timestamp, 'diskuse': diskuse, 'disk_timestamp': disk_timestamp,
-                                   'pro': pro, 'pro_timestamp': pro_timestamp})
+                                   'pro': pro, 'pro_timestamp': pro_timestamp, 'usergroup': usergroup})
     else:
         return HttpResponse("ERROR")
 

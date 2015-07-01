@@ -146,6 +146,8 @@
     <a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
     {% if usergroup != 'admin' %}
         <a href="/start_system" class="easyui-linkbutton" style="width:130px">网络服务</a>
+    {% else %}
+        <a href="/schedule" class="easyui-linkbutton" style="width:130px">调度监控</a>
     {% endif %}
     <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
 </div>

@@ -8,9 +8,9 @@ class User(models.Model):
     usergroup = models.CharField(max_length = 50)                   # user group: user | administrator
     
 class Service(models.Model):
-    ServiceName = models.CharField(max_length=50)               # Description of service
+    ServiceName = models.CharField(max_length=50, db_index=True)               # Description of service
     HostName = models.CharField(max_length=50)                  # The host where service record got from
-    HostId = models.IntegerField()
+    HostId = models.IntegerField(db_index=True)
     Status = models.CharField(max_length=50)                    # Status of the host
     Attempt = models.CharField(max_length=50)
     Duration = models.CharField(max_length=50)
@@ -21,11 +21,11 @@ class Service(models.Model):
     
 class HostStatus(models.Model):
     HostName = models.CharField(max_length=50)
-    HostId = models.IntegerField()
+    HostId = models.IntegerField(db_index=True)
     PluginOutput = models.CharField(max_length=50)
     Duration = models.CharField(max_length=50)
     PerformanceData = models.CharField(max_length=100)
-    LastCheck = models.CharField(max_length=50)
+    LastCheck = models.CharField(max_length=50, db_index=True)
     HostType = models.CharField(max_length=50)
     Status = models.CharField(max_length=50)
 

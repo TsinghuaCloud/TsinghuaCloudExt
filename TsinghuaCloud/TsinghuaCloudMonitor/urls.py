@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^download_third/$', views.download_third, name='views.download_third'),
     url(r'^start_system/$', views.start_system, name='start_system'),
     url(r'^monitor/doSearch/$', views.doSearch, name='doSearch'),
-    
+    url(r'^schedule/scheduledata/$', views.schedule_data, name='scheduledata'),
+
 
 )

@@ -1,0 +1,118 @@
+{% load staticfiles %}
+{% csrf_token %}
+{% load staticfiles %}
+
+<script>
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    // DONE DJANGO HACK
+
+    function get_site_prefix() {
+        var href = $(location).attr("href");
+        return href
+    }
+
+    function cache_clear() {
+        window.location.reload(true);
+        alert('refresh');
+    }
+    function doSearch() {
+        var prefix = get_site_prefix();
+        $.ajax({
+            type: "POST",
+            url: prefix + "doSearch/",
+            data: {
+                service: $('#itemid').val(),
+                host: $('#productid').val()
+            }
+        })
+    }
+
+    $(function () {
+        $(document).ready(function () {
+            tenants()
+    });
+</script>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Tsinghua Cloud - Schedule Page</title>
+    <script src="{% static 'jquery-easyui-1/jquery.min.js' %}"></script>
+    <script src="{% static 'jquery-easyui-1/jquery.easyui.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
+    <script type="text/javascript" src="/static/QuneeHTML5_V1.8/demos/lib/qunee-min.js"></script>
+    <script type="text/javascript" src="/static/QuneeHTML5_V1.8/demos/js/common.js"></script>
+    <script type="text/javascript" src="/static/QuneeHTML5_V1.8/demos/js/graphs.js"></script>
+    <script src="/static/QuneeHTML5_V1.8/demos/js/codemirror/codemirror.js"></script>
+    <script src="/static/QuneeHTML5_V1.8/demos/js/codemirror/javascript.js"></script>
+
+</head>
+
+<body class="easyui-layout">
+
+<div data-options="region:'north',border:false"
+     style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
+    <a href="/logout" class="easyui-linkbutton"
+       style="background:#CCCCCC;width:60px;height:30px;position:relative;float:right;">登出</a>
+</div>
+<div data-options="region:'west',split:true,title:'菜单'" style="width:150px;padding:10px;">
+    <a href="/hoststatus" class="easyui-linkbutton" style="width:130px">首页</a>
+    <a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
+    {% if usergroup != 'admin' %}
+        <a href="/start_system" class="easyui-linkbutton" style="width:130px">网络服务</a>
+    {% else %}
+        <a href="/schedule" class="easyui-linkbutton" style="width:130px">调度监控</a>
+    {% endif %}
+    <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
+</div>
+
+<div data-options="region:'east',split:true" title="详细信息" style="width:300px;">
+    <table class="easyui-datagrid">
+        <thead>
+        <tr>
+            <th data-options="field:'host'" width="200">调度分配</th>
+        </tr>
+        </thead>
+        <tbody>
+            {%  for server in server_table %}
+            <tr><td>监控：{{ server.ServerName }}</td></tr>
+            {% for host in server.Host %}
+            <tr><td>{{ host }}</td></tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div data-options="region:'south',border:false" style="height:20px;background:#F5F5F5;padding:10px;"></div>
+<div data-options="region:'center',title:'Monitor Charts'" style="background:#F0F0F0">
+</div>
+<div style="height: 650px;width:1300px;" id="canvas">
+        <script src="{% static 'js/schedulegraph.js' %}"></script>
+</div>
+	
+	

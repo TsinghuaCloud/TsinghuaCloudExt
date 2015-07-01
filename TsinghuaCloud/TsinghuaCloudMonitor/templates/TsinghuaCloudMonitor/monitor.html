@@ -152,9 +152,11 @@ var csrftoken = getCookie('csrftoken');
 	<div data-options="region:'west',split:true,title:'菜单'" style="width:150px;padding:10px;">
         <a href="/hoststatus" class="easyui-linkbutton" style="width:130px">首页</a>
     	<a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
-        {% if usergroup != 'admin' %}
+    {% if usergroup != 'admin' %}
         <a href="/start_system" class="easyui-linkbutton" style="width:130px">网络服务</a>
-        {% endif %}
+    {% else %}
+        <a href="/schedule" class="easyui-linkbutton" style="width:130px">调度监控</a>
+    {% endif %}
     	<a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
     </div>
 	<div data-options="region:'east',split:true,collapsed:true,title:'East'" style="width:100px;padding:10px;">其他</div>

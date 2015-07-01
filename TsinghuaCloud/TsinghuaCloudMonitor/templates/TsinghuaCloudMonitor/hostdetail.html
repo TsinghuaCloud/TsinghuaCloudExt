@@ -3,1599 +3,1583 @@
 {% load staticfiles %}
 
 <script>
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-// DONE DJANGO HACK
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    // DONE DJANGO HACK
 
-function get_site_prefix(){
-    var href = $(location).attr("href");
-    return href
-}
+    function get_site_prefix() {
+        var href = $(location).attr("href");
+        return href
+    }
 
-function cache_clear()
-    {
-    window.location.reload(true);
-    alert('refresh');
-}
+    function cache_clear() {
+        window.location.reload(true);
+        alert('refresh');
+    }
+    function doSearch() {
+        var prefix = get_site_prefix();
+        $.ajax({
+            type: "POST",
+            url: prefix + "doSearch/",
+            data: {
+                service: $('#itemid').val(),
+                host: $('#productid').val()
+            }
+        })
+    }
 
-function doSearch(){
-    var prefix= get_site_prefix();
-    $.ajax({
-        type: "POST",
-        url: prefix + "doSearch/", 
-        data: { 
-            service: $('#itemid').val(),
-            host: $('#productid').val(),
-        },
-	})
-};
-        
-$(function () {
- 
-    $(document).ready(function(){
-     setInterval(function(){cache_clear()},1000000000);
-     
-     });
-    
-      
-          
-});
-
-
-
+    $(function () {
+        $(document).ready(function () {
+            setInterval(function () {
+                cache_clear()
+            }, 1000000000);
+        });
+    });
 </script>
 
 
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Tsinghua Cloud - HostDetail Page</title>
-<script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
-<script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
-<script>
-$(function () {
-         var output = " ";
-         var k=0;
-         for(var i=71;i>=0;i--){
-              k=i*4;
-	          output = output+'{'+'{'+"pro."+k+'}'+'}'+",";
-          }
-          //alert(output);
-          $("#memory_halfday").show();
-          $('#memory_oneday').hide();
-          $('#memory_oneweek').hide();
-          $("#cpuload_halfday").show();
-          $("#cpuload_oneday").hide();
-          $("#cpuload_oneweek").hide();
-          $("#disk_halfday").show();
-          $("#disk_oneday").hide();
-          $("#disk_oneweek").hide();
-          $("#process_halfday").show();
-          $("#process_oneday").hide();
-          $("#process_oneweek").hide();
-          
+    <meta charset="UTF-8">
+    <title>Tsinghua Cloud - HostDetail Page</title>
+    <script src="{% static 'jquery-easyui-1/jquery.min.js' %}"></script>
+    <script src="{% static 'jquery-easyui-1/jquery.easyui.min.js' %}"></script>
+    <script>
+        $(function () {
+            var output = " ";
+            var k = 0;
+            for (var i = 71; i >= 0; i--) {
+                k = i * 4;
+                output = output + '{' + '{' + "pro." + k + '}' + '}' + ",";
+            }
+            //alert(output);
+            $("#memory_halfday").show();
+            $('#memory_oneday').hide();
+            $('#memory_oneweek').hide();
+            $("#cpuload_halfday").show();
+            $("#cpuload_oneday").hide();
+            $("#cpuload_oneweek").hide();
+            $("#disk_halfday").show();
+            $("#disk_oneday").hide();
+            $("#disk_oneweek").hide();
+            $("#process_halfday").show();
+            $("#process_oneday").hide();
+            $("#process_oneweek").hide();
 
-          $("#halfday").click(function(){
-          $("#memory_halfday").show();
-          $('#memory_oneday').hide();
-          $('#memory_oneweek').hide();
-          $("#cpuload_halfday").show();
-          $("#cpuload_oneday").hide();
-          $("#cpuload_oneweek").hide();
-          $("#disk_halfday").show();
-          $("#disk_oneday").hide();
-          $("#disk_oneweek").hide();
-          $("#process_halfday").show();
-          $("#process_oneday").hide();
-          $("#process_oneweek").hide();          
-         });
-           
-          $("#oneday").click(function(){
-          $("#memory_halfday").hide();
-          $('#memory_oneday').show();
-          $('#memory_oneweek').hide();
-          $("#cpuload_halfday").hide();
-          $("#cpuload_oneday").show();
-          $("#cpuload_oneweek").hide();
-          $("#disk_halfday").hide();
-          $("#disk_oneday").show();
-          $("#disk_oneweek").hide();
-          $("#process_halfday").hide();
-          $("#process_oneday").show();
-          $("#process_oneweek").hide();          
-         });
-         
-          $("#oneweek").click(function(){
-          $("#memory_halfday").hide();
-          $('#memory_oneday').hide();
-          $('#memory_oneweek').show();
-          $("#cpuload_halfday").hide();
-          $("#cpuload_oneday").hide();
-          $("#cpuload_oneweek").show();
-          $("#disk_halfday").hide();
-          $("#disk_oneday").hide();
-          $("#disk_oneweek").show();
-          $("#process_halfday").hide();
-          $("#process_oneday").hide();
-          $("#process_oneweek").show();
-         });
 
-    
-});
+            $("#halfday").click(function () {
+                $("#memory_halfday").show();
+                $('#memory_oneday').hide();
+                $('#memory_oneweek').hide();
+                $("#cpuload_halfday").show();
+                $("#cpuload_oneday").hide();
+                $("#cpuload_oneweek").hide();
+                $("#disk_halfday").show();
+                $("#disk_oneday").hide();
+                $("#disk_oneweek").hide();
+                $("#process_halfday").show();
+                $("#process_oneday").hide();
+                $("#process_oneweek").hide();
+            });
 
-</script>
-<link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
+            $("#oneday").click(function () {
+                $("#memory_halfday").hide();
+                $('#memory_oneday').show();
+                $('#memory_oneweek').hide();
+                $("#cpuload_halfday").hide();
+                $("#cpuload_oneday").show();
+                $("#cpuload_oneweek").hide();
+                $("#disk_halfday").hide();
+                $("#disk_oneday").show();
+                $("#disk_oneweek").hide();
+                $("#process_halfday").hide();
+                $("#process_oneday").show();
+                $("#process_oneweek").hide();
+            });
+
+            $("#oneweek").click(function () {
+                $("#memory_halfday").hide();
+                $('#memory_oneday').hide();
+                $('#memory_oneweek').show();
+                $("#cpuload_halfday").hide();
+                $("#cpuload_oneday").hide();
+                $("#cpuload_oneweek").show();
+                $("#disk_halfday").hide();
+                $("#disk_oneday").hide();
+                $("#disk_oneweek").show();
+                $("#process_halfday").hide();
+                $("#process_oneday").hide();
+                $("#process_oneweek").show();
+            });
+
+
+        });
+
+    </script>
+    <link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
 </head>
 
 <body class="easyui-layout">
 
-	 <div data-options="region:'north',border:false" style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
-        <a href="/logout" class="easyui-linkbutton" style="background:#CCCCCC;width:60px;height:30px;position:relative;float:right;">登出</a>
-   </div>
-   <div data-options="region:'west',split:true,title:'菜单'" style="width:150px;padding:10px;">
-        <a href="/hoststatus" class="easyui-linkbutton" style="width:130px">首页</a>
-        <a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
-        {% if usergroup != 'admin' %}
+<div data-options="region:'north',border:false"
+     style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
+    <a href="/logout" class="easyui-linkbutton"
+       style="background:#CCCCCC;width:60px;height:30px;position:relative;float:right;">登出</a>
+</div>
+<div data-options="region:'west',split:true,title:'菜单'" style="width:150px;padding:10px;">
+    <a href="/hoststatus" class="easyui-linkbutton" style="width:130px">首页</a>
+    <a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
+    {% if usergroup != 'admin' %}
         <a href="/start_system" class="easyui-linkbutton" style="width:130px">网络服务</a>
-        {% endif %}
-        <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
-    </div>
+    {% else %}
+        <a href="/schedule" class="easyui-linkbutton" style="width:130px">调度监控</a>
+    {% endif %}
+    <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
+</div>
 
-    <div data-options="region:'east',split:true" title="Host Detail" style="width:300px;">
+<div data-options="region:'east',split:true" title="Host Detail" style="width:300px;">
     <table class="easyui-datagrid">
-    <thead>
-      <tr>
-        <th data-options="field:'host'" width="50">主机名</th>
-        <th data-options="field:'IP'" width="150">IP地址</th>
-        <th data-options="field:'Owner'" width="50">用户</th>
-        <th data-options="field:'Info'" width="50">详细信息</th>
-                
-      </tr>
-    </thead>
-    <tbody>
+        <thead>
         <tr>
-        <td>{{host.HostName}}</td>
-        <td>{{host.IP}}</td>
-        <td>{{host.Owner}}</td>
-        <td>{{host.Info}}</td>
+            <th data-options="field:'host'" width="50">主机名</th>
+            <th data-options="field:'IP'" width="150">IP地址</th>
+            <th data-options="field:'Owner'" width="50">用户</th>
+            <th data-options="field:'Info'" width="50">详细信息</th>
+
         </tr>
-    </tbody>
-  </table>      
-    </div>
-	
-	<div data-options="region:'south',border:false" style="height:20px;background:#F5F5F5;padding:10px;"></div>
-	<div data-options="region:'center',title:'Monitor Charts'" style="background:#F0F0F0">
-	<a id="halfday"  class="easyui-linkbutton" style="width:130px">12小时</a>
-	<a id="oneday"  class="easyui-linkbutton" style="width:130px">一天</a>
-	<a id="oneweek"  class="easyui-linkbutton" style="width:130px">一周</a>
-	<a id="onemonth"  class="easyui-linkbutton" style="width:130px">一月</a>
-		
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ host.HostName }}</td>
+            <td>{{ host.IP }}</td>
+            <td>{{ host.Owner }}</td>
+            <td>{{ host.Info }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div data-options="region:'south',border:false" style="height:20px;background:#F5F5F5;padding:10px;"></div>
+<div data-options="region:'center',title:'Monitor Charts'" style="background:#F0F0F0">
+    <a id="halfday" class="easyui-linkbutton" style="width:130px">12小时</a>
+    <a id="oneday" class="easyui-linkbutton" style="width:130px">一天</a>
+    <a id="oneweek" class="easyui-linkbutton" style="width:130px">一周</a>
+    <a id="onemonth" class="easyui-linkbutton" style="width:130px">一月</a>
 
 
-<div id="memory_halfday" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
-$(function () {
-var csrftoken = getCookie('csrftoken'); 
+    <div id="memory_halfday" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
 
-   
-    $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-    // END DJANGO AJAX
-   
-});
 
-       
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            // END DJANGO AJAX
+        });
+
         require.config({
             paths: {
                 echarts: 'http://echarts.baidu.com/build/dist'
             }
         });
-// 使用
+        // 使用
         require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('memory_halfday')); 
-                var memory_timestamp = function(){
-                	var data = []; 
-	                for (var i = 0; i <= 20; i++) {
-					    data.push('{'+'{'+'memory_timestamp.' + i + '}}');
-					    
-					    
-					 };
-					 
-					 return data;
-                };
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
 
-                var option = {
-    title : {
-        text: 'Memeory Usage Data',
-        subtext: 'Host'
-    },
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['Used']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            dataZoom : {show: true},
-            magicType : {show: false},
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 80,
-        end : 100
-    },    
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['{{memory_timestamp.72}}','{{memory_timestamp.71}}','{{memory_timestamp.70}}','{{memory_timestamp.69}}','{{memory_timestamp.68}}','{{memory_timestamp.67}}','{{memory_timestamp.66}}','{{memory_timestamp.65}}','{{memory_timestamp.64}}','{{memory_timestamp.63}}','{{memory_timestamp.62}}','{{memory_timestamp.61}}','{{memory_timestamp.60}}','{{memory_timestamp.59}}','{{memory_timestamp.58}}','{{memory_timestamp.57}}','{{memory_timestamp.56}}','{{memory_timestamp.55}}','{{memory_timestamp.54}}','{{memory_timestamp.53}}','{{memory_timestamp.52}}','{{memory_timestamp.51}}','{{memory_timestamp.50}}','{{memory_timestamp.49}}','{{memory_timestamp.48}}','{{memory_timestamp.47}}','{{memory_timestamp.46}}','{{memory_timestamp.45}}','{{memory_timestamp.44}}','{{memory_timestamp.43}}','{{memory_timestamp.42}}','{{memory_timestamp.41}}','{{memory_timestamp.40}}','{{memory_timestamp.39}}','{{memory_timestamp.38}}','{{memory_timestamp.37}}','{{memory_timestamp.36}}','{{memory_timestamp.35}}','{{memory_timestamp.34}}','{{memory_timestamp.33}}','{{memory_timestamp.32}}','{{memory_timestamp.31}}','{{memory_timestamp.30}}','{{memory_timestamp.29}}','{{memory_timestamp.28}}','{{memory_timestamp.27}}','{{memory_timestamp.26}}','{{memory_timestamp.25}}','{{memory_timestamp.24}}','{{memory_timestamp.23}}','{{memory_timestamp.22}}','{{memory_timestamp.21}}','{{memory_timestamp.20}}','{{memory_timestamp.19}}','{{memory_timestamp.18}}','{{memory_timestamp.17}}','{{memory_timestamp.16}}','{{memory_timestamp.15}}','{{memory_timestamp.14}}','{{memory_timestamp.13}}','{{memory_timestamp.12}}','{{memory_timestamp.11}}','{{memory_timestamp.10}}','{{memory_timestamp.9}}','{{memory_timestamp.8}}','{{memory_timestamp.7}}','{{memory_timestamp.6}}','{{memory_timestamp.5}}','{{memory_timestamp.4}}','{{memory_timestamp.3}}','{{memory_timestamp.2}}','{{memory_timestamp.1}}','{{memory_timestamp.0}}']  
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} KB'
-            },
-            scale:true
-        }
-    ],
-    series : [
-                {
-            name:'Used',
-            type:'line',
-            data: [{{memory_used.72}},{{memory_used.71}},{{memory_used.70}},{{memory_used.69}},{{memory_used.68}},{{memory_used.67}},{{memory_used.66}},{{memory_used.65}},{{memory_used.64}},{{memory_used.63}},{{memory_used.62}},{{memory_used.61}},{{memory_used.60}},{{memory_used.59}},{{memory_used.58}},{{memory_used.57}},{{memory_used.56}},{{memory_used.55}},{{memory_used.54}},{{memory_used.53}},{{memory_used.52}},{{memory_used.51}},{{memory_used.50}},{{memory_used.49}},{{memory_used.48}},{{memory_used.47}},{{memory_used.46}},{{memory_used.45}},{{memory_used.44}},{{memory_used.43}},{{memory_used.42}},{{memory_used.41}},{{memory_used.40}},{{memory_used.39}},{{memory_used.38}},{{memory_used.37}},{{memory_used.36}},{{memory_used.35}},{{memory_used.34}},{{memory_used.33}},{{memory_used.32}},{{memory_used.31}},{{memory_used.30}},{{memory_used.29}},{{memory_used.28}},{{memory_used.27}},{{memory_used.26}},{{memory_used.25}},{{memory_used.24}},{{memory_used.23}},{{memory_used.22}},{{memory_used.21}},{{memory_used.20}},{{memory_used.19}},{{memory_used.18}},{{memory_used.17}},{{memory_used.16}},{{memory_used.15}},{{memory_used.14}},{{memory_used.13}},{{memory_used.12}},{{memory_used.11}},{{memory_used.10}},{{memory_used.9}},{{memory_used.8}},{{memory_used.7}},{{memory_used.6}},{{memory_used.5}},{{memory_used.4}},{{memory_used.3}},{{memory_used.2}},{{memory_used.1}},{{memory_used.0}}],   
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('memory_halfday'));
+                    var memory_timestamp = function () {
+                        var data = [];
+                        for (var i = 0; i <= 20; i++) {
+                            data.push('{' + '{' + 'memory_timestamp.' + i + '}}');
+                        }
+                        return data;
+                    };
 
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
+                    var option = {
+                        title: {
+                            text: 'Memeory Usage Data',
+                            subtext: 'Host'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['Used']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
+                                magicType: {show: false},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100
+                        },
+                        calculable: true,
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{memory_timestamp.72}}', '{{memory_timestamp.71}}', '{{memory_timestamp.70}}', '{{memory_timestamp.69}}', '{{memory_timestamp.68}}', '{{memory_timestamp.67}}', '{{memory_timestamp.66}}', '{{memory_timestamp.65}}', '{{memory_timestamp.64}}', '{{memory_timestamp.63}}', '{{memory_timestamp.62}}', '{{memory_timestamp.61}}', '{{memory_timestamp.60}}', '{{memory_timestamp.59}}', '{{memory_timestamp.58}}', '{{memory_timestamp.57}}', '{{memory_timestamp.56}}', '{{memory_timestamp.55}}', '{{memory_timestamp.54}}', '{{memory_timestamp.53}}', '{{memory_timestamp.52}}', '{{memory_timestamp.51}}', '{{memory_timestamp.50}}', '{{memory_timestamp.49}}', '{{memory_timestamp.48}}', '{{memory_timestamp.47}}', '{{memory_timestamp.46}}', '{{memory_timestamp.45}}', '{{memory_timestamp.44}}', '{{memory_timestamp.43}}', '{{memory_timestamp.42}}', '{{memory_timestamp.41}}', '{{memory_timestamp.40}}', '{{memory_timestamp.39}}', '{{memory_timestamp.38}}', '{{memory_timestamp.37}}', '{{memory_timestamp.36}}', '{{memory_timestamp.35}}', '{{memory_timestamp.34}}', '{{memory_timestamp.33}}', '{{memory_timestamp.32}}', '{{memory_timestamp.31}}', '{{memory_timestamp.30}}', '{{memory_timestamp.29}}', '{{memory_timestamp.28}}', '{{memory_timestamp.27}}', '{{memory_timestamp.26}}', '{{memory_timestamp.25}}', '{{memory_timestamp.24}}', '{{memory_timestamp.23}}', '{{memory_timestamp.22}}', '{{memory_timestamp.21}}', '{{memory_timestamp.20}}', '{{memory_timestamp.19}}', '{{memory_timestamp.18}}', '{{memory_timestamp.17}}', '{{memory_timestamp.16}}', '{{memory_timestamp.15}}', '{{memory_timestamp.14}}', '{{memory_timestamp.13}}', '{{memory_timestamp.12}}', '{{memory_timestamp.11}}', '{{memory_timestamp.10}}', '{{memory_timestamp.9}}', '{{memory_timestamp.8}}', '{{memory_timestamp.7}}', '{{memory_timestamp.6}}', '{{memory_timestamp.5}}', '{{memory_timestamp.4}}', '{{memory_timestamp.3}}', '{{memory_timestamp.2}}', '{{memory_timestamp.1}}', '{{memory_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} KB'
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Used',
+                                type: 'line',
+                                data: [{{memory_used.72}}, {{memory_used.71}}, {{memory_used.70}}, {{memory_used.69}}, {{memory_used.68}}, {{memory_used.67}}, {{memory_used.66}}, {{memory_used.65}}, {{memory_used.64}}, {{memory_used.63}}, {{memory_used.62}}, {{memory_used.61}}, {{memory_used.60}}, {{memory_used.59}}, {{memory_used.58}}, {{memory_used.57}}, {{memory_used.56}}, {{memory_used.55}}, {{memory_used.54}}, {{memory_used.53}}, {{memory_used.52}}, {{memory_used.51}}, {{memory_used.50}}, {{memory_used.49}}, {{memory_used.48}}, {{memory_used.47}}, {{memory_used.46}}, {{memory_used.45}}, {{memory_used.44}}, {{memory_used.43}}, {{memory_used.42}}, {{memory_used.41}}, {{memory_used.40}}, {{memory_used.39}}, {{memory_used.38}}, {{memory_used.37}}, {{memory_used.36}}, {{memory_used.35}}, {{memory_used.34}}, {{memory_used.33}}, {{memory_used.32}}, {{memory_used.31}}, {{memory_used.30}}, {{memory_used.29}}, {{memory_used.28}}, {{memory_used.27}}, {{memory_used.26}}, {{memory_used.25}}, {{memory_used.24}}, {{memory_used.23}}, {{memory_used.22}}, {{memory_used.21}}, {{memory_used.20}}, {{memory_used.19}}, {{memory_used.18}}, {{memory_used.17}}, {{memory_used.16}}, {{memory_used.15}}, {{memory_used.14}}, {{memory_used.13}}, {{memory_used.12}}, {{memory_used.11}}, {{memory_used.10}}, {{memory_used.9}}, {{memory_used.8}}, {{memory_used.7}}, {{memory_used.6}}, {{memory_used.5}}, {{memory_used.4}}, {{memory_used.3}}, {{memory_used.2}}, {{memory_used.1}}, {{memory_used.0}}],
+
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
         );
 
-</script>
+    </script>
 
-<div id="memory_oneday" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
-$(function () {
-var csrftoken = getCookie('csrftoken'); 
+    <div id="memory_oneday" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
 
-   
-    $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-    // END DJANGO AJAX
-   
-});
 
-       
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            // END DJANGO AJAX
+
+        });
+
+
         require.config({
             paths: {
                 echarts: 'http://echarts.baidu.com/build/dist'
             }
         });
-// 使用
+        // 使用
         require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('memory_oneday')); 
-                var memory_timestamp = function(){
-                	var data = []; 
-	                for (var i = 0; i <= 20; i++) {
-					    data.push('{'+'{'+'memory_timestamp.' + i + '}}');
-					    
-					    
-					 };
-					 
-					 return data;
-                };
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
 
-                var option = {
-    title : {
-        text: 'Memeory Usage Data',
-        subtext: 'Host'
-    },
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['Used']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            dataZoom : {show: true},
-            magicType : {show: false},
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 80,
-        end : 100
-    },    
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : [ '{{memory_timestamp.282}}','{{memory_timestamp.276}}','{{memory_timestamp.270}}','{{memory_timestamp.264}}','{{memory_timestamp.258}}','{{memory_timestamp.252}}','{{memory_timestamp.246}}','{{memory_timestamp.240}}','{{memory_timestamp.234}}','{{memory_timestamp.228}}','{{memory_timestamp.222}}','{{memory_timestamp.216}}','{{memory_timestamp.210}}','{{memory_timestamp.204}}','{{memory_timestamp.198}}','{{memory_timestamp.192}}','{{memory_timestamp.186}}','{{memory_timestamp.180}}','{{memory_timestamp.174}}','{{memory_timestamp.168}}','{{memory_timestamp.162}}','{{memory_timestamp.156}}','{{memory_timestamp.150}}','{{memory_timestamp.144}}','{{memory_timestamp.138}}','{{memory_timestamp.132}}','{{memory_timestamp.126}}','{{memory_timestamp.120}}','{{memory_timestamp.114}}','{{memory_timestamp.108}}','{{memory_timestamp.102}}','{{memory_timestamp.96}}','{{memory_timestamp.90}}','{{memory_timestamp.84}}','{{memory_timestamp.78}}','{{memory_timestamp.72}}','{{memory_timestamp.66}}','{{memory_timestamp.60}}','{{memory_timestamp.54}}','{{memory_timestamp.48}}','{{memory_timestamp.42}}','{{memory_timestamp.36}}','{{memory_timestamp.30}}','{{memory_timestamp.24}}','{{memory_timestamp.18}}','{{memory_timestamp.12}}','{{memory_timestamp.6}}','{{memory_timestamp.0}}'
-            ]  
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} KB'
-            },
-            scale:true
-        }
-    ],
-    series : [
-                {
-            name:'Used',
-            type:'line',
-            data: [ {{memory_used.282}},{{memory_used.276}},{{memory_used.270}},{{memory_used.264}},{{memory_used.258}},{{memory_used.252}},{{memory_used.246}},{{memory_used.240}},{{memory_used.234}},{{memory_used.228}},{{memory_used.222}},{{memory_used.216}},{{memory_used.210}},{{memory_used.204}},{{memory_used.198}},{{memory_used.192}},{{memory_used.186}},{{memory_used.180}},{{memory_used.174}},{{memory_used.168}},{{memory_used.162}},{{memory_used.156}},{{memory_used.150}},{{memory_used.144}},{{memory_used.138}},{{memory_used.132}},{{memory_used.126}},{{memory_used.120}},{{memory_used.114}},{{memory_used.108}},{{memory_used.102}},{{memory_used.96}},{{memory_used.90}},{{memory_used.84}},{{memory_used.78}},{{memory_used.72}},{{memory_used.66}},{{memory_used.60}},{{memory_used.54}},{{memory_used.48}},{{memory_used.42}},{{memory_used.36}},{{memory_used.30}},{{memory_used.24}},{{memory_used.18}},{{memory_used.12}},{{memory_used.6}},{{memory_used.0}}],   
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('memory_oneday'));
+                    var memory_timestamp = function () {
+                        var data = [];
+                        for (var i = 0; i <= 20; i++) {
+                            data.push('{' + '{' + 'memory_timestamp.' + i + '}}');
 
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
+
+                        }
+                        return data;
+                    };
+
+                    var option = {
+                        title: {
+                            text: 'Memeory Usage Data',
+                            subtext: 'Host'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['Used']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
+                                magicType: {show: false},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100
+                        },
+                        calculable: true,
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{memory_timestamp.282}}', '{{memory_timestamp.276}}', '{{memory_timestamp.270}}', '{{memory_timestamp.264}}', '{{memory_timestamp.258}}', '{{memory_timestamp.252}}', '{{memory_timestamp.246}}', '{{memory_timestamp.240}}', '{{memory_timestamp.234}}', '{{memory_timestamp.228}}', '{{memory_timestamp.222}}', '{{memory_timestamp.216}}', '{{memory_timestamp.210}}', '{{memory_timestamp.204}}', '{{memory_timestamp.198}}', '{{memory_timestamp.192}}', '{{memory_timestamp.186}}', '{{memory_timestamp.180}}', '{{memory_timestamp.174}}', '{{memory_timestamp.168}}', '{{memory_timestamp.162}}', '{{memory_timestamp.156}}', '{{memory_timestamp.150}}', '{{memory_timestamp.144}}', '{{memory_timestamp.138}}', '{{memory_timestamp.132}}', '{{memory_timestamp.126}}', '{{memory_timestamp.120}}', '{{memory_timestamp.114}}', '{{memory_timestamp.108}}', '{{memory_timestamp.102}}', '{{memory_timestamp.96}}', '{{memory_timestamp.90}}', '{{memory_timestamp.84}}', '{{memory_timestamp.78}}', '{{memory_timestamp.72}}', '{{memory_timestamp.66}}', '{{memory_timestamp.60}}', '{{memory_timestamp.54}}', '{{memory_timestamp.48}}', '{{memory_timestamp.42}}', '{{memory_timestamp.36}}', '{{memory_timestamp.30}}', '{{memory_timestamp.24}}', '{{memory_timestamp.18}}', '{{memory_timestamp.12}}', '{{memory_timestamp.6}}', '{{memory_timestamp.0}}'
+                                ]
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} KB'
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Used',
+                                type: 'line',
+                                data: [{{memory_used.282}}, {{memory_used.276}}, {{memory_used.270}}, {{memory_used.264}}, {{memory_used.258}}, {{memory_used.252}}, {{memory_used.246}}, {{memory_used.240}}, {{memory_used.234}}, {{memory_used.228}}, {{memory_used.222}}, {{memory_used.216}}, {{memory_used.210}}, {{memory_used.204}}, {{memory_used.198}}, {{memory_used.192}}, {{memory_used.186}}, {{memory_used.180}}, {{memory_used.174}}, {{memory_used.168}}, {{memory_used.162}}, {{memory_used.156}}, {{memory_used.150}}, {{memory_used.144}}, {{memory_used.138}}, {{memory_used.132}}, {{memory_used.126}}, {{memory_used.120}}, {{memory_used.114}}, {{memory_used.108}}, {{memory_used.102}}, {{memory_used.96}}, {{memory_used.90}}, {{memory_used.84}}, {{memory_used.78}}, {{memory_used.72}}, {{memory_used.66}}, {{memory_used.60}}, {{memory_used.54}}, {{memory_used.48}}, {{memory_used.42}}, {{memory_used.36}}, {{memory_used.30}}, {{memory_used.24}}, {{memory_used.18}}, {{memory_used.12}}, {{memory_used.6}}, {{memory_used.0}}],
+
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
         );
 
-</script>
+    </script>
 
-<div id="memory_oneweek" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
-<script type="text/javascript">
-$(function () {
-var csrftoken = getCookie('csrftoken'); 
+    <div id="memory_oneweek" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
 
-   
-    $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-    // END DJANGO AJAX
-   
-});
 
-       
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            // END DJANGO AJAX
+
+        });
+
+
         require.config({
             paths: {
                 echarts: 'http://echarts.baidu.com/build/dist'
             }
         });
-// 使用
+        // 使用
         require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('memory_oneweek')); 
-                var memory_timestamp = function(){
-                	var data = []; 
-	                for (var i = 0; i <= 20; i++) {
-					    data.push('{'+'{'+'memory_timestamp.' + i + '}}');
-					    
-					    
-					 };
-					 
-					 return data;
-                };
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
 
-                var option = {
-    title : {
-        text: 'Memeory Usage Data',
-        subtext: 'Host'
-    },
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['Used']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            dataZoom : {show: true},
-            magicType : {show: false},
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 80,
-        end : 100
-    },    
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : [ '{{memory_timestamp.1980}}','{{memory_timestamp.1944}}','{{memory_timestamp.1908}}','{{memory_timestamp.1872}}','{{memory_timestamp.1836}}','{{memory_timestamp.1800}}','{{memory_timestamp.1764}}','{{memory_timestamp.1728}}','{{memory_timestamp.1692}}','{{memory_timestamp.1656}}','{{memory_timestamp.1620}}','{{memory_timestamp.1584}}','{{memory_timestamp.1548}}','{{memory_timestamp.1512}}','{{memory_timestamp.1476}}','{{memory_timestamp.1440}}','{{memory_timestamp.1404}}','{{memory_timestamp.1368}}','{{memory_timestamp.1332}}','{{memory_timestamp.1296}}','{{memory_timestamp.1260}}','{{memory_timestamp.1224}}','{{memory_timestamp.1188}}','{{memory_timestamp.1152}}','{{memory_timestamp.1116}}','{{memory_timestamp.1080}}','{{memory_timestamp.1044}}','{{memory_timestamp.1008}}','{{memory_timestamp.972}}','{{memory_timestamp.936}}','{{memory_timestamp.900}}','{{memory_timestamp.864}}','{{memory_timestamp.828}}','{{memory_timestamp.792}}','{{memory_timestamp.756}}','{{memory_timestamp.720}}','{{memory_timestamp.684}}','{{memory_timestamp.648}}','{{memory_timestamp.612}}','{{memory_timestamp.576}}','{{memory_timestamp.540}}','{{memory_timestamp.504}}','{{memory_timestamp.468}}','{{memory_timestamp.432}}','{{memory_timestamp.396}}','{{memory_timestamp.360}}','{{memory_timestamp.324}}','{{memory_timestamp.288}}','{{memory_timestamp.252}}','{{memory_timestamp.216}}','{{memory_timestamp.180}}','{{memory_timestamp.144}}','{{memory_timestamp.108}}','{{memory_timestamp.72}}','{{memory_timestamp.36}}','{{memory_timestamp.0}}' ]  
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} KB'
-            },
-            scale:true
-        }
-    ],
-    series : [
-                {
-            name:'Used',
-            type:'line',
-            data: [{{memory_used.1980}},{{memory_used.1944}},{{memory_used.1908}},{{memory_used.1872}},{{memory_used.1836}},{{memory_used.1800}},{{memory_used.1764}},{{memory_used.1728}},{{memory_used.1692}},{{memory_used.1656}},{{memory_used.1620}},{{memory_used.1584}},{{memory_used.1548}},{{memory_used.1512}},{{memory_used.1476}},{{memory_used.1440}},{{memory_used.1404}},{{memory_used.1368}},{{memory_used.1332}},{{memory_used.1296}},{{memory_used.1260}},{{memory_used.1224}},{{memory_used.1188}},{{memory_used.1152}},{{memory_used.1116}},{{memory_used.1080}},{{memory_used.1044}},{{memory_used.1008}},{{memory_used.972}},{{memory_used.936}},{{memory_used.900}},{{memory_used.864}},{{memory_used.828}},{{memory_used.792}},{{memory_used.756}},{{memory_used.720}},{{memory_used.684}},{{memory_used.648}},{{memory_used.612}},{{memory_used.576}},{{memory_used.540}},{{memory_used.504}},{{memory_used.468}},{{memory_used.432}},{{memory_used.396}},{{memory_used.360}},{{memory_used.324}},{{memory_used.288}},{{memory_used.252}},{{memory_used.216}},{{memory_used.180}},{{memory_used.144}},{{memory_used.108}},{{memory_used.72}},{{memory_used.36}},{{memory_used.0}}],   
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('memory_oneweek'));
+                    var memory_timestamp = function () {
+                        var data = [];
+                        for (var i = 0; i <= 20; i++) {
+                            data.push('{' + '{' + 'memory_timestamp.' + i + '}}');
 
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
+
+                        }
+                        return data;
+                    };
+
+                    var option = {
+                        title: {
+                            text: 'Memeory Usage Data',
+                            subtext: 'Host'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['Used']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
+                                magicType: {show: false},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100
+                        },
+                        calculable: true,
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{memory_timestamp.1980}}', '{{memory_timestamp.1944}}', '{{memory_timestamp.1908}}', '{{memory_timestamp.1872}}', '{{memory_timestamp.1836}}', '{{memory_timestamp.1800}}', '{{memory_timestamp.1764}}', '{{memory_timestamp.1728}}', '{{memory_timestamp.1692}}', '{{memory_timestamp.1656}}', '{{memory_timestamp.1620}}', '{{memory_timestamp.1584}}', '{{memory_timestamp.1548}}', '{{memory_timestamp.1512}}', '{{memory_timestamp.1476}}', '{{memory_timestamp.1440}}', '{{memory_timestamp.1404}}', '{{memory_timestamp.1368}}', '{{memory_timestamp.1332}}', '{{memory_timestamp.1296}}', '{{memory_timestamp.1260}}', '{{memory_timestamp.1224}}', '{{memory_timestamp.1188}}', '{{memory_timestamp.1152}}', '{{memory_timestamp.1116}}', '{{memory_timestamp.1080}}', '{{memory_timestamp.1044}}', '{{memory_timestamp.1008}}', '{{memory_timestamp.972}}', '{{memory_timestamp.936}}', '{{memory_timestamp.900}}', '{{memory_timestamp.864}}', '{{memory_timestamp.828}}', '{{memory_timestamp.792}}', '{{memory_timestamp.756}}', '{{memory_timestamp.720}}', '{{memory_timestamp.684}}', '{{memory_timestamp.648}}', '{{memory_timestamp.612}}', '{{memory_timestamp.576}}', '{{memory_timestamp.540}}', '{{memory_timestamp.504}}', '{{memory_timestamp.468}}', '{{memory_timestamp.432}}', '{{memory_timestamp.396}}', '{{memory_timestamp.360}}', '{{memory_timestamp.324}}', '{{memory_timestamp.288}}', '{{memory_timestamp.252}}', '{{memory_timestamp.216}}', '{{memory_timestamp.180}}', '{{memory_timestamp.144}}', '{{memory_timestamp.108}}', '{{memory_timestamp.72}}', '{{memory_timestamp.36}}', '{{memory_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} KB'
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Used',
+                                type: 'line',
+                                data: [{{memory_used.1980}}, {{memory_used.1944}}, {{memory_used.1908}}, {{memory_used.1872}}, {{memory_used.1836}}, {{memory_used.1800}}, {{memory_used.1764}}, {{memory_used.1728}}, {{memory_used.1692}}, {{memory_used.1656}}, {{memory_used.1620}}, {{memory_used.1584}}, {{memory_used.1548}}, {{memory_used.1512}}, {{memory_used.1476}}, {{memory_used.1440}}, {{memory_used.1404}}, {{memory_used.1368}}, {{memory_used.1332}}, {{memory_used.1296}}, {{memory_used.1260}}, {{memory_used.1224}}, {{memory_used.1188}}, {{memory_used.1152}}, {{memory_used.1116}}, {{memory_used.1080}}, {{memory_used.1044}}, {{memory_used.1008}}, {{memory_used.972}}, {{memory_used.936}}, {{memory_used.900}}, {{memory_used.864}}, {{memory_used.828}}, {{memory_used.792}}, {{memory_used.756}}, {{memory_used.720}}, {{memory_used.684}}, {{memory_used.648}}, {{memory_used.612}}, {{memory_used.576}}, {{memory_used.540}}, {{memory_used.504}}, {{memory_used.468}}, {{memory_used.432}}, {{memory_used.396}}, {{memory_used.360}}, {{memory_used.324}}, {{memory_used.288}}, {{memory_used.252}}, {{memory_used.216}}, {{memory_used.180}}, {{memory_used.144}}, {{memory_used.108}}, {{memory_used.72}}, {{memory_used.36}}, {{memory_used.0}}],
+
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
         );
 
-</script>
+    </script>
 
-<div id="cpuload_halfday" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
- $(function () {
-var csrftoken = getCookie('csrftoken'); 
+    <div id="cpuload_halfday" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
 
-  
-  
-    $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-    // END DJANGO AJAX
-   
-});
-       // 路径配置
-        require.config({
-            paths: {
-                echarts: 'http://echarts.baidu.com/build/dist'
-            }
+
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            // END DJANGO AJAX
+
         });
-// 使用
-        require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('cpuload_halfday')); 
-                var option = {
-    title : {
-        text: 'CPU Load Data',
-        subtext: 'Host'
-    },
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['1 minute','5 minutes']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            dataZoom : {show: true},
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    calculable : true,
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 80,
-        end : 100
-    },    
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['{{cpu_timestamp.144}}','{{cpu_timestamp.142}}','{{cpu_timestamp.140}}','{{cpu_timestamp.138}}','{{cpu_timestamp.136}}','{{cpu_timestamp.134}}','{{cpu_timestamp.132}}','{{cpu_timestamp.130}}','{{cpu_timestamp.128}}','{{cpu_timestamp.126}}','{{cpu_timestamp.124}}','{{cpu_timestamp.122}}','{{cpu_timestamp.120}}','{{cpu_timestamp.118}}','{{cpu_timestamp.116}}','{{cpu_timestamp.114}}','{{cpu_timestamp.112}}','{{cpu_timestamp.110}}','{{cpu_timestamp.108}}','{{cpu_timestamp.106}}','{{cpu_timestamp.104}}','{{cpu_timestamp.102}}','{{cpu_timestamp.100}}','{{cpu_timestamp.98}}','{{cpu_timestamp.96}}','{{cpu_timestamp.94}}','{{cpu_timestamp.92}}','{{cpu_timestamp.90}}','{{cpu_timestamp.88}}','{{cpu_timestamp.86}}','{{cpu_timestamp.84}}','{{cpu_timestamp.82}}','{{cpu_timestamp.80}}','{{cpu_timestamp.78}}','{{cpu_timestamp.76}}','{{cpu_timestamp.74}}','{{cpu_timestamp.72}}','{{cpu_timestamp.70}}','{{cpu_timestamp.68}}','{{cpu_timestamp.66}}','{{cpu_timestamp.64}}','{{cpu_timestamp.62}}','{{cpu_timestamp.60}}','{{cpu_timestamp.58}}','{{cpu_timestamp.56}}','{{cpu_timestamp.54}}','{{cpu_timestamp.52}}','{{cpu_timestamp.50}}','{{cpu_timestamp.48}}','{{cpu_timestamp.46}}','{{cpu_timestamp.44}}','{{cpu_timestamp.42}}','{{cpu_timestamp.40}}','{{cpu_timestamp.38}}','{{cpu_timestamp.36}}','{{cpu_timestamp.34}}','{{cpu_timestamp.32}}','{{cpu_timestamp.30}}','{{cpu_timestamp.28}}','{{cpu_timestamp.26}}','{{cpu_timestamp.24}}','{{cpu_timestamp.22}}','{{cpu_timestamp.20}}','{{cpu_timestamp.18}}','{{cpu_timestamp.16}}','{{cpu_timestamp.14}}','{{cpu_timestamp.12}}','{{cpu_timestamp.10}}','{{cpu_timestamp.8}}','{{cpu_timestamp.6}}','{{cpu_timestamp.4}}','{{cpu_timestamp.2}}','{{cpu_timestamp.0}}']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} '
-            },
-            scale:true
-        }
-    ],
-    series : [
-        {
-            name:'Average in 1 minute',
-            type:'line',
-            data:[{{cpu_one.144}},{{cpu_one.142}},{{cpu_one.140}},{{cpu_one.138}},{{cpu_one.136}},{{cpu_one.134}},{{cpu_one.132}},{{cpu_one.130}},{{cpu_one.128}},{{cpu_one.126}},{{cpu_one.124}},{{cpu_one.122}},{{cpu_one.120}},{{cpu_one.118}},{{cpu_one.116}},{{cpu_one.114}},{{cpu_one.112}},{{cpu_one.110}},{{cpu_one.108}},{{cpu_one.106}},{{cpu_one.104}},{{cpu_one.102}},{{cpu_one.100}},{{cpu_one.98}},{{cpu_one.96}},{{cpu_one.94}},{{cpu_one.92}},{{cpu_one.90}},{{cpu_one.88}},{{cpu_one.86}},{{cpu_one.84}},{{cpu_one.82}},{{cpu_one.80}},{{cpu_one.78}},{{cpu_one.76}},{{cpu_one.74}},{{cpu_one.72}},{{cpu_one.70}},{{cpu_one.68}},{{cpu_one.66}},{{cpu_one.64}},{{cpu_one.62}},{{cpu_one.60}},{{cpu_one.58}},{{cpu_one.56}},{{cpu_one.54}},{{cpu_one.52}},{{cpu_one.50}},{{cpu_one.48}},{{cpu_one.46}},{{cpu_one.44}},{{cpu_one.42}},{{cpu_one.40}},{{cpu_one.38}},{{cpu_one.36}},{{cpu_one.34}},{{cpu_one.32}},{{cpu_one.30}},{{cpu_one.28}},{{cpu_one.26}},{{cpu_one.24}},{{cpu_one.22}},{{cpu_one.20}},{{cpu_one.18}},{{cpu_one.16}},{{cpu_one.14}},{{cpu_one.12}},{{cpu_one.10}},{{cpu_one.8}},{{cpu_one.6}},{{cpu_one.4}},{{cpu_one.2}},{{cpu_one.0}}],
-            markPoint : {
-                data : [
-                    {type : 'max', name: '最大值'},
-                    {type : 'min', name: '最小值'}
-                ]
-            },
-            markLine : {
-                data : [
-                    {type : 'average', name: '平均值'}
-                ]
-            }
-        },
-        {
-            name:'Average in 5 minutes',
-            type:'line',
-            data:[{{cpu_five.144}},{{cpu_five.142}},{{cpu_five.140}},{{cpu_five.138}},{{cpu_five.136}},{{cpu_five.134}},{{cpu_five.132}},{{cpu_five.130}},{{cpu_five.128}},{{cpu_five.126}},{{cpu_five.124}},{{cpu_five.122}},{{cpu_five.120}},{{cpu_five.118}},{{cpu_five.116}},{{cpu_five.114}},{{cpu_five.112}},{{cpu_five.110}},{{cpu_five.108}},{{cpu_five.106}},{{cpu_five.104}},{{cpu_five.102}},{{cpu_five.100}},{{cpu_five.98}},{{cpu_five.96}},{{cpu_five.94}},{{cpu_five.92}},{{cpu_five.90}},{{cpu_five.88}},{{cpu_five.86}},{{cpu_five.84}},{{cpu_five.82}},{{cpu_five.80}},{{cpu_five.78}},{{cpu_five.76}},{{cpu_five.74}},{{cpu_five.72}},{{cpu_five.70}},{{cpu_five.68}},{{cpu_five.66}},{{cpu_five.64}},{{cpu_five.62}},{{cpu_five.60}},{{cpu_five.58}},{{cpu_five.56}},{{cpu_five.54}},{{cpu_five.52}},{{cpu_five.50}},{{cpu_five.48}},{{cpu_five.46}},{{cpu_five.44}},{{cpu_five.42}},{{cpu_five.40}},{{cpu_five.38}},{{cpu_five.36}},{{cpu_five.34}},{{cpu_five.32}},{{cpu_five.30}},{{cpu_five.28}},{{cpu_five.26}},{{cpu_five.24}},{{cpu_five.22}},{{cpu_five.20}},{{cpu_five.18}},{{cpu_five.16}},{{cpu_five.14}},{{cpu_five.12}},{{cpu_five.10}},{{cpu_five.8}},{{cpu_five.6}},{{cpu_five.4}},{{cpu_five.2}},{{cpu_five.0}}],
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
-        );
-
-</script>
-
-<div id="cpuload_oneday" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
- $(function () {
-var csrftoken = getCookie('csrftoken'); 
-
-  
-  
-    $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-    // END DJANGO AJAX
-   
-});
-       // 路径配置
-        require.config({
-            paths: {
-                echarts: 'http://echarts.baidu.com/build/dist'
-            }
-        });
-// 使用
-        require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('cpuload_oneday')); 
-                var option = {
-    title : {
-        text: 'CPU Load Data',
-        subtext: 'Host'
-    },
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['1 minute','5 minutes']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            dataZoom : {show: true},
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    calculable : true,
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 80,
-        end : 100
-    },    
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['{{cpu_timestamp.284}}','{{cpu_timestamp.280}}','{{cpu_timestamp.276}}','{{cpu_timestamp.272}}','{{cpu_timestamp.268}}','{{cpu_timestamp.264}}','{{cpu_timestamp.260}}','{{cpu_timestamp.256}}','{{cpu_timestamp.252}}','{{cpu_timestamp.248}}','{{cpu_timestamp.244}}','{{cpu_timestamp.240}}','{{cpu_timestamp.236}}','{{cpu_timestamp.232}}','{{cpu_timestamp.228}}','{{cpu_timestamp.224}}','{{cpu_timestamp.220}}','{{cpu_timestamp.216}}','{{cpu_timestamp.212}}','{{cpu_timestamp.208}}','{{cpu_timestamp.204}}','{{cpu_timestamp.200}}','{{cpu_timestamp.196}}','{{cpu_timestamp.192}}','{{cpu_timestamp.188}}','{{cpu_timestamp.184}}','{{cpu_timestamp.180}}','{{cpu_timestamp.176}}','{{cpu_timestamp.172}}','{{cpu_timestamp.168}}','{{cpu_timestamp.164}}','{{cpu_timestamp.160}}','{{cpu_timestamp.156}}','{{cpu_timestamp.152}}','{{cpu_timestamp.148}}','{{cpu_timestamp.144}}','{{cpu_timestamp.140}}','{{cpu_timestamp.136}}','{{cpu_timestamp.132}}','{{cpu_timestamp.128}}','{{cpu_timestamp.124}}','{{cpu_timestamp.120}}','{{cpu_timestamp.116}}','{{cpu_timestamp.112}}','{{cpu_timestamp.108}}','{{cpu_timestamp.104}}','{{cpu_timestamp.100}}','{{cpu_timestamp.96}}','{{cpu_timestamp.92}}','{{cpu_timestamp.88}}','{{cpu_timestamp.84}}','{{cpu_timestamp.80}}','{{cpu_timestamp.76}}','{{cpu_timestamp.72}}','{{cpu_timestamp.68}}','{{cpu_timestamp.64}}','{{cpu_timestamp.60}}','{{cpu_timestamp.56}}','{{cpu_timestamp.52}}','{{cpu_timestamp.48}}','{{cpu_timestamp.44}}','{{cpu_timestamp.40}}','{{cpu_timestamp.36}}','{{cpu_timestamp.32}}','{{cpu_timestamp.28}}','{{cpu_timestamp.24}}','{{cpu_timestamp.20}}','{{cpu_timestamp.16}}','{{cpu_timestamp.12}}','{{cpu_timestamp.8}}','{{cpu_timestamp.4}}','{{cpu_timestamp.0}}']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} '
-            },
-            scale:true
-        }
-    ],
-    series : [
-        {
-            name:'Average in 1 minute',
-            type:'line',
-            data:[ {{cpu_one.284}},{{cpu_one.280}},{{cpu_one.276}},{{cpu_one.272}},{{cpu_one.268}},{{cpu_one.264}},{{cpu_one.260}},{{cpu_one.256}},{{cpu_one.252}},{{cpu_one.248}},{{cpu_one.244}},{{cpu_one.240}},{{cpu_one.236}},{{cpu_one.232}},{{cpu_one.228}},{{cpu_one.224}},{{cpu_one.220}},{{cpu_one.216}},{{cpu_one.212}},{{cpu_one.208}},{{cpu_one.204}},{{cpu_one.200}},{{cpu_one.196}},{{cpu_one.192}},{{cpu_one.188}},{{cpu_one.184}},{{cpu_one.180}},{{cpu_one.176}},{{cpu_one.172}},{{cpu_one.168}},{{cpu_one.164}},{{cpu_one.160}},{{cpu_one.156}},{{cpu_one.152}},{{cpu_one.148}},{{cpu_one.144}},{{cpu_one.140}},{{cpu_one.136}},{{cpu_one.132}},{{cpu_one.128}},{{cpu_one.124}},{{cpu_one.120}},{{cpu_one.116}},{{cpu_one.112}},{{cpu_one.108}},{{cpu_one.104}},{{cpu_one.100}},{{cpu_one.96}},{{cpu_one.92}},{{cpu_one.88}},{{cpu_one.84}},{{cpu_one.80}},{{cpu_one.76}},{{cpu_one.72}},{{cpu_one.68}},{{cpu_one.64}},{{cpu_one.60}},{{cpu_one.56}},{{cpu_one.52}},{{cpu_one.48}},{{cpu_one.44}},{{cpu_one.40}},{{cpu_one.36}},{{cpu_one.32}},{{cpu_one.28}},{{cpu_one.24}},{{cpu_one.20}},{{cpu_one.16}},{{cpu_one.12}},{{cpu_one.8}},{{cpu_one.4}},{{cpu_one.0}}],
-            markPoint : {
-                data : [
-                    {type : 'max', name: '最大值'},
-                    {type : 'min', name: '最小值'}
-                ]
-            },
-            markLine : {
-                data : [
-                    {type : 'average', name: '平均值'}
-                ]
-            }
-        },
-        {
-            name:'Average in 5 minutes',
-            type:'line',
-            data:[{{cpu_five.284}},{{cpu_five.280}},{{cpu_five.276}},{{cpu_five.272}},{{cpu_five.268}},{{cpu_five.264}},{{cpu_five.260}},{{cpu_five.256}},{{cpu_five.252}},{{cpu_five.248}},{{cpu_five.244}},{{cpu_five.240}},{{cpu_five.236}},{{cpu_five.232}},{{cpu_five.228}},{{cpu_five.224}},{{cpu_five.220}},{{cpu_five.216}},{{cpu_five.212}},{{cpu_five.208}},{{cpu_five.204}},{{cpu_five.200}},{{cpu_five.196}},{{cpu_five.192}},{{cpu_five.188}},{{cpu_five.184}},{{cpu_five.180}},{{cpu_five.176}},{{cpu_five.172}},{{cpu_five.168}},{{cpu_five.164}},{{cpu_five.160}},{{cpu_five.156}},{{cpu_five.152}},{{cpu_five.148}},{{cpu_five.144}},{{cpu_five.140}},{{cpu_five.136}},{{cpu_five.132}},{{cpu_five.128}},{{cpu_five.124}},{{cpu_five.120}},{{cpu_five.116}},{{cpu_five.112}},{{cpu_five.108}},{{cpu_five.104}},{{cpu_five.100}},{{cpu_five.96}},{{cpu_five.92}},{{cpu_five.88}},{{cpu_five.84}},{{cpu_five.80}},{{cpu_five.76}},{{cpu_five.72}},{{cpu_five.68}},{{cpu_five.64}},{{cpu_five.60}},{{cpu_five.56}},{{cpu_five.52}},{{cpu_five.48}},{{cpu_five.44}},{{cpu_five.40}},{{cpu_five.36}},{{cpu_five.32}},{{cpu_five.28}},{{cpu_five.24}},{{cpu_five.20}},{{cpu_five.16}},{{cpu_five.12}},{{cpu_five.8}},{{cpu_five.4}},{{cpu_five.0}}],
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
-        );
-
-</script>
-
-<div id="cpuload_oneweek" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
- $(function () {
-var csrftoken = getCookie('csrftoken'); 
-
-  
-  
-    $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-    // END DJANGO AJAX
-   
-});
-       // 路径配置
-        require.config({
-            paths: {
-                echarts: 'http://echarts.baidu.com/build/dist'
-            }
-        });
-// 使用
-        require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('cpuload_oneweek')); 
-                var option = {
-    title : {
-        text: 'CPU Load Data',
-        subtext: 'Host'
-    },
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['1 minute','5 minutes']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            dataZoom : {show: true},
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    calculable : true,
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 80,
-        end : 100
-    },    
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : [ '{{cpu_timestamp.1980}}','{{cpu_timestamp.1944}}','{{cpu_timestamp.1908}}','{{cpu_timestamp.1872}}','{{cpu_timestamp.1836}}','{{cpu_timestamp.1800}}','{{cpu_timestamp.1764}}','{{cpu_timestamp.1728}}','{{cpu_timestamp.1692}}','{{cpu_timestamp.1656}}','{{cpu_timestamp.1620}}','{{cpu_timestamp.1584}}','{{cpu_timestamp.1548}}','{{cpu_timestamp.1512}}','{{cpu_timestamp.1476}}','{{cpu_timestamp.1440}}','{{cpu_timestamp.1404}}','{{cpu_timestamp.1368}}','{{cpu_timestamp.1332}}','{{cpu_timestamp.1296}}','{{cpu_timestamp.1260}}','{{cpu_timestamp.1224}}','{{cpu_timestamp.1188}}','{{cpu_timestamp.1152}}','{{cpu_timestamp.1116}}','{{cpu_timestamp.1080}}','{{cpu_timestamp.1044}}','{{cpu_timestamp.1008}}','{{cpu_timestamp.972}}','{{cpu_timestamp.936}}','{{cpu_timestamp.900}}','{{cpu_timestamp.864}}','{{cpu_timestamp.828}}','{{cpu_timestamp.792}}','{{cpu_timestamp.756}}','{{cpu_timestamp.720}}','{{cpu_timestamp.684}}','{{cpu_timestamp.648}}','{{cpu_timestamp.612}}','{{cpu_timestamp.576}}','{{cpu_timestamp.540}}','{{cpu_timestamp.504}}','{{cpu_timestamp.468}}','{{cpu_timestamp.432}}','{{cpu_timestamp.396}}','{{cpu_timestamp.360}}','{{cpu_timestamp.324}}','{{cpu_timestamp.288}}','{{cpu_timestamp.252}}','{{cpu_timestamp.216}}','{{cpu_timestamp.180}}','{{cpu_timestamp.144}}','{{cpu_timestamp.108}}','{{cpu_timestamp.72}}','{{cpu_timestamp.36}}','{{cpu_timestamp.0}}']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} '
-            },
-            scale:true
-        }
-    ],
-    series : [
-        {
-            name:'Average in 1 minute',
-            type:'line',
-            data:[ {{cpu_one.1980}},{{cpu_one.1944}},{{cpu_one.1908}},{{cpu_one.1872}},{{cpu_one.1836}},{{cpu_one.1800}},{{cpu_one.1764}},{{cpu_one.1728}},{{cpu_one.1692}},{{cpu_one.1656}},{{cpu_one.1620}},{{cpu_one.1584}},{{cpu_one.1548}},{{cpu_one.1512}},{{cpu_one.1476}},{{cpu_one.1440}},{{cpu_one.1404}},{{cpu_one.1368}},{{cpu_one.1332}},{{cpu_one.1296}},{{cpu_one.1260}},{{cpu_one.1224}},{{cpu_one.1188}},{{cpu_one.1152}},{{cpu_one.1116}},{{cpu_one.1080}},{{cpu_one.1044}},{{cpu_one.1008}},{{cpu_one.972}},{{cpu_one.936}},{{cpu_one.900}},{{cpu_one.864}},{{cpu_one.828}},{{cpu_one.792}},{{cpu_one.756}},{{cpu_one.720}},{{cpu_one.684}},{{cpu_one.648}},{{cpu_one.612}},{{cpu_one.576}},{{cpu_one.540}},{{cpu_one.504}},{{cpu_one.468}},{{cpu_one.432}},{{cpu_one.396}},{{cpu_one.360}},{{cpu_one.324}},{{cpu_one.288}},{{cpu_one.252}},{{cpu_one.216}},{{cpu_one.180}},{{cpu_one.144}},{{cpu_one.108}},{{cpu_one.72}},{{cpu_one.36}},{{cpu_one.0}}],
-            markPoint : {
-                data : [
-                    {type : 'max', name: '最大值'},
-                    {type : 'min', name: '最小值'}
-                ]
-            },
-            markLine : {
-                data : [
-                    {type : 'average', name: '平均值'}
-                ]
-            }
-        },
-        {
-            name:'Average in 5 minutes',
-            type:'line',
-            data:[{{cpu_five.1980}},{{cpu_five.1944}},{{cpu_five.1908}},{{cpu_five.1872}},{{cpu_five.1836}},{{cpu_five.1800}},{{cpu_five.1764}},{{cpu_five.1728}},{{cpu_five.1692}},{{cpu_five.1656}},{{cpu_five.1620}},{{cpu_five.1584}},{{cpu_five.1548}},{{cpu_five.1512}},{{cpu_five.1476}},{{cpu_five.1440}},{{cpu_five.1404}},{{cpu_five.1368}},{{cpu_five.1332}},{{cpu_five.1296}},{{cpu_five.1260}},{{cpu_five.1224}},{{cpu_five.1188}},{{cpu_five.1152}},{{cpu_five.1116}},{{cpu_five.1080}},{{cpu_five.1044}},{{cpu_five.1008}},{{cpu_five.972}},{{cpu_five.936}},{{cpu_five.900}},{{cpu_five.864}},{{cpu_five.828}},{{cpu_five.792}},{{cpu_five.756}},{{cpu_five.720}},{{cpu_five.684}},{{cpu_five.648}},{{cpu_five.612}},{{cpu_five.576}},{{cpu_five.540}},{{cpu_five.504}},{{cpu_five.468}},{{cpu_five.432}},{{cpu_five.396}},{{cpu_five.360}},{{cpu_five.324}},{{cpu_five.288}},{{cpu_five.252}},{{cpu_five.216}},{{cpu_five.180}},{{cpu_five.144}},{{cpu_five.108}},{{cpu_five.72}},{{cpu_five.36}},{{cpu_five.0}}],
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
-        );
-
-</script>
-
-
-<div id="disk_halfday" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
         // 路径配置
         require.config({
             paths: {
                 echarts: 'http://echarts.baidu.com/build/dist'
             }
         });
-// 使用
+        // 使用
         require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('disk_halfday')); 
-                var option = {
-    title : {
-        text: 'Disk Usage Data',
-        subtext: 'Host'
-    },
-    color : [ 
-    '#6495ed','#87cefa', '#da70d6', '#32cd32', '#6495ed', 
-    '#ff69b4', '#ba55d3', '#cd5c5c', '#ffa500', '#40e0d0', 
-    '#1e90ff', '#ff6347', '#7b68ee', '#00fa9a', '#ffd700', 
-    '#6b8e23', '#ff00ff', '#3cb371', '#b8860b', '#30e0e0' 
-],
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['Used']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            dataZoom : {show: true},
-            
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 90,
-        end : 100
-    },    
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
 
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['{{disk_timestamp.142}}','{{disk_timestamp.140}}','{{disk_timestamp.138}}','{{disk_timestamp.136}}','{{disk_timestamp.134}}','{{disk_timestamp.132}}','{{disk_timestamp.130}}','{{disk_timestamp.128}}','{{disk_timestamp.126}}','{{disk_timestamp.124}}','{{disk_timestamp.122}}','{{disk_timestamp.120}}','{{disk_timestamp.118}}','{{disk_timestamp.116}}','{{disk_timestamp.114}}','{{disk_timestamp.112}}','{{disk_timestamp.110}}','{{disk_timestamp.108}}','{{disk_timestamp.106}}','{{disk_timestamp.104}}','{{disk_timestamp.102}}','{{disk_timestamp.100}}','{{disk_timestamp.98}}','{{disk_timestamp.96}}','{{disk_timestamp.94}}','{{disk_timestamp.92}}','{{disk_timestamp.90}}','{{disk_timestamp.88}}','{{disk_timestamp.86}}','{{disk_timestamp.84}}','{{disk_timestamp.82}}','{{disk_timestamp.80}}','{{disk_timestamp.78}}','{{disk_timestamp.76}}','{{disk_timestamp.74}}','{{disk_timestamp.72}}','{{disk_timestamp.70}}','{{disk_timestamp.68}}','{{disk_timestamp.66}}','{{disk_timestamp.64}}','{{disk_timestamp.62}}','{{disk_timestamp.60}}','{{disk_timestamp.58}}','{{disk_timestamp.56}}','{{disk_timestamp.54}}','{{disk_timestamp.52}}','{{disk_timestamp.50}}','{{disk_timestamp.48}}','{{disk_timestamp.46}}','{{disk_timestamp.44}}','{{disk_timestamp.42}}','{{disk_timestamp.40}}','{{disk_timestamp.38}}','{{disk_timestamp.36}}','{{disk_timestamp.34}}','{{disk_timestamp.32}}','{{disk_timestamp.30}}','{{disk_timestamp.28}}','{{disk_timestamp.26}}','{{disk_timestamp.24}}','{{disk_timestamp.22}}','{{disk_timestamp.20}}','{{disk_timestamp.18}}','{{disk_timestamp.16}}','{{disk_timestamp.14}}','{{disk_timestamp.12}}','{{disk_timestamp.10}}','{{disk_timestamp.8}}','{{disk_timestamp.6}}','{{disk_timestamp.4}}','{{disk_timestamp.2}}','{{disk_timestamp.0}}']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} MB'
-            },
-            scale:true
-        }
-    ],
-    series : [
-                {
-            name:'Used',
-            type:'line',
-            data:[{{diskuse.142}},{{diskuse.140}},{{diskuse.138}},{{diskuse.136}},{{diskuse.134}},{{diskuse.132}},{{diskuse.130}},{{diskuse.128}},{{diskuse.126}},{{diskuse.124}},{{diskuse.122}},{{diskuse.120}},{{diskuse.118}},{{diskuse.116}},{{diskuse.114}},{{diskuse.112}},{{diskuse.110}},{{diskuse.108}},{{diskuse.106}},{{diskuse.104}},{{diskuse.102}},{{diskuse.100}},{{diskuse.98}},{{diskuse.96}},{{diskuse.94}},{{diskuse.92}},{{diskuse.90}},{{diskuse.88}},{{diskuse.86}},{{diskuse.84}},{{diskuse.82}},{{diskuse.80}},{{diskuse.78}},{{diskuse.76}},{{diskuse.74}},{{diskuse.72}},{{diskuse.70}},{{diskuse.68}},{{diskuse.66}},{{diskuse.64}},{{diskuse.62}},{{diskuse.60}},{{diskuse.58}},{{diskuse.56}},{{diskuse.54}},{{diskuse.52}},{{diskuse.50}},{{diskuse.48}},{{diskuse.46}},{{diskuse.44}},{{diskuse.42}},{{diskuse.40}},{{diskuse.38}},{{diskuse.36}},{{diskuse.34}},{{diskuse.32}},{{diskuse.30}},{{diskuse.28}},{{diskuse.26}},{{diskuse.24}},{{diskuse.22}},{{diskuse.20}},{{diskuse.18}},{{diskuse.16}},{{diskuse.14}},{{diskuse.12}},{{diskuse.10}},{{diskuse.8}},{{diskuse.6}},{{diskuse.4}},{{diskuse.2}},{{diskuse.0}}],
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('cpuload_halfday'));
+                    var option = {
+                        title: {
+                            text: 'CPU Load Data',
+                            subtext: 'Host'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['1 minute', '5 minutes']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        calculable: true,
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{cpu_timestamp.144}}', '{{cpu_timestamp.142}}', '{{cpu_timestamp.140}}', '{{cpu_timestamp.138}}', '{{cpu_timestamp.136}}', '{{cpu_timestamp.134}}', '{{cpu_timestamp.132}}', '{{cpu_timestamp.130}}', '{{cpu_timestamp.128}}', '{{cpu_timestamp.126}}', '{{cpu_timestamp.124}}', '{{cpu_timestamp.122}}', '{{cpu_timestamp.120}}', '{{cpu_timestamp.118}}', '{{cpu_timestamp.116}}', '{{cpu_timestamp.114}}', '{{cpu_timestamp.112}}', '{{cpu_timestamp.110}}', '{{cpu_timestamp.108}}', '{{cpu_timestamp.106}}', '{{cpu_timestamp.104}}', '{{cpu_timestamp.102}}', '{{cpu_timestamp.100}}', '{{cpu_timestamp.98}}', '{{cpu_timestamp.96}}', '{{cpu_timestamp.94}}', '{{cpu_timestamp.92}}', '{{cpu_timestamp.90}}', '{{cpu_timestamp.88}}', '{{cpu_timestamp.86}}', '{{cpu_timestamp.84}}', '{{cpu_timestamp.82}}', '{{cpu_timestamp.80}}', '{{cpu_timestamp.78}}', '{{cpu_timestamp.76}}', '{{cpu_timestamp.74}}', '{{cpu_timestamp.72}}', '{{cpu_timestamp.70}}', '{{cpu_timestamp.68}}', '{{cpu_timestamp.66}}', '{{cpu_timestamp.64}}', '{{cpu_timestamp.62}}', '{{cpu_timestamp.60}}', '{{cpu_timestamp.58}}', '{{cpu_timestamp.56}}', '{{cpu_timestamp.54}}', '{{cpu_timestamp.52}}', '{{cpu_timestamp.50}}', '{{cpu_timestamp.48}}', '{{cpu_timestamp.46}}', '{{cpu_timestamp.44}}', '{{cpu_timestamp.42}}', '{{cpu_timestamp.40}}', '{{cpu_timestamp.38}}', '{{cpu_timestamp.36}}', '{{cpu_timestamp.34}}', '{{cpu_timestamp.32}}', '{{cpu_timestamp.30}}', '{{cpu_timestamp.28}}', '{{cpu_timestamp.26}}', '{{cpu_timestamp.24}}', '{{cpu_timestamp.22}}', '{{cpu_timestamp.20}}', '{{cpu_timestamp.18}}', '{{cpu_timestamp.16}}', '{{cpu_timestamp.14}}', '{{cpu_timestamp.12}}', '{{cpu_timestamp.10}}', '{{cpu_timestamp.8}}', '{{cpu_timestamp.6}}', '{{cpu_timestamp.4}}', '{{cpu_timestamp.2}}', '{{cpu_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} '
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Average in 1 minute',
+                                type: 'line',
+                                data: [{{cpu_one.144}}, {{cpu_one.142}}, {{cpu_one.140}}, {{cpu_one.138}}, {{cpu_one.136}}, {{cpu_one.134}}, {{cpu_one.132}}, {{cpu_one.130}}, {{cpu_one.128}}, {{cpu_one.126}}, {{cpu_one.124}}, {{cpu_one.122}}, {{cpu_one.120}}, {{cpu_one.118}}, {{cpu_one.116}}, {{cpu_one.114}}, {{cpu_one.112}}, {{cpu_one.110}}, {{cpu_one.108}}, {{cpu_one.106}}, {{cpu_one.104}}, {{cpu_one.102}}, {{cpu_one.100}}, {{cpu_one.98}}, {{cpu_one.96}}, {{cpu_one.94}}, {{cpu_one.92}}, {{cpu_one.90}}, {{cpu_one.88}}, {{cpu_one.86}}, {{cpu_one.84}}, {{cpu_one.82}}, {{cpu_one.80}}, {{cpu_one.78}}, {{cpu_one.76}}, {{cpu_one.74}}, {{cpu_one.72}}, {{cpu_one.70}}, {{cpu_one.68}}, {{cpu_one.66}}, {{cpu_one.64}}, {{cpu_one.62}}, {{cpu_one.60}}, {{cpu_one.58}}, {{cpu_one.56}}, {{cpu_one.54}}, {{cpu_one.52}}, {{cpu_one.50}}, {{cpu_one.48}}, {{cpu_one.46}}, {{cpu_one.44}}, {{cpu_one.42}}, {{cpu_one.40}}, {{cpu_one.38}}, {{cpu_one.36}}, {{cpu_one.34}}, {{cpu_one.32}}, {{cpu_one.30}}, {{cpu_one.28}}, {{cpu_one.26}}, {{cpu_one.24}}, {{cpu_one.22}}, {{cpu_one.20}}, {{cpu_one.18}}, {{cpu_one.16}}, {{cpu_one.14}}, {{cpu_one.12}}, {{cpu_one.10}}, {{cpu_one.8}}, {{cpu_one.6}}, {{cpu_one.4}}, {{cpu_one.2}}, {{cpu_one.0}}],
+                                markPoint: {
+                                    data: [
+                                        {type: 'max', name: '最大值'},
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+                            {
+                                name: 'Average in 5 minutes',
+                                type: 'line',
+                                data: [{{cpu_five.144}}, {{cpu_five.142}}, {{cpu_five.140}}, {{cpu_five.138}}, {{cpu_five.136}}, {{cpu_five.134}}, {{cpu_five.132}}, {{cpu_five.130}}, {{cpu_five.128}}, {{cpu_five.126}}, {{cpu_five.124}}, {{cpu_five.122}}, {{cpu_five.120}}, {{cpu_five.118}}, {{cpu_five.116}}, {{cpu_five.114}}, {{cpu_five.112}}, {{cpu_five.110}}, {{cpu_five.108}}, {{cpu_five.106}}, {{cpu_five.104}}, {{cpu_five.102}}, {{cpu_five.100}}, {{cpu_five.98}}, {{cpu_five.96}}, {{cpu_five.94}}, {{cpu_five.92}}, {{cpu_five.90}}, {{cpu_five.88}}, {{cpu_five.86}}, {{cpu_five.84}}, {{cpu_five.82}}, {{cpu_five.80}}, {{cpu_five.78}}, {{cpu_five.76}}, {{cpu_five.74}}, {{cpu_five.72}}, {{cpu_five.70}}, {{cpu_five.68}}, {{cpu_five.66}}, {{cpu_five.64}}, {{cpu_five.62}}, {{cpu_five.60}}, {{cpu_five.58}}, {{cpu_five.56}}, {{cpu_five.54}}, {{cpu_five.52}}, {{cpu_five.50}}, {{cpu_five.48}}, {{cpu_five.46}}, {{cpu_five.44}}, {{cpu_five.42}}, {{cpu_five.40}}, {{cpu_five.38}}, {{cpu_five.36}}, {{cpu_five.34}}, {{cpu_five.32}}, {{cpu_five.30}}, {{cpu_five.28}}, {{cpu_five.26}}, {{cpu_five.24}}, {{cpu_five.22}}, {{cpu_five.20}}, {{cpu_five.18}}, {{cpu_five.16}}, {{cpu_five.14}}, {{cpu_five.12}}, {{cpu_five.10}}, {{cpu_five.8}}, {{cpu_five.6}}, {{cpu_five.4}}, {{cpu_five.2}}, {{cpu_five.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
         );
 
-</script>
+    </script>
 
-<div id="disk_oneday" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
+    <div id="cpuload_oneday" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
+
+
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            // END DJANGO AJAX
+
+        });
         // 路径配置
         require.config({
             paths: {
                 echarts: 'http://echarts.baidu.com/build/dist'
             }
         });
-// 使用
+        // 使用
         require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('disk_oneday')); 
-                var option = {
-    title : {
-        text: 'Disk Usage Data',
-        subtext: 'Host'
-    },
-    color : [ 
-    '#6495ed','#87cefa', '#da70d6', '#32cd32', '#6495ed', 
-    '#ff69b4', '#ba55d3', '#cd5c5c', '#ffa500', '#40e0d0', 
-    '#1e90ff', '#ff6347', '#7b68ee', '#00fa9a', '#ffd700', 
-    '#6b8e23', '#ff00ff', '#3cb371', '#b8860b', '#30e0e0' 
-],
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['Used']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            dataZoom : {show: true},
-            
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 90,
-        end : 100
-    },    
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
 
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['{{disk_timestamp.284}}','{{disk_timestamp.280}}','{{disk_timestamp.276}}','{{disk_timestamp.272}}','{{disk_timestamp.268}}','{{disk_timestamp.264}}','{{disk_timestamp.260}}','{{disk_timestamp.256}}','{{disk_timestamp.252}}','{{disk_timestamp.248}}','{{disk_timestamp.244}}','{{disk_timestamp.240}}','{{disk_timestamp.236}}','{{disk_timestamp.232}}','{{disk_timestamp.228}}','{{disk_timestamp.224}}','{{disk_timestamp.220}}','{{disk_timestamp.216}}','{{disk_timestamp.212}}','{{disk_timestamp.208}}','{{disk_timestamp.204}}','{{disk_timestamp.200}}','{{disk_timestamp.196}}','{{disk_timestamp.192}}','{{disk_timestamp.188}}','{{disk_timestamp.184}}','{{disk_timestamp.180}}','{{disk_timestamp.176}}','{{disk_timestamp.172}}','{{disk_timestamp.168}}','{{disk_timestamp.164}}','{{disk_timestamp.160}}','{{disk_timestamp.156}}','{{disk_timestamp.152}}','{{disk_timestamp.148}}','{{disk_timestamp.144}}','{{disk_timestamp.140}}','{{disk_timestamp.136}}','{{disk_timestamp.132}}','{{disk_timestamp.128}}','{{disk_timestamp.124}}','{{disk_timestamp.120}}','{{disk_timestamp.116}}','{{disk_timestamp.112}}','{{disk_timestamp.108}}','{{disk_timestamp.104}}','{{disk_timestamp.100}}','{{disk_timestamp.96}}','{{disk_timestamp.92}}','{{disk_timestamp.88}}','{{disk_timestamp.84}}','{{disk_timestamp.80}}','{{disk_timestamp.76}}','{{disk_timestamp.72}}','{{disk_timestamp.68}}','{{disk_timestamp.64}}','{{disk_timestamp.60}}','{{disk_timestamp.56}}','{{disk_timestamp.52}}','{{disk_timestamp.48}}','{{disk_timestamp.44}}','{{disk_timestamp.40}}','{{disk_timestamp.36}}','{{disk_timestamp.32}}','{{disk_timestamp.28}}','{{disk_timestamp.24}}','{{disk_timestamp.20}}','{{disk_timestamp.16}}','{{disk_timestamp.12}}','{{disk_timestamp.8}}','{{disk_timestamp.4}}','{{disk_timestamp.0}}']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} MB'
-            },
-            scale:true
-        }
-    ],
-    series : [
-                {
-            name:'Used',
-            type:'line',
-            data:[{{diskuse.284}},{{diskuse.280}},{{diskuse.276}},{{diskuse.272}},{{diskuse.268}},{{diskuse.264}},{{diskuse.260}},{{diskuse.256}},{{diskuse.252}},{{diskuse.248}},{{diskuse.244}},{{diskuse.240}},{{diskuse.236}},{{diskuse.232}},{{diskuse.228}},{{diskuse.224}},{{diskuse.220}},{{diskuse.216}},{{diskuse.212}},{{diskuse.208}},{{diskuse.204}},{{diskuse.200}},{{diskuse.196}},{{diskuse.192}},{{diskuse.188}},{{diskuse.184}},{{diskuse.180}},{{diskuse.176}},{{diskuse.172}},{{diskuse.168}},{{diskuse.164}},{{diskuse.160}},{{diskuse.156}},{{diskuse.152}},{{diskuse.148}},{{diskuse.144}},{{diskuse.140}},{{diskuse.136}},{{diskuse.132}},{{diskuse.128}},{{diskuse.124}},{{diskuse.120}},{{diskuse.116}},{{diskuse.112}},{{diskuse.108}},{{diskuse.104}},{{diskuse.100}},{{diskuse.96}},{{diskuse.92}},{{diskuse.88}},{{diskuse.84}},{{diskuse.80}},{{diskuse.76}},{{diskuse.72}},{{diskuse.68}},{{diskuse.64}},{{diskuse.60}},{{diskuse.56}},{{diskuse.52}},{{diskuse.48}},{{diskuse.44}},{{diskuse.40}},{{diskuse.36}},{{diskuse.32}},{{diskuse.28}},{{diskuse.24}},{{diskuse.20}},{{diskuse.16}},{{diskuse.12}},{{diskuse.8}},{{diskuse.4}},{{diskuse.0}}],
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('cpuload_oneday'));
+                    var option = {
+                        title: {
+                            text: 'CPU Load Data',
+                            subtext: 'Host'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['1 minute', '5 minutes']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        calculable: true,
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{cpu_timestamp.284}}', '{{cpu_timestamp.280}}', '{{cpu_timestamp.276}}', '{{cpu_timestamp.272}}', '{{cpu_timestamp.268}}', '{{cpu_timestamp.264}}', '{{cpu_timestamp.260}}', '{{cpu_timestamp.256}}', '{{cpu_timestamp.252}}', '{{cpu_timestamp.248}}', '{{cpu_timestamp.244}}', '{{cpu_timestamp.240}}', '{{cpu_timestamp.236}}', '{{cpu_timestamp.232}}', '{{cpu_timestamp.228}}', '{{cpu_timestamp.224}}', '{{cpu_timestamp.220}}', '{{cpu_timestamp.216}}', '{{cpu_timestamp.212}}', '{{cpu_timestamp.208}}', '{{cpu_timestamp.204}}', '{{cpu_timestamp.200}}', '{{cpu_timestamp.196}}', '{{cpu_timestamp.192}}', '{{cpu_timestamp.188}}', '{{cpu_timestamp.184}}', '{{cpu_timestamp.180}}', '{{cpu_timestamp.176}}', '{{cpu_timestamp.172}}', '{{cpu_timestamp.168}}', '{{cpu_timestamp.164}}', '{{cpu_timestamp.160}}', '{{cpu_timestamp.156}}', '{{cpu_timestamp.152}}', '{{cpu_timestamp.148}}', '{{cpu_timestamp.144}}', '{{cpu_timestamp.140}}', '{{cpu_timestamp.136}}', '{{cpu_timestamp.132}}', '{{cpu_timestamp.128}}', '{{cpu_timestamp.124}}', '{{cpu_timestamp.120}}', '{{cpu_timestamp.116}}', '{{cpu_timestamp.112}}', '{{cpu_timestamp.108}}', '{{cpu_timestamp.104}}', '{{cpu_timestamp.100}}', '{{cpu_timestamp.96}}', '{{cpu_timestamp.92}}', '{{cpu_timestamp.88}}', '{{cpu_timestamp.84}}', '{{cpu_timestamp.80}}', '{{cpu_timestamp.76}}', '{{cpu_timestamp.72}}', '{{cpu_timestamp.68}}', '{{cpu_timestamp.64}}', '{{cpu_timestamp.60}}', '{{cpu_timestamp.56}}', '{{cpu_timestamp.52}}', '{{cpu_timestamp.48}}', '{{cpu_timestamp.44}}', '{{cpu_timestamp.40}}', '{{cpu_timestamp.36}}', '{{cpu_timestamp.32}}', '{{cpu_timestamp.28}}', '{{cpu_timestamp.24}}', '{{cpu_timestamp.20}}', '{{cpu_timestamp.16}}', '{{cpu_timestamp.12}}', '{{cpu_timestamp.8}}', '{{cpu_timestamp.4}}', '{{cpu_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} '
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Average in 1 minute',
+                                type: 'line',
+                                data: [{{cpu_one.284}}, {{cpu_one.280}}, {{cpu_one.276}}, {{cpu_one.272}}, {{cpu_one.268}}, {{cpu_one.264}}, {{cpu_one.260}}, {{cpu_one.256}}, {{cpu_one.252}}, {{cpu_one.248}}, {{cpu_one.244}}, {{cpu_one.240}}, {{cpu_one.236}}, {{cpu_one.232}}, {{cpu_one.228}}, {{cpu_one.224}}, {{cpu_one.220}}, {{cpu_one.216}}, {{cpu_one.212}}, {{cpu_one.208}}, {{cpu_one.204}}, {{cpu_one.200}}, {{cpu_one.196}}, {{cpu_one.192}}, {{cpu_one.188}}, {{cpu_one.184}}, {{cpu_one.180}}, {{cpu_one.176}}, {{cpu_one.172}}, {{cpu_one.168}}, {{cpu_one.164}}, {{cpu_one.160}}, {{cpu_one.156}}, {{cpu_one.152}}, {{cpu_one.148}}, {{cpu_one.144}}, {{cpu_one.140}}, {{cpu_one.136}}, {{cpu_one.132}}, {{cpu_one.128}}, {{cpu_one.124}}, {{cpu_one.120}}, {{cpu_one.116}}, {{cpu_one.112}}, {{cpu_one.108}}, {{cpu_one.104}}, {{cpu_one.100}}, {{cpu_one.96}}, {{cpu_one.92}}, {{cpu_one.88}}, {{cpu_one.84}}, {{cpu_one.80}}, {{cpu_one.76}}, {{cpu_one.72}}, {{cpu_one.68}}, {{cpu_one.64}}, {{cpu_one.60}}, {{cpu_one.56}}, {{cpu_one.52}}, {{cpu_one.48}}, {{cpu_one.44}}, {{cpu_one.40}}, {{cpu_one.36}}, {{cpu_one.32}}, {{cpu_one.28}}, {{cpu_one.24}}, {{cpu_one.20}}, {{cpu_one.16}}, {{cpu_one.12}}, {{cpu_one.8}}, {{cpu_one.4}}, {{cpu_one.0}}],
+                                markPoint: {
+                                    data: [
+                                        {type: 'max', name: '最大值'},
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+                            {
+                                name: 'Average in 5 minutes',
+                                type: 'line',
+                                data: [{{cpu_five.284}}, {{cpu_five.280}}, {{cpu_five.276}}, {{cpu_five.272}}, {{cpu_five.268}}, {{cpu_five.264}}, {{cpu_five.260}}, {{cpu_five.256}}, {{cpu_five.252}}, {{cpu_five.248}}, {{cpu_five.244}}, {{cpu_five.240}}, {{cpu_five.236}}, {{cpu_five.232}}, {{cpu_five.228}}, {{cpu_five.224}}, {{cpu_five.220}}, {{cpu_five.216}}, {{cpu_five.212}}, {{cpu_five.208}}, {{cpu_five.204}}, {{cpu_five.200}}, {{cpu_five.196}}, {{cpu_five.192}}, {{cpu_five.188}}, {{cpu_five.184}}, {{cpu_five.180}}, {{cpu_five.176}}, {{cpu_five.172}}, {{cpu_five.168}}, {{cpu_five.164}}, {{cpu_five.160}}, {{cpu_five.156}}, {{cpu_five.152}}, {{cpu_five.148}}, {{cpu_five.144}}, {{cpu_five.140}}, {{cpu_five.136}}, {{cpu_five.132}}, {{cpu_five.128}}, {{cpu_five.124}}, {{cpu_five.120}}, {{cpu_five.116}}, {{cpu_five.112}}, {{cpu_five.108}}, {{cpu_five.104}}, {{cpu_five.100}}, {{cpu_five.96}}, {{cpu_five.92}}, {{cpu_five.88}}, {{cpu_five.84}}, {{cpu_five.80}}, {{cpu_five.76}}, {{cpu_five.72}}, {{cpu_five.68}}, {{cpu_five.64}}, {{cpu_five.60}}, {{cpu_five.56}}, {{cpu_five.52}}, {{cpu_five.48}}, {{cpu_five.44}}, {{cpu_five.40}}, {{cpu_five.36}}, {{cpu_five.32}}, {{cpu_five.28}}, {{cpu_five.24}}, {{cpu_five.20}}, {{cpu_five.16}}, {{cpu_five.12}}, {{cpu_five.8}}, {{cpu_five.4}}, {{cpu_five.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
         );
 
-</script>
+    </script>
 
-<div id="disk_oneweek" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
+    <div id="cpuload_oneweek" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
+
+
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            // END DJANGO AJAX
+
+        });
         // 路径配置
         require.config({
             paths: {
                 echarts: 'http://echarts.baidu.com/build/dist'
             }
         });
-// 使用
+        // 使用
         require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('disk_oneweek')); 
-                var option = {
-    title : {
-        text: 'Disk Usage Data',
-        subtext: 'Host'
-    },
-    color : [ 
-    '#6495ed','#87cefa', '#da70d6', '#32cd32', '#6495ed', 
-    '#ff69b4', '#ba55d3', '#cd5c5c', '#ffa500', '#40e0d0', 
-    '#1e90ff', '#ff6347', '#7b68ee', '#00fa9a', '#ffd700', 
-    '#6b8e23', '#ff00ff', '#3cb371', '#b8860b', '#30e0e0' 
-],
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['Used']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            dataZoom : {show: true},
-            
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 90,
-        end : 100
-    },    
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
 
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : [ '{{disk_timestamp.1980}}','{{disk_timestamp.1944}}','{{disk_timestamp.1908}}','{{disk_timestamp.1872}}','{{disk_timestamp.1836}}','{{disk_timestamp.1800}}','{{disk_timestamp.1764}}','{{disk_timestamp.1728}}','{{disk_timestamp.1692}}','{{disk_timestamp.1656}}','{{disk_timestamp.1620}}','{{disk_timestamp.1584}}','{{disk_timestamp.1548}}','{{disk_timestamp.1512}}','{{disk_timestamp.1476}}','{{disk_timestamp.1440}}','{{disk_timestamp.1404}}','{{disk_timestamp.1368}}','{{disk_timestamp.1332}}','{{disk_timestamp.1296}}','{{disk_timestamp.1260}}','{{disk_timestamp.1224}}','{{disk_timestamp.1188}}','{{disk_timestamp.1152}}','{{disk_timestamp.1116}}','{{disk_timestamp.1080}}','{{disk_timestamp.1044}}','{{disk_timestamp.1008}}','{{disk_timestamp.972}}','{{disk_timestamp.936}}','{{disk_timestamp.900}}','{{disk_timestamp.864}}','{{disk_timestamp.828}}','{{disk_timestamp.792}}','{{disk_timestamp.756}}','{{disk_timestamp.720}}','{{disk_timestamp.684}}','{{disk_timestamp.648}}','{{disk_timestamp.612}}','{{disk_timestamp.576}}','{{disk_timestamp.540}}','{{disk_timestamp.504}}','{{disk_timestamp.468}}','{{disk_timestamp.432}}','{{disk_timestamp.396}}','{{disk_timestamp.360}}','{{disk_timestamp.324}}','{{disk_timestamp.288}}','{{disk_timestamp.252}}','{{disk_timestamp.216}}','{{disk_timestamp.180}}','{{disk_timestamp.144}}','{{disk_timestamp.108}}','{{disk_timestamp.72}}','{{disk_timestamp.36}}','{{disk_timestamp.0}}']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value} MB'
-            },
-            scale:true
-        }
-    ],
-    series : [
-                {
-            name:'Used',
-            type:'line',
-            data:[{{diskuse.1980}},{{diskuse.1944}},{{diskuse.1908}},{{diskuse.1872}},{{diskuse.1836}},{{diskuse.1800}},{{diskuse.1764}},{{diskuse.1728}},{{diskuse.1692}},{{diskuse.1656}},{{diskuse.1620}},{{diskuse.1584}},{{diskuse.1548}},{{diskuse.1512}},{{diskuse.1476}},{{diskuse.1440}},{{diskuse.1404}},{{diskuse.1368}},{{diskuse.1332}},{{diskuse.1296}},{{diskuse.1260}},{{diskuse.1224}},{{diskuse.1188}},{{diskuse.1152}},{{diskuse.1116}},{{diskuse.1080}},{{diskuse.1044}},{{diskuse.1008}},{{diskuse.972}},{{diskuse.936}},{{diskuse.900}},{{diskuse.864}},{{diskuse.828}},{{diskuse.792}},{{diskuse.756}},{{diskuse.720}},{{diskuse.684}},{{diskuse.648}},{{diskuse.612}},{{diskuse.576}},{{diskuse.540}},{{diskuse.504}},{{diskuse.468}},{{diskuse.432}},{{diskuse.396}},{{diskuse.360}},{{diskuse.324}},{{diskuse.288}},{{diskuse.252}},{{diskuse.216}},{{diskuse.180}},{{diskuse.144}},{{diskuse.108}},{{diskuse.72}},{{diskuse.36}},{{diskuse.0}}],
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('cpuload_oneweek'));
+                    var option = {
+                        title: {
+                            text: 'CPU Load Data',
+                            subtext: 'Host'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['1 minute', '5 minutes']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        calculable: true,
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{cpu_timestamp.1980}}', '{{cpu_timestamp.1944}}', '{{cpu_timestamp.1908}}', '{{cpu_timestamp.1872}}', '{{cpu_timestamp.1836}}', '{{cpu_timestamp.1800}}', '{{cpu_timestamp.1764}}', '{{cpu_timestamp.1728}}', '{{cpu_timestamp.1692}}', '{{cpu_timestamp.1656}}', '{{cpu_timestamp.1620}}', '{{cpu_timestamp.1584}}', '{{cpu_timestamp.1548}}', '{{cpu_timestamp.1512}}', '{{cpu_timestamp.1476}}', '{{cpu_timestamp.1440}}', '{{cpu_timestamp.1404}}', '{{cpu_timestamp.1368}}', '{{cpu_timestamp.1332}}', '{{cpu_timestamp.1296}}', '{{cpu_timestamp.1260}}', '{{cpu_timestamp.1224}}', '{{cpu_timestamp.1188}}', '{{cpu_timestamp.1152}}', '{{cpu_timestamp.1116}}', '{{cpu_timestamp.1080}}', '{{cpu_timestamp.1044}}', '{{cpu_timestamp.1008}}', '{{cpu_timestamp.972}}', '{{cpu_timestamp.936}}', '{{cpu_timestamp.900}}', '{{cpu_timestamp.864}}', '{{cpu_timestamp.828}}', '{{cpu_timestamp.792}}', '{{cpu_timestamp.756}}', '{{cpu_timestamp.720}}', '{{cpu_timestamp.684}}', '{{cpu_timestamp.648}}', '{{cpu_timestamp.612}}', '{{cpu_timestamp.576}}', '{{cpu_timestamp.540}}', '{{cpu_timestamp.504}}', '{{cpu_timestamp.468}}', '{{cpu_timestamp.432}}', '{{cpu_timestamp.396}}', '{{cpu_timestamp.360}}', '{{cpu_timestamp.324}}', '{{cpu_timestamp.288}}', '{{cpu_timestamp.252}}', '{{cpu_timestamp.216}}', '{{cpu_timestamp.180}}', '{{cpu_timestamp.144}}', '{{cpu_timestamp.108}}', '{{cpu_timestamp.72}}', '{{cpu_timestamp.36}}', '{{cpu_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} '
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Average in 1 minute',
+                                type: 'line',
+                                data: [{{cpu_one.1980}}, {{cpu_one.1944}}, {{cpu_one.1908}}, {{cpu_one.1872}}, {{cpu_one.1836}}, {{cpu_one.1800}}, {{cpu_one.1764}}, {{cpu_one.1728}}, {{cpu_one.1692}}, {{cpu_one.1656}}, {{cpu_one.1620}}, {{cpu_one.1584}}, {{cpu_one.1548}}, {{cpu_one.1512}}, {{cpu_one.1476}}, {{cpu_one.1440}}, {{cpu_one.1404}}, {{cpu_one.1368}}, {{cpu_one.1332}}, {{cpu_one.1296}}, {{cpu_one.1260}}, {{cpu_one.1224}}, {{cpu_one.1188}}, {{cpu_one.1152}}, {{cpu_one.1116}}, {{cpu_one.1080}}, {{cpu_one.1044}}, {{cpu_one.1008}}, {{cpu_one.972}}, {{cpu_one.936}}, {{cpu_one.900}}, {{cpu_one.864}}, {{cpu_one.828}}, {{cpu_one.792}}, {{cpu_one.756}}, {{cpu_one.720}}, {{cpu_one.684}}, {{cpu_one.648}}, {{cpu_one.612}}, {{cpu_one.576}}, {{cpu_one.540}}, {{cpu_one.504}}, {{cpu_one.468}}, {{cpu_one.432}}, {{cpu_one.396}}, {{cpu_one.360}}, {{cpu_one.324}}, {{cpu_one.288}}, {{cpu_one.252}}, {{cpu_one.216}}, {{cpu_one.180}}, {{cpu_one.144}}, {{cpu_one.108}}, {{cpu_one.72}}, {{cpu_one.36}}, {{cpu_one.0}}],
+                                markPoint: {
+                                    data: [
+                                        {type: 'max', name: '最大值'},
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+                            {
+                                name: 'Average in 5 minutes',
+                                type: 'line',
+                                data: [{{cpu_five.1980}}, {{cpu_five.1944}}, {{cpu_five.1908}}, {{cpu_five.1872}}, {{cpu_five.1836}}, {{cpu_five.1800}}, {{cpu_five.1764}}, {{cpu_five.1728}}, {{cpu_five.1692}}, {{cpu_five.1656}}, {{cpu_five.1620}}, {{cpu_five.1584}}, {{cpu_five.1548}}, {{cpu_five.1512}}, {{cpu_five.1476}}, {{cpu_five.1440}}, {{cpu_five.1404}}, {{cpu_five.1368}}, {{cpu_five.1332}}, {{cpu_five.1296}}, {{cpu_five.1260}}, {{cpu_five.1224}}, {{cpu_five.1188}}, {{cpu_five.1152}}, {{cpu_five.1116}}, {{cpu_five.1080}}, {{cpu_five.1044}}, {{cpu_five.1008}}, {{cpu_five.972}}, {{cpu_five.936}}, {{cpu_five.900}}, {{cpu_five.864}}, {{cpu_five.828}}, {{cpu_five.792}}, {{cpu_five.756}}, {{cpu_five.720}}, {{cpu_five.684}}, {{cpu_five.648}}, {{cpu_five.612}}, {{cpu_five.576}}, {{cpu_five.540}}, {{cpu_five.504}}, {{cpu_five.468}}, {{cpu_five.432}}, {{cpu_five.396}}, {{cpu_five.360}}, {{cpu_five.324}}, {{cpu_five.288}}, {{cpu_five.252}}, {{cpu_five.216}}, {{cpu_five.180}}, {{cpu_five.144}}, {{cpu_five.108}}, {{cpu_five.72}}, {{cpu_five.36}}, {{cpu_five.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
         );
 
-</script>
+    </script>
 
-<div id="process_halfday" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
+
+    <div id="disk_halfday" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
         // 路径配置
         require.config({
             paths: {
                 echarts: 'http://echarts.baidu.com/build/dist'
             }
         });
-// 使用
+        // 使用
         require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('process_halfday')); 
-                var option = {
-    title : {
-        text: 'Process Amount',
-        subtext: 'Host'
-    },
-    color : [ 
-    '#FF0080'],
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['Number']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            magicType : {show: false},
-            dataZoom : {show: true},
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
 
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 80,
-        end : 100,
-    },    
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('disk_halfday'));
+                    var option = {
+                        title: {
+                            text: 'Disk Usage Data',
+                            subtext: 'Host'
+                        },
+                        color: [
+                            '#6495ed', '#87cefa', '#da70d6', '#32cd32', '#6495ed',
+                            '#ff69b4', '#ba55d3', '#cd5c5c', '#ffa500', '#40e0d0',
+                            '#1e90ff', '#ff6347', '#7b68ee', '#00fa9a', '#ffd700',
+                            '#6b8e23', '#ff00ff', '#3cb371', '#b8860b', '#30e0e0'
+                        ],
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['Used']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
 
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 90,
+                            end: 100
+                        },
 
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['{{pro_timestamp.144}}','{{pro_timestamp.142}}','{{pro_timestamp.140}}','{{pro_timestamp.138}}','{{pro_timestamp.136}}','{{pro_timestamp.134}}','{{pro_timestamp.132}}','{{pro_timestamp.130}}','{{pro_timestamp.128}}','{{pro_timestamp.126}}','{{pro_timestamp.124}}','{{pro_timestamp.122}}','{{pro_timestamp.120}}','{{pro_timestamp.118}}','{{pro_timestamp.116}}','{{pro_timestamp.114}}','{{pro_timestamp.112}}','{{pro_timestamp.110}}','{{pro_timestamp.108}}','{{pro_timestamp.106}}','{{pro_timestamp.104}}','{{pro_timestamp.102}}','{{pro_timestamp.100}}','{{pro_timestamp.98}}','{{pro_timestamp.96}}','{{pro_timestamp.94}}','{{pro_timestamp.92}}','{{pro_timestamp.90}}','{{pro_timestamp.88}}','{{pro_timestamp.86}}','{{pro_timestamp.84}}','{{pro_timestamp.82}}','{{pro_timestamp.80}}','{{pro_timestamp.78}}','{{pro_timestamp.76}}','{{pro_timestamp.74}}','{{pro_timestamp.72}}','{{pro_timestamp.70}}','{{pro_timestamp.68}}','{{pro_timestamp.66}}','{{pro_timestamp.64}}','{{pro_timestamp.62}}','{{pro_timestamp.60}}','{{pro_timestamp.58}}','{{pro_timestamp.56}}','{{pro_timestamp.54}}','{{pro_timestamp.52}}','{{pro_timestamp.50}}','{{pro_timestamp.48}}','{{pro_timestamp.46}}','{{pro_timestamp.44}}','{{pro_timestamp.42}}','{{pro_timestamp.40}}','{{pro_timestamp.38}}','{{pro_timestamp.36}}','{{pro_timestamp.34}}','{{pro_timestamp.32}}','{{pro_timestamp.30}}','{{pro_timestamp.28}}','{{pro_timestamp.26}}','{{pro_timestamp.24}}','{{pro_timestamp.22}}','{{pro_timestamp.20}}','{{pro_timestamp.18}}','{{pro_timestamp.16}}','{{pro_timestamp.14}}','{{pro_timestamp.12}}','{{pro_timestamp.10}}','{{pro_timestamp.8}}','{{pro_timestamp.6}}','{{pro_timestamp.4}}','{{pro_timestamp.2}}','{{pro_timestamp.0}}']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value}'
-            },
-            scale:true
-        }
-    ],
-    series : [
-                {
-            name:'Used',
-            type:'line',
-            data:[{{pro.144}},{{pro.142}},{{pro.140}},{{pro.138}},{{pro.136}},{{pro.134}},{{pro.132}},{{pro.130}},{{pro.128}},{{pro.126}},{{pro.124}},{{pro.122}},{{pro.120}},{{pro.118}},{{pro.116}},{{pro.114}},{{pro.112}},{{pro.110}},{{pro.108}},{{pro.106}},{{pro.104}},{{pro.102}},{{pro.100}},{{pro.98}},{{pro.96}},{{pro.94}},{{pro.92}},{{pro.90}},{{pro.88}},{{pro.86}},{{pro.84}},{{pro.82}},{{pro.80}},{{pro.78}},{{pro.76}},{{pro.74}},{{pro.72}},{{pro.70}},{{pro.68}},{{pro.66}},{{pro.64}},{{pro.62}},{{pro.60}},{{pro.58}},{{pro.56}},{{pro.54}},{{pro.52}},{{pro.50}},{{pro.48}},{{pro.46}},{{pro.44}},{{pro.42}},{{pro.40}},{{pro.38}},{{pro.36}},{{pro.34}},{{pro.32}},{{pro.30}},{{pro.28}},{{pro.26}},{{pro.24}},{{pro.22}},{{pro.20}},{{pro.18}},{{pro.16}},{{pro.14}},{{pro.12}},{{pro.10}},{{pro.8}},{{pro.6}},{{pro.4}},{{pro.2}},{{pro.0}}],
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
+                        calculable: true,
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{disk_timestamp.142}}', '{{disk_timestamp.140}}', '{{disk_timestamp.138}}', '{{disk_timestamp.136}}', '{{disk_timestamp.134}}', '{{disk_timestamp.132}}', '{{disk_timestamp.130}}', '{{disk_timestamp.128}}', '{{disk_timestamp.126}}', '{{disk_timestamp.124}}', '{{disk_timestamp.122}}', '{{disk_timestamp.120}}', '{{disk_timestamp.118}}', '{{disk_timestamp.116}}', '{{disk_timestamp.114}}', '{{disk_timestamp.112}}', '{{disk_timestamp.110}}', '{{disk_timestamp.108}}', '{{disk_timestamp.106}}', '{{disk_timestamp.104}}', '{{disk_timestamp.102}}', '{{disk_timestamp.100}}', '{{disk_timestamp.98}}', '{{disk_timestamp.96}}', '{{disk_timestamp.94}}', '{{disk_timestamp.92}}', '{{disk_timestamp.90}}', '{{disk_timestamp.88}}', '{{disk_timestamp.86}}', '{{disk_timestamp.84}}', '{{disk_timestamp.82}}', '{{disk_timestamp.80}}', '{{disk_timestamp.78}}', '{{disk_timestamp.76}}', '{{disk_timestamp.74}}', '{{disk_timestamp.72}}', '{{disk_timestamp.70}}', '{{disk_timestamp.68}}', '{{disk_timestamp.66}}', '{{disk_timestamp.64}}', '{{disk_timestamp.62}}', '{{disk_timestamp.60}}', '{{disk_timestamp.58}}', '{{disk_timestamp.56}}', '{{disk_timestamp.54}}', '{{disk_timestamp.52}}', '{{disk_timestamp.50}}', '{{disk_timestamp.48}}', '{{disk_timestamp.46}}', '{{disk_timestamp.44}}', '{{disk_timestamp.42}}', '{{disk_timestamp.40}}', '{{disk_timestamp.38}}', '{{disk_timestamp.36}}', '{{disk_timestamp.34}}', '{{disk_timestamp.32}}', '{{disk_timestamp.30}}', '{{disk_timestamp.28}}', '{{disk_timestamp.26}}', '{{disk_timestamp.24}}', '{{disk_timestamp.22}}', '{{disk_timestamp.20}}', '{{disk_timestamp.18}}', '{{disk_timestamp.16}}', '{{disk_timestamp.14}}', '{{disk_timestamp.12}}', '{{disk_timestamp.10}}', '{{disk_timestamp.8}}', '{{disk_timestamp.6}}', '{{disk_timestamp.4}}', '{{disk_timestamp.2}}', '{{disk_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} MB'
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Used',
+                                type: 'line',
+                                data: [{{diskuse.142}}, {{diskuse.140}}, {{diskuse.138}}, {{diskuse.136}}, {{diskuse.134}}, {{diskuse.132}}, {{diskuse.130}}, {{diskuse.128}}, {{diskuse.126}}, {{diskuse.124}}, {{diskuse.122}}, {{diskuse.120}}, {{diskuse.118}}, {{diskuse.116}}, {{diskuse.114}}, {{diskuse.112}}, {{diskuse.110}}, {{diskuse.108}}, {{diskuse.106}}, {{diskuse.104}}, {{diskuse.102}}, {{diskuse.100}}, {{diskuse.98}}, {{diskuse.96}}, {{diskuse.94}}, {{diskuse.92}}, {{diskuse.90}}, {{diskuse.88}}, {{diskuse.86}}, {{diskuse.84}}, {{diskuse.82}}, {{diskuse.80}}, {{diskuse.78}}, {{diskuse.76}}, {{diskuse.74}}, {{diskuse.72}}, {{diskuse.70}}, {{diskuse.68}}, {{diskuse.66}}, {{diskuse.64}}, {{diskuse.62}}, {{diskuse.60}}, {{diskuse.58}}, {{diskuse.56}}, {{diskuse.54}}, {{diskuse.52}}, {{diskuse.50}}, {{diskuse.48}}, {{diskuse.46}}, {{diskuse.44}}, {{diskuse.42}}, {{diskuse.40}}, {{diskuse.38}}, {{diskuse.36}}, {{diskuse.34}}, {{diskuse.32}}, {{diskuse.30}}, {{diskuse.28}}, {{diskuse.26}}, {{diskuse.24}}, {{diskuse.22}}, {{diskuse.20}}, {{diskuse.18}}, {{diskuse.16}}, {{diskuse.14}}, {{diskuse.12}}, {{diskuse.10}}, {{diskuse.8}}, {{diskuse.6}}, {{diskuse.4}}, {{diskuse.2}}, {{diskuse.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
         );
 
-</script>
+    </script>
 
-<div id="process_oneday" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
+    <div id="disk_oneday" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
         // 路径配置
         require.config({
             paths: {
                 echarts: 'http://echarts.baidu.com/build/dist'
             }
         });
-// 使用
+        // 使用
         require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('process_oneday')); 
-                var option = {
-    title : {
-        text: 'Process Amount',
-        subtext: 'Host'
-    },
-    color : [ 
-    '#FF0080'],
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['Number']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            magicType : {show: false},
-            dataZoom : {show: true},
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
 
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 80,
-        end : 100,
-    },    
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('disk_oneday'));
+                    var option = {
+                        title: {
+                            text: 'Disk Usage Data',
+                            subtext: 'Host'
+                        },
+                        color: [
+                            '#6495ed', '#87cefa', '#da70d6', '#32cd32', '#6495ed',
+                            '#ff69b4', '#ba55d3', '#cd5c5c', '#ffa500', '#40e0d0',
+                            '#1e90ff', '#ff6347', '#7b68ee', '#00fa9a', '#ffd700',
+                            '#6b8e23', '#ff00ff', '#3cb371', '#b8860b', '#30e0e0'
+                        ],
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['Used']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
 
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 90,
+                            end: 100
+                        },
 
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : [ '{{pro_timestamp.284}}','{{pro_timestamp.280}}','{{pro_timestamp.276}}','{{pro_timestamp.272}}','{{pro_timestamp.268}}','{{pro_timestamp.264}}','{{pro_timestamp.260}}','{{pro_timestamp.256}}','{{pro_timestamp.252}}','{{pro_timestamp.248}}','{{pro_timestamp.244}}','{{pro_timestamp.240}}','{{pro_timestamp.236}}','{{pro_timestamp.232}}','{{pro_timestamp.228}}','{{pro_timestamp.224}}','{{pro_timestamp.220}}','{{pro_timestamp.216}}','{{pro_timestamp.212}}','{{pro_timestamp.208}}','{{pro_timestamp.204}}','{{pro_timestamp.200}}','{{pro_timestamp.196}}','{{pro_timestamp.192}}','{{pro_timestamp.188}}','{{pro_timestamp.184}}','{{pro_timestamp.180}}','{{pro_timestamp.176}}','{{pro_timestamp.172}}','{{pro_timestamp.168}}','{{pro_timestamp.164}}','{{pro_timestamp.160}}','{{pro_timestamp.156}}','{{pro_timestamp.152}}','{{pro_timestamp.148}}','{{pro_timestamp.144}}','{{pro_timestamp.140}}','{{pro_timestamp.136}}','{{pro_timestamp.132}}','{{pro_timestamp.128}}','{{pro_timestamp.124}}','{{pro_timestamp.120}}','{{pro_timestamp.116}}','{{pro_timestamp.112}}','{{pro_timestamp.108}}','{{pro_timestamp.104}}','{{pro_timestamp.100}}','{{pro_timestamp.96}}','{{pro_timestamp.92}}','{{pro_timestamp.88}}','{{pro_timestamp.84}}','{{pro_timestamp.80}}','{{pro_timestamp.76}}','{{pro_timestamp.72}}','{{pro_timestamp.68}}','{{pro_timestamp.64}}','{{pro_timestamp.60}}','{{pro_timestamp.56}}','{{pro_timestamp.52}}','{{pro_timestamp.48}}','{{pro_timestamp.44}}','{{pro_timestamp.40}}','{{pro_timestamp.36}}','{{pro_timestamp.32}}','{{pro_timestamp.28}}','{{pro_timestamp.24}}','{{pro_timestamp.20}}','{{pro_timestamp.16}}','{{pro_timestamp.12}}','{{pro_timestamp.8}}','{{pro_timestamp.4}}','{{pro_timestamp.0}}']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value}'
-            },
-            scale:true
-        }
-    ],
-    series : [
-                {
-            name:'Used',
-            type:'line',
-            data:[ {{pro.284}},{{pro.280}},{{pro.276}},{{pro.272}},{{pro.268}},{{pro.264}},{{pro.260}},{{pro.256}},{{pro.252}},{{pro.248}},{{pro.244}},{{pro.240}},{{pro.236}},{{pro.232}},{{pro.228}},{{pro.224}},{{pro.220}},{{pro.216}},{{pro.212}},{{pro.208}},{{pro.204}},{{pro.200}},{{pro.196}},{{pro.192}},{{pro.188}},{{pro.184}},{{pro.180}},{{pro.176}},{{pro.172}},{{pro.168}},{{pro.164}},{{pro.160}},{{pro.156}},{{pro.152}},{{pro.148}},{{pro.144}},{{pro.140}},{{pro.136}},{{pro.132}},{{pro.128}},{{pro.124}},{{pro.120}},{{pro.116}},{{pro.112}},{{pro.108}},{{pro.104}},{{pro.100}},{{pro.96}},{{pro.92}},{{pro.88}},{{pro.84}},{{pro.80}},{{pro.76}},{{pro.72}},{{pro.68}},{{pro.64}},{{pro.60}},{{pro.56}},{{pro.52}},{{pro.48}},{{pro.44}},{{pro.40}},{{pro.36}},{{pro.32}},{{pro.28}},{{pro.24}},{{pro.20}},{{pro.16}},{{pro.12}},{{pro.8}},{{pro.4}},{{pro.0}}],
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
+                        calculable: true,
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{disk_timestamp.284}}', '{{disk_timestamp.280}}', '{{disk_timestamp.276}}', '{{disk_timestamp.272}}', '{{disk_timestamp.268}}', '{{disk_timestamp.264}}', '{{disk_timestamp.260}}', '{{disk_timestamp.256}}', '{{disk_timestamp.252}}', '{{disk_timestamp.248}}', '{{disk_timestamp.244}}', '{{disk_timestamp.240}}', '{{disk_timestamp.236}}', '{{disk_timestamp.232}}', '{{disk_timestamp.228}}', '{{disk_timestamp.224}}', '{{disk_timestamp.220}}', '{{disk_timestamp.216}}', '{{disk_timestamp.212}}', '{{disk_timestamp.208}}', '{{disk_timestamp.204}}', '{{disk_timestamp.200}}', '{{disk_timestamp.196}}', '{{disk_timestamp.192}}', '{{disk_timestamp.188}}', '{{disk_timestamp.184}}', '{{disk_timestamp.180}}', '{{disk_timestamp.176}}', '{{disk_timestamp.172}}', '{{disk_timestamp.168}}', '{{disk_timestamp.164}}', '{{disk_timestamp.160}}', '{{disk_timestamp.156}}', '{{disk_timestamp.152}}', '{{disk_timestamp.148}}', '{{disk_timestamp.144}}', '{{disk_timestamp.140}}', '{{disk_timestamp.136}}', '{{disk_timestamp.132}}', '{{disk_timestamp.128}}', '{{disk_timestamp.124}}', '{{disk_timestamp.120}}', '{{disk_timestamp.116}}', '{{disk_timestamp.112}}', '{{disk_timestamp.108}}', '{{disk_timestamp.104}}', '{{disk_timestamp.100}}', '{{disk_timestamp.96}}', '{{disk_timestamp.92}}', '{{disk_timestamp.88}}', '{{disk_timestamp.84}}', '{{disk_timestamp.80}}', '{{disk_timestamp.76}}', '{{disk_timestamp.72}}', '{{disk_timestamp.68}}', '{{disk_timestamp.64}}', '{{disk_timestamp.60}}', '{{disk_timestamp.56}}', '{{disk_timestamp.52}}', '{{disk_timestamp.48}}', '{{disk_timestamp.44}}', '{{disk_timestamp.40}}', '{{disk_timestamp.36}}', '{{disk_timestamp.32}}', '{{disk_timestamp.28}}', '{{disk_timestamp.24}}', '{{disk_timestamp.20}}', '{{disk_timestamp.16}}', '{{disk_timestamp.12}}', '{{disk_timestamp.8}}', '{{disk_timestamp.4}}', '{{disk_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} MB'
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Used',
+                                type: 'line',
+                                data: [{{diskuse.284}}, {{diskuse.280}}, {{diskuse.276}}, {{diskuse.272}}, {{diskuse.268}}, {{diskuse.264}}, {{diskuse.260}}, {{diskuse.256}}, {{diskuse.252}}, {{diskuse.248}}, {{diskuse.244}}, {{diskuse.240}}, {{diskuse.236}}, {{diskuse.232}}, {{diskuse.228}}, {{diskuse.224}}, {{diskuse.220}}, {{diskuse.216}}, {{diskuse.212}}, {{diskuse.208}}, {{diskuse.204}}, {{diskuse.200}}, {{diskuse.196}}, {{diskuse.192}}, {{diskuse.188}}, {{diskuse.184}}, {{diskuse.180}}, {{diskuse.176}}, {{diskuse.172}}, {{diskuse.168}}, {{diskuse.164}}, {{diskuse.160}}, {{diskuse.156}}, {{diskuse.152}}, {{diskuse.148}}, {{diskuse.144}}, {{diskuse.140}}, {{diskuse.136}}, {{diskuse.132}}, {{diskuse.128}}, {{diskuse.124}}, {{diskuse.120}}, {{diskuse.116}}, {{diskuse.112}}, {{diskuse.108}}, {{diskuse.104}}, {{diskuse.100}}, {{diskuse.96}}, {{diskuse.92}}, {{diskuse.88}}, {{diskuse.84}}, {{diskuse.80}}, {{diskuse.76}}, {{diskuse.72}}, {{diskuse.68}}, {{diskuse.64}}, {{diskuse.60}}, {{diskuse.56}}, {{diskuse.52}}, {{diskuse.48}}, {{diskuse.44}}, {{diskuse.40}}, {{diskuse.36}}, {{diskuse.32}}, {{diskuse.28}}, {{diskuse.24}}, {{diskuse.20}}, {{diskuse.16}}, {{diskuse.12}}, {{diskuse.8}}, {{diskuse.4}}, {{diskuse.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
         );
 
-</script>
+    </script>
 
-<div id="process_oneweek" style="height:400px;width:900px;"></div>
-<!-- ECharts单文件引入 -->
-<script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
-<script type="text/javascript">
+    <div id="disk_oneweek" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
         // 路径配置
         require.config({
             paths: {
                 echarts: 'http://echarts.baidu.com/build/dist'
             }
         });
-// 使用
+        // 使用
         require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-               
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('process_oneweek')); 
-                var option = {
-    title : {
-        text: 'Process Amount',
-        subtext: 'Host'
-    },
-    color : [ 
-    '#FF0080'],
-    tooltip : {
-        trigger: 'axis'
-    },
-    legend: {
-        data:['Number']
-    },
-    toolbox: {
-        show : true,
-        feature : {
-            mark : {show: true},
-            dataView : {show: true, readOnly: false},
-            magicType : {show: false},
-            dataZoom : {show: true},
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
 
-            restore : {show: true},
-            saveAsImage : {show: true}
-        }
-    },
-    dataZoom : {
-        show : true,
-        realtime : true,
-        //orient: 'vertical',   // 'horizontal'
-        //x: 0,
-        y: 36,
-        //width: 400,
-        height: 20,
-        //backgroundColor: 'rgba(221,160,221,0.5)',
-        //dataBackgroundColor: 'rgba(138,43,226,0.5)',
-        //fillerColor: 'rgba(38,143,26,0.6)',
-        //handleColor: 'rgba(128,43,16,0.8)',
-        //xAxisIndex:[],
-        //yAxisIndex:[],
-        start : 80,
-        end : 100,
-    },    
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('disk_oneweek'));
+                    var option = {
+                        title: {
+                            text: 'Disk Usage Data',
+                            subtext: 'Host'
+                        },
+                        color: [
+                            '#6495ed', '#87cefa', '#da70d6', '#32cd32', '#6495ed',
+                            '#ff69b4', '#ba55d3', '#cd5c5c', '#ffa500', '#40e0d0',
+                            '#1e90ff', '#ff6347', '#7b68ee', '#00fa9a', '#ffd700',
+                            '#6b8e23', '#ff00ff', '#3cb371', '#b8860b', '#30e0e0'
+                        ],
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['Used']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
 
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 90,
+                            end: 100
+                        },
 
-    calculable : true,
-    xAxis : [
-        {
-            type : 'category',
-            boundaryGap : false,
-            data : ['{{pro_timestamp.1980}}','{{pro_timestamp.1944}}','{{pro_timestamp.1908}}','{{pro_timestamp.1872}}','{{pro_timestamp.1836}}','{{pro_timestamp.1800}}','{{pro_timestamp.1764}}','{{pro_timestamp.1728}}','{{pro_timestamp.1692}}','{{pro_timestamp.1656}}','{{pro_timestamp.1620}}','{{pro_timestamp.1584}}','{{pro_timestamp.1548}}','{{pro_timestamp.1512}}','{{pro_timestamp.1476}}','{{pro_timestamp.1440}}','{{pro_timestamp.1404}}','{{pro_timestamp.1368}}','{{pro_timestamp.1332}}','{{pro_timestamp.1296}}','{{pro_timestamp.1260}}','{{pro_timestamp.1224}}','{{pro_timestamp.1188}}','{{pro_timestamp.1152}}','{{pro_timestamp.1116}}','{{pro_timestamp.1080}}','{{pro_timestamp.1044}}','{{pro_timestamp.1008}}','{{pro_timestamp.972}}','{{pro_timestamp.936}}','{{pro_timestamp.900}}','{{pro_timestamp.864}}','{{pro_timestamp.828}}','{{pro_timestamp.792}}','{{pro_timestamp.756}}','{{pro_timestamp.720}}','{{pro_timestamp.684}}','{{pro_timestamp.648}}','{{pro_timestamp.612}}','{{pro_timestamp.576}}','{{pro_timestamp.540}}','{{pro_timestamp.504}}','{{pro_timestamp.468}}','{{pro_timestamp.432}}','{{pro_timestamp.396}}','{{pro_timestamp.360}}','{{pro_timestamp.324}}','{{pro_timestamp.288}}','{{pro_timestamp.252}}','{{pro_timestamp.216}}','{{pro_timestamp.180}}','{{pro_timestamp.144}}','{{pro_timestamp.108}}','{{pro_timestamp.72}}','{{pro_timestamp.36}}','{{pro_timestamp.0}}']
-        }
-    ],
-    yAxis : [
-        {
-            type : 'value',
-            axisLabel : {
-                formatter: '{value}'
-            },
-            scale:true
-        }
-    ],
-    series : [
-                {
-            name:'Used',
-            type:'line',
-            data:[{{pro.1980}},{{pro.1944}},{{pro.1908}},{{pro.1872}},{{pro.1836}},{{pro.1800}},{{pro.1764}},{{pro.1728}},{{pro.1692}},{{pro.1656}},{{pro.1620}},{{pro.1584}},{{pro.1548}},{{pro.1512}},{{pro.1476}},{{pro.1440}},{{pro.1404}},{{pro.1368}},{{pro.1332}},{{pro.1296}},{{pro.1260}},{{pro.1224}},{{pro.1188}},{{pro.1152}},{{pro.1116}},{{pro.1080}},{{pro.1044}},{{pro.1008}},{{pro.972}},{{pro.936}},{{pro.900}},{{pro.864}},{{pro.828}},{{pro.792}},{{pro.756}},{{pro.720}},{{pro.684}},{{pro.648}},{{pro.612}},{{pro.576}},{{pro.540}},{{pro.504}},{{pro.468}},{{pro.432}},{{pro.396}},{{pro.360}},{{pro.324}},{{pro.288}},{{pro.252}},{{pro.216}},{{pro.180}},{{pro.144}},{{pro.108}},{{pro.72}},{{pro.36}},{{pro.0}}],
-            
-            markLine : {
-                data : [
-                    {type : 'average', name : '平均值'}
-                ]
-            }
-        },
-                
-    ]
-};
-                    
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
+                        calculable: true,
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{disk_timestamp.1980}}', '{{disk_timestamp.1944}}', '{{disk_timestamp.1908}}', '{{disk_timestamp.1872}}', '{{disk_timestamp.1836}}', '{{disk_timestamp.1800}}', '{{disk_timestamp.1764}}', '{{disk_timestamp.1728}}', '{{disk_timestamp.1692}}', '{{disk_timestamp.1656}}', '{{disk_timestamp.1620}}', '{{disk_timestamp.1584}}', '{{disk_timestamp.1548}}', '{{disk_timestamp.1512}}', '{{disk_timestamp.1476}}', '{{disk_timestamp.1440}}', '{{disk_timestamp.1404}}', '{{disk_timestamp.1368}}', '{{disk_timestamp.1332}}', '{{disk_timestamp.1296}}', '{{disk_timestamp.1260}}', '{{disk_timestamp.1224}}', '{{disk_timestamp.1188}}', '{{disk_timestamp.1152}}', '{{disk_timestamp.1116}}', '{{disk_timestamp.1080}}', '{{disk_timestamp.1044}}', '{{disk_timestamp.1008}}', '{{disk_timestamp.972}}', '{{disk_timestamp.936}}', '{{disk_timestamp.900}}', '{{disk_timestamp.864}}', '{{disk_timestamp.828}}', '{{disk_timestamp.792}}', '{{disk_timestamp.756}}', '{{disk_timestamp.720}}', '{{disk_timestamp.684}}', '{{disk_timestamp.648}}', '{{disk_timestamp.612}}', '{{disk_timestamp.576}}', '{{disk_timestamp.540}}', '{{disk_timestamp.504}}', '{{disk_timestamp.468}}', '{{disk_timestamp.432}}', '{{disk_timestamp.396}}', '{{disk_timestamp.360}}', '{{disk_timestamp.324}}', '{{disk_timestamp.288}}', '{{disk_timestamp.252}}', '{{disk_timestamp.216}}', '{{disk_timestamp.180}}', '{{disk_timestamp.144}}', '{{disk_timestamp.108}}', '{{disk_timestamp.72}}', '{{disk_timestamp.36}}', '{{disk_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} MB'
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Used',
+                                type: 'line',
+                                data: [{{diskuse.1980}}, {{diskuse.1944}}, {{diskuse.1908}}, {{diskuse.1872}}, {{diskuse.1836}}, {{diskuse.1800}}, {{diskuse.1764}}, {{diskuse.1728}}, {{diskuse.1692}}, {{diskuse.1656}}, {{diskuse.1620}}, {{diskuse.1584}}, {{diskuse.1548}}, {{diskuse.1512}}, {{diskuse.1476}}, {{diskuse.1440}}, {{diskuse.1404}}, {{diskuse.1368}}, {{diskuse.1332}}, {{diskuse.1296}}, {{diskuse.1260}}, {{diskuse.1224}}, {{diskuse.1188}}, {{diskuse.1152}}, {{diskuse.1116}}, {{diskuse.1080}}, {{diskuse.1044}}, {{diskuse.1008}}, {{diskuse.972}}, {{diskuse.936}}, {{diskuse.900}}, {{diskuse.864}}, {{diskuse.828}}, {{diskuse.792}}, {{diskuse.756}}, {{diskuse.720}}, {{diskuse.684}}, {{diskuse.648}}, {{diskuse.612}}, {{diskuse.576}}, {{diskuse.540}}, {{diskuse.504}}, {{diskuse.468}}, {{diskuse.432}}, {{diskuse.396}}, {{diskuse.360}}, {{diskuse.324}}, {{diskuse.288}}, {{diskuse.252}}, {{diskuse.216}}, {{diskuse.180}}, {{diskuse.144}}, {{diskuse.108}}, {{diskuse.72}}, {{diskuse.36}}, {{diskuse.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
         );
 
-</script>
-	</div>
+    </script>
+
+    <div id="process_halfday" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+        // 使用
+        require(
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('process_halfday'));
+                    var option = {
+                        title: {
+                            text: 'Process Amount',
+                            subtext: 'Host'
+                        },
+                        color: [
+                            '#FF0080'],
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['Number']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: false},
+                                dataZoom: {show: true},
+
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100,
+                        },
+
+
+                        calculable: true,
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{pro_timestamp.144}}', '{{pro_timestamp.142}}', '{{pro_timestamp.140}}', '{{pro_timestamp.138}}', '{{pro_timestamp.136}}', '{{pro_timestamp.134}}', '{{pro_timestamp.132}}', '{{pro_timestamp.130}}', '{{pro_timestamp.128}}', '{{pro_timestamp.126}}', '{{pro_timestamp.124}}', '{{pro_timestamp.122}}', '{{pro_timestamp.120}}', '{{pro_timestamp.118}}', '{{pro_timestamp.116}}', '{{pro_timestamp.114}}', '{{pro_timestamp.112}}', '{{pro_timestamp.110}}', '{{pro_timestamp.108}}', '{{pro_timestamp.106}}', '{{pro_timestamp.104}}', '{{pro_timestamp.102}}', '{{pro_timestamp.100}}', '{{pro_timestamp.98}}', '{{pro_timestamp.96}}', '{{pro_timestamp.94}}', '{{pro_timestamp.92}}', '{{pro_timestamp.90}}', '{{pro_timestamp.88}}', '{{pro_timestamp.86}}', '{{pro_timestamp.84}}', '{{pro_timestamp.82}}', '{{pro_timestamp.80}}', '{{pro_timestamp.78}}', '{{pro_timestamp.76}}', '{{pro_timestamp.74}}', '{{pro_timestamp.72}}', '{{pro_timestamp.70}}', '{{pro_timestamp.68}}', '{{pro_timestamp.66}}', '{{pro_timestamp.64}}', '{{pro_timestamp.62}}', '{{pro_timestamp.60}}', '{{pro_timestamp.58}}', '{{pro_timestamp.56}}', '{{pro_timestamp.54}}', '{{pro_timestamp.52}}', '{{pro_timestamp.50}}', '{{pro_timestamp.48}}', '{{pro_timestamp.46}}', '{{pro_timestamp.44}}', '{{pro_timestamp.42}}', '{{pro_timestamp.40}}', '{{pro_timestamp.38}}', '{{pro_timestamp.36}}', '{{pro_timestamp.34}}', '{{pro_timestamp.32}}', '{{pro_timestamp.30}}', '{{pro_timestamp.28}}', '{{pro_timestamp.26}}', '{{pro_timestamp.24}}', '{{pro_timestamp.22}}', '{{pro_timestamp.20}}', '{{pro_timestamp.18}}', '{{pro_timestamp.16}}', '{{pro_timestamp.14}}', '{{pro_timestamp.12}}', '{{pro_timestamp.10}}', '{{pro_timestamp.8}}', '{{pro_timestamp.6}}', '{{pro_timestamp.4}}', '{{pro_timestamp.2}}', '{{pro_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value}'
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Used',
+                                type: 'line',
+                                data: [{{pro.144}}, {{pro.142}}, {{pro.140}}, {{pro.138}}, {{pro.136}}, {{pro.134}}, {{pro.132}}, {{pro.130}}, {{pro.128}}, {{pro.126}}, {{pro.124}}, {{pro.122}}, {{pro.120}}, {{pro.118}}, {{pro.116}}, {{pro.114}}, {{pro.112}}, {{pro.110}}, {{pro.108}}, {{pro.106}}, {{pro.104}}, {{pro.102}}, {{pro.100}}, {{pro.98}}, {{pro.96}}, {{pro.94}}, {{pro.92}}, {{pro.90}}, {{pro.88}}, {{pro.86}}, {{pro.84}}, {{pro.82}}, {{pro.80}}, {{pro.78}}, {{pro.76}}, {{pro.74}}, {{pro.72}}, {{pro.70}}, {{pro.68}}, {{pro.66}}, {{pro.64}}, {{pro.62}}, {{pro.60}}, {{pro.58}}, {{pro.56}}, {{pro.54}}, {{pro.52}}, {{pro.50}}, {{pro.48}}, {{pro.46}}, {{pro.44}}, {{pro.42}}, {{pro.40}}, {{pro.38}}, {{pro.36}}, {{pro.34}}, {{pro.32}}, {{pro.30}}, {{pro.28}}, {{pro.26}}, {{pro.24}}, {{pro.22}}, {{pro.20}}, {{pro.18}}, {{pro.16}}, {{pro.14}}, {{pro.12}}, {{pro.10}}, {{pro.8}}, {{pro.6}}, {{pro.4}}, {{pro.2}}, {{pro.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
+        );
+
+    </script>
+
+    <div id="process_oneday" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+        // 使用
+        require(
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('process_oneday'));
+                    var option = {
+                        title: {
+                            text: 'Process Amount',
+                            subtext: 'Host'
+                        },
+                        color: [
+                            '#FF0080'],
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['Number']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: false},
+                                dataZoom: {show: true},
+
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100,
+                        },
+
+
+                        calculable: true,
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{pro_timestamp.284}}', '{{pro_timestamp.280}}', '{{pro_timestamp.276}}', '{{pro_timestamp.272}}', '{{pro_timestamp.268}}', '{{pro_timestamp.264}}', '{{pro_timestamp.260}}', '{{pro_timestamp.256}}', '{{pro_timestamp.252}}', '{{pro_timestamp.248}}', '{{pro_timestamp.244}}', '{{pro_timestamp.240}}', '{{pro_timestamp.236}}', '{{pro_timestamp.232}}', '{{pro_timestamp.228}}', '{{pro_timestamp.224}}', '{{pro_timestamp.220}}', '{{pro_timestamp.216}}', '{{pro_timestamp.212}}', '{{pro_timestamp.208}}', '{{pro_timestamp.204}}', '{{pro_timestamp.200}}', '{{pro_timestamp.196}}', '{{pro_timestamp.192}}', '{{pro_timestamp.188}}', '{{pro_timestamp.184}}', '{{pro_timestamp.180}}', '{{pro_timestamp.176}}', '{{pro_timestamp.172}}', '{{pro_timestamp.168}}', '{{pro_timestamp.164}}', '{{pro_timestamp.160}}', '{{pro_timestamp.156}}', '{{pro_timestamp.152}}', '{{pro_timestamp.148}}', '{{pro_timestamp.144}}', '{{pro_timestamp.140}}', '{{pro_timestamp.136}}', '{{pro_timestamp.132}}', '{{pro_timestamp.128}}', '{{pro_timestamp.124}}', '{{pro_timestamp.120}}', '{{pro_timestamp.116}}', '{{pro_timestamp.112}}', '{{pro_timestamp.108}}', '{{pro_timestamp.104}}', '{{pro_timestamp.100}}', '{{pro_timestamp.96}}', '{{pro_timestamp.92}}', '{{pro_timestamp.88}}', '{{pro_timestamp.84}}', '{{pro_timestamp.80}}', '{{pro_timestamp.76}}', '{{pro_timestamp.72}}', '{{pro_timestamp.68}}', '{{pro_timestamp.64}}', '{{pro_timestamp.60}}', '{{pro_timestamp.56}}', '{{pro_timestamp.52}}', '{{pro_timestamp.48}}', '{{pro_timestamp.44}}', '{{pro_timestamp.40}}', '{{pro_timestamp.36}}', '{{pro_timestamp.32}}', '{{pro_timestamp.28}}', '{{pro_timestamp.24}}', '{{pro_timestamp.20}}', '{{pro_timestamp.16}}', '{{pro_timestamp.12}}', '{{pro_timestamp.8}}', '{{pro_timestamp.4}}', '{{pro_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value}'
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Used',
+                                type: 'line',
+                                data: [{{pro.284}}, {{pro.280}}, {{pro.276}}, {{pro.272}}, {{pro.268}}, {{pro.264}}, {{pro.260}}, {{pro.256}}, {{pro.252}}, {{pro.248}}, {{pro.244}}, {{pro.240}}, {{pro.236}}, {{pro.232}}, {{pro.228}}, {{pro.224}}, {{pro.220}}, {{pro.216}}, {{pro.212}}, {{pro.208}}, {{pro.204}}, {{pro.200}}, {{pro.196}}, {{pro.192}}, {{pro.188}}, {{pro.184}}, {{pro.180}}, {{pro.176}}, {{pro.172}}, {{pro.168}}, {{pro.164}}, {{pro.160}}, {{pro.156}}, {{pro.152}}, {{pro.148}}, {{pro.144}}, {{pro.140}}, {{pro.136}}, {{pro.132}}, {{pro.128}}, {{pro.124}}, {{pro.120}}, {{pro.116}}, {{pro.112}}, {{pro.108}}, {{pro.104}}, {{pro.100}}, {{pro.96}}, {{pro.92}}, {{pro.88}}, {{pro.84}}, {{pro.80}}, {{pro.76}}, {{pro.72}}, {{pro.68}}, {{pro.64}}, {{pro.60}}, {{pro.56}}, {{pro.52}}, {{pro.48}}, {{pro.44}}, {{pro.40}}, {{pro.36}}, {{pro.32}}, {{pro.28}}, {{pro.24}}, {{pro.20}}, {{pro.16}}, {{pro.12}}, {{pro.8}}, {{pro.4}}, {{pro.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
+        );
+
+    </script>
+
+    <div id="process_oneweek" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+        // 使用
+        require(
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('process_oneweek'));
+                    var option = {
+                        title: {
+                            text: 'Process Amount',
+                            subtext: 'Host'
+                        },
+                        color: [
+                            '#FF0080'],
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['Number']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: false},
+                                dataZoom: {show: true},
+
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100,
+                        },
+
+
+                        calculable: true,
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{pro_timestamp.1980}}', '{{pro_timestamp.1944}}', '{{pro_timestamp.1908}}', '{{pro_timestamp.1872}}', '{{pro_timestamp.1836}}', '{{pro_timestamp.1800}}', '{{pro_timestamp.1764}}', '{{pro_timestamp.1728}}', '{{pro_timestamp.1692}}', '{{pro_timestamp.1656}}', '{{pro_timestamp.1620}}', '{{pro_timestamp.1584}}', '{{pro_timestamp.1548}}', '{{pro_timestamp.1512}}', '{{pro_timestamp.1476}}', '{{pro_timestamp.1440}}', '{{pro_timestamp.1404}}', '{{pro_timestamp.1368}}', '{{pro_timestamp.1332}}', '{{pro_timestamp.1296}}', '{{pro_timestamp.1260}}', '{{pro_timestamp.1224}}', '{{pro_timestamp.1188}}', '{{pro_timestamp.1152}}', '{{pro_timestamp.1116}}', '{{pro_timestamp.1080}}', '{{pro_timestamp.1044}}', '{{pro_timestamp.1008}}', '{{pro_timestamp.972}}', '{{pro_timestamp.936}}', '{{pro_timestamp.900}}', '{{pro_timestamp.864}}', '{{pro_timestamp.828}}', '{{pro_timestamp.792}}', '{{pro_timestamp.756}}', '{{pro_timestamp.720}}', '{{pro_timestamp.684}}', '{{pro_timestamp.648}}', '{{pro_timestamp.612}}', '{{pro_timestamp.576}}', '{{pro_timestamp.540}}', '{{pro_timestamp.504}}', '{{pro_timestamp.468}}', '{{pro_timestamp.432}}', '{{pro_timestamp.396}}', '{{pro_timestamp.360}}', '{{pro_timestamp.324}}', '{{pro_timestamp.288}}', '{{pro_timestamp.252}}', '{{pro_timestamp.216}}', '{{pro_timestamp.180}}', '{{pro_timestamp.144}}', '{{pro_timestamp.108}}', '{{pro_timestamp.72}}', '{{pro_timestamp.36}}', '{{pro_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value}'
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'Used',
+                                type: 'line',
+                                data: [{{pro.1980}}, {{pro.1944}}, {{pro.1908}}, {{pro.1872}}, {{pro.1836}}, {{pro.1800}}, {{pro.1764}}, {{pro.1728}}, {{pro.1692}}, {{pro.1656}}, {{pro.1620}}, {{pro.1584}}, {{pro.1548}}, {{pro.1512}}, {{pro.1476}}, {{pro.1440}}, {{pro.1404}}, {{pro.1368}}, {{pro.1332}}, {{pro.1296}}, {{pro.1260}}, {{pro.1224}}, {{pro.1188}}, {{pro.1152}}, {{pro.1116}}, {{pro.1080}}, {{pro.1044}}, {{pro.1008}}, {{pro.972}}, {{pro.936}}, {{pro.900}}, {{pro.864}}, {{pro.828}}, {{pro.792}}, {{pro.756}}, {{pro.720}}, {{pro.684}}, {{pro.648}}, {{pro.612}}, {{pro.576}}, {{pro.540}}, {{pro.504}}, {{pro.468}}, {{pro.432}}, {{pro.396}}, {{pro.360}}, {{pro.324}}, {{pro.288}}, {{pro.252}}, {{pro.216}}, {{pro.180}}, {{pro.144}}, {{pro.108}}, {{pro.72}}, {{pro.36}}, {{pro.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
+        );
+
+    </script>
+</div>
 	
 	
