@@ -58,6 +58,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Tsinghua Cloud - Schedule Page</title>
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+
     <script src="{% static 'jquery-easyui-1/jquery.min.js' %}"></script>
     <script src="{% static 'jquery-easyui-1/jquery.easyui.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
@@ -69,6 +72,7 @@
     <script type="text/javascript" src="/static/QuneeHTML5_V1.8/demos/js/graphs.js"></script>
     <script src="/static/QuneeHTML5_V1.8/demos/js/codemirror/codemirror.js"></script>
     <script src="/static/QuneeHTML5_V1.8/demos/js/codemirror/javascript.js"></script>
+
 
 </head>
 
@@ -105,29 +109,12 @@
     </table>
 </div>
 
-<div data-options="region:'south',border:false" style="height:20px;background:#F5F5F5;padding:10px;"></div>
 <div data-options="region:'center',title:'Monitor Charts'" style="background:#F0F0F0">
 </div>
 <div style="height: 650px;width:1300px;" id="canvas">
         <script src="{% static 'js/schedulegraph.js' %}"></script>
 </div>
 
-
-<script type="text/javascript">
-    $(function () {
-        action();
-        tenants();
-    });
-
-    action = function(){
-        $('#monitor-table').datagrid({
-            url:'scheduledatatable/'
-        });
-        console.info("123");
-    };
-    setInterval("action()", 3000);
-    setInterval("tenants()", 3000);
-</script>
 
 </body>
 </html>
