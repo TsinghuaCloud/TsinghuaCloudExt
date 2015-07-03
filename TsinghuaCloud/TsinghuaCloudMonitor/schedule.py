@@ -11,7 +11,7 @@ host1='192.168.173.22'
 host2='192.168.173.23'
 port='22'
 username='root'
-passwd='tsinghuanmcloud'
+passwd='ubuntu'
 cmd='/usr/local/nagios/etc/Configuration.py'
 
 class DBConn:
@@ -55,9 +55,9 @@ def ssh_cmd(ip, port, user, passwd, cmd):
         r=ssh.read()
         print r
         ret=0
-    except pexpect.EOF:
-        print "EOF"
-        ssh.close()
+    except pxssh.ExceptionPxssh, e:  
+        print "pxssh failed on login."  
+        print str(e)   
         ret = -1
     except pexpect.TIMEOUT:
         print "TIMEOUT"
@@ -125,7 +125,7 @@ def line2(x):
 
 
 def test():
-    sql = 'select * from externalService_schedule'
+    sql = 'select * from TsinghuaCloudMonitor_schedule'
     results = selectData(sql)
     sort=[]
 
@@ -168,9 +168,9 @@ def test():
 
 
 
-
+#ssh_cmd(host1,port,username,passwd,cmd)
 while True:
-    test()
-        time.sleep(2)
+     test()
+     time.sleep(2)
  
    
