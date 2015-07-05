@@ -215,7 +215,7 @@ def schedule_data(request):
     for monitor_item in monitor_list:
         for server_rec in server_table:
             if server_rec['ServerName'] == monitor_item.Server:
-                server_rec['Host'].append(monitor_item.Target_IP)
+                server_rec['Host'].append(monitor_item.Target_HostName)
 
     print server_table
     return HttpResponse(json.dumps(server_table), content_type="application/json")
@@ -322,7 +322,7 @@ def monitor(request):
     print "Run to 1"
     for k in range(0, host_count):
         print "Run to 2"
-        last_check_rec_list = Service.objects.values('HostId', 'ServiceName').filter(HostId=monitor_host_list[k].get('id'), id__gt=700000).distinct()
+        last_check_rec_list = Service.objects.values('HostId', 'ServiceName').filter(HostId=monitor_host_list[k].get('id')).distinct()
         print "Run to 3"
         if len(last_check_rec_list) == 0:
             # Create empty service record
@@ -339,7 +339,7 @@ def monitor(request):
             print "Run to 4"
             cur_id = monitor_host_list[k].get('id')
             svc_name = single_last_check.get('ServiceName')
-            service_record = Service.objects.all().filter(HostId=cur_id, ServiceName=svc_name, id__gt=700000).last()
+            service_record = Service.objects.all().filter(HostId=cur_id, ServiceName=svc_name).last()
             print "Run to 5a"
             service_table.append(service_record)
             print "Run to 5b"
@@ -1007,7 +1007,7 @@ def hostdetail(request, hostid):
     usergroup = request.session['usergroup']
 
     host = get_object_or_404(Host, pk=hostid)
-    memory = Service.objects.filter(HostId=host.id, ServiceName='MemoryUsage', id__gt=700000)
+    memory = Service.objects.filter(HostId=host.id, ServiceName='MemoryUsage')
     p = re.compile(r'\d+')
     memory_total = []
     memory_used = []
@@ -1030,7 +1030,7 @@ def hostdetail(request, hostid):
                         memory_timestamp.append(memory[k].LastCheck)
     print memory_timestamp
     print memory_used
-    cpuload = Service.objects.filter(HostId=host.id, ServiceName='cpuload', id__gt=700000)
+    cpuload = Service.objects.filter(HostId=host.id, ServiceName='cpuload')
     p = re.compile(r'(\d+)\.(\d*)')
     cpu_one = []
     cpu_five = []
@@ -1054,7 +1054,7 @@ def hostdetail(request, hostid):
                     cpu_five.append('.'.join(p.findall(cpuload[k].PerformanceData)[3]))
                     cpu_timestamp.append(cpuload[k].LastCheck)
 
-    disk = Service.objects.filter(HostId=host.id, ServiceName='disk', id__gt=700000)
+    disk = Service.objects.filter(HostId=host.id, ServiceName='disk')
     p = re.compile(r'\d+')
     diskuse = []
     disk_timestamp = []
@@ -1072,7 +1072,7 @@ def hostdetail(request, hostid):
                     diskuse.append(p.findall(disk[k].PerformanceData)[0])
                     disk_timestamp.append(disk[k].LastCheck)
 
-    process = Service.objects.filter(HostId=host.id, ServiceName='total-procs', id__gt=700000)
+    process = Service.objects.filter(HostId=host.id, ServiceName='total-procs')
     p = re.compile(r'\d+')
     pro = []
     pro_timestamp = []
@@ -1211,6 +1211,7 @@ def start_input(request):
         print request.session['username']
         schedule = Schedule(IP=ip, HostName=hostname, ArrivingTime=now, Owner=request.session['username'])
         schedule.save()
+        print "Schedule Added"
         # p = sub.Popen('/home/django/TsinghuaCloud/TsinghuaCloud/schedule.py',stdout=sub.PIPE,shell=True)
         return HttpResponseRedirect('/hoststatus')
 

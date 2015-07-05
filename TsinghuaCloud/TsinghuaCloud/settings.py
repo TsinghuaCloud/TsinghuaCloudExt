@@ -46,7 +46,6 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -62,7 +61,7 @@ WSGI_APPLICATION = 'TsinghuaCloud.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'TsinghuaCloud',
+        'NAME': 'monitorService',
         'USER': 'root',
         'PASSWORD': 'tsinghua',
         'HOST': '166.111.143.241',
