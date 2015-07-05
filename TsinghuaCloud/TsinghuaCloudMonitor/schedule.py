@@ -147,7 +147,7 @@ def test():
 
             sql3= "insert into TsinghuaCloudMonitor_nagios(Server,Target_IP,Target_HostName)value('%s','%s','%s')" % (sort2[0]['Server'],ipgroup[k],namegroup[k])
             insertData(sql3)
-            sql4="insert into TsinghuaCloudMonitor_host(IP,HostName,Owner,Info,NagiosServer,HostType,Alias)value('%s','%s','%s','UP','%s','external')" % (ipgroup[k], namegroup[k], Owner[k], sort2[0]['Server'], namegroup[k])
+            sql4="insert into TsinghuaCloudMonitor_host(IP,HostName,Owner,Info,NagiosServer,HostType,Alias)value('%s','%s','%s','UP','%s','external', '%s')" % (ipgroup[k], namegroup[k], Owner[k], sort2[0]['Server'], namegroup[k])
             insertData(sql4)
 # <<<<<<< HEAD
 # 			#if sort2[0]['Server'] == '01':
