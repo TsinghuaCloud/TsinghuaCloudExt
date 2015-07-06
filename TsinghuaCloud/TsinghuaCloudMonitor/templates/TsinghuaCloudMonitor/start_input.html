@@ -2,6 +2,10 @@
 {% load staticfiles %}
 
 <script>
+    {% for error in errors %}
+        alert("{{ error }}");
+    {% endfor %}
+
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {

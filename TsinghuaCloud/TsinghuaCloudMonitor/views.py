@@ -1197,23 +1197,30 @@ def start_input(request):
     hostname = None
     if request.method == 'POST':
         if not request.POST.get('ip'):
-            errors.append('Please Enter IP address')
+            errors.append("Please Enter IP address")
         else:
             ip = request.POST.get('ip')
             print('dd')
-        if not request.POST.get('hostname'):
-            errors.append('Please Enter hostname')
-        else:
-            hostname = request.POST.get('hostname')
+            if not request.POST.get('hostname'):
+                errors.append("Please Enter Hostname")
+            else:
+                hostname = request.POST.get('hostname')
+                exist_ip = Host.objects.filter(IP=ip)
+                if len(exist_ip) > 0:
+                    errors.append("IP already exists")
+                exist_hostname = Host.objects.filter(HostName=hostname)
+                if len(exist_hostname) > 0:
+                    errors.append("Hostname already exists")
 
-        now = time.time()
-        print now
-        print request.session['username']
-        schedule = Schedule(IP=ip, HostName=hostname, ArrivingTime=now, Owner=request.session['username'])
-        schedule.save()
-        print "Schedule Added"
-        # p = sub.Popen('/home/django/TsinghuaCloud/TsinghuaCloud/schedule.py',stdout=sub.PIPE,shell=True)
-        return HttpResponseRedirect('/hoststatus')
+        print errors
+
+        if len(errors) == 0:
+            now = time.time()
+            schedule = Schedule(IP=ip, HostName=hostname, ArrivingTime=now, Owner=request.session['username'])
+            schedule.save()
+            print "Schedule Added"
+            # p = sub.Popen('/home/django/TsinghuaCloud/TsinghuaCloud/schedule.py',stdout=sub.PIPE,shell=True)
+            return HttpResponseRedirect('/hoststatus')
 
     return render_to_response('TsinghuaCloudMonitor/start_input.html', {'errors': errors})
 
