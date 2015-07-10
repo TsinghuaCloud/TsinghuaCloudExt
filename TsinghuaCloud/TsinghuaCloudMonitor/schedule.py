@@ -1,5 +1,5 @@
 #! /usr/bin/python
-import pxssh  
+import pxssh
 import pexpect
 import MySQLdb
 import MySQLdb.cursors
@@ -16,7 +16,6 @@ cmd='/usr/local/nagios/etc/Configuration.py'
 
 class DBConn:
     conn = None
-
     def connect(self):
         self.conn= MySQLdb.connect(
             host='166.111.143.241',
@@ -137,7 +136,7 @@ def test():
         for k in range(len(sort[j]['IP'].split(';'))):
             ipgroup=sort[j]['IP'].split(';')
             namegroup= sort[j]['HostName'].split(';')
-            Owner = sort[j]['Owner'].split(';')
+            Owner = sort[j]['Owner']
             sql2='select Server,count(Target_IP) as num from TsinghuaCloudMonitor_nagios group by Server'
             server_count = selectData(sql2)
             sort2=[]
@@ -149,7 +148,7 @@ def test():
                   "value('%s','%s','%s')" % (sort2[0]['Server'],ipgroup[k],namegroup[k])
             insertData(sql3)
             sql4="insert into TsinghuaCloudMonitor_host(IP,HostName,Owner,Info,NagiosServer,HostType,Alias)" \
-                 "value('%s','%s','%s','UP','%s','external', '%s')" % (ipgroup[k], namegroup[k], Owner[k], sort2[0]['Server'], namegroup[k])
+                 "value('%s','%s','%s','UP','%s','external', '%s')" % (ipgroup[k], namegroup[k], Owner, sort2[0]['Server'], namegroup[k])
             insertData(sql4)
 # <<<<<<< HEAD
 # 			#if sort2[0]['Server'] == '01':
