@@ -1,6 +1,21 @@
 {% csrf_token %}
 {% load staticfiles %}
 
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tsinghua Cloud - Monitor Page</title>
+<script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
+<script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
+<script src="{% static 'js/group.js'%}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
+</head>
+
 <script>
 function getCookie(name) {
     var cookieValue = null;
@@ -39,11 +54,11 @@ function doSearch(){
     var prefix= get_site_prefix();
     $.ajax({
         type: "POST",
-        url: prefix + "doSearch/", 
-        data: { 
+        url: prefix + "doSearch/",
+        data: {
             service: $('#itemid').val(),
-            host: $('#productid').val(),
-        },
+            host: $('#productid').val()
+        }
 	});
 }
 /**
@@ -52,7 +67,6 @@ function doSearch(){
         * @param fldList 要合并的列,用逗号分隔(例如："name,department,office");
         */
         function MergeCells(tableID, fldList) {
-            
             var Arr = fldList.split(",");
             var dg = $('#' + tableID);
             var fldName;
@@ -61,13 +75,6 @@ function doSearch(){
             var PerValue = "";
             var CurValue = "";
             var length = Arr.length - 1;
-            var test = [];
-            for (i=72;i>=30;i--){
-                var k=2*i;
-	            test.push("{"+'{'+'pro.'+k+"}}");
-	         
-            }
-            //alert(test);
             for (i = length; i >= 0; i--) {
                 fldName = Arr[i];
                 PerValue = "";
@@ -77,11 +84,7 @@ function doSearch(){
                         CurValue = "";
                     }
                     else {
-                        CurValue1 = dg.datagrid("getRows")[row][fldName].split('>');
-                        CurValue = CurValue1[1];
-                 
-                        
-                        
+                        CurValue = dg.datagrid("getRows")[row][fldName];
                     }
                     if (PerValue == CurValue) {
                         span += 1;
@@ -99,18 +102,14 @@ function doSearch(){
                     }
                 }
             }
-             $('.datagrid-td-merged').find('a').css('font-size','15px');
-             $('.datagrid-td-merged').css('background-color','#eadfd9'); 
-             
-             
-         }
-        
+        }
+
 $(function () {
-var csrftoken = getCookie('csrftoken'); 
+var csrftoken = getCookie('csrftoken');
     $(document).ready(function(){
      setInterval(function(){cache_clear()},1000000);
      });
-      
+
     $.ajaxSetup({
         crossDomain: false, // obviates need for sameOrigin test
         beforeSend: function(xhr, settings) {
@@ -119,29 +118,11 @@ var csrftoken = getCookie('csrftoken');
             }
         }
     });
+
     // END DJANGO AJAX
-  
-          
 });
 
-
-
 </script>
-
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Tsinghua Cloud - Monitor Page</title>
-<script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
-<script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
-<script src="{% static 'js/group.js'%}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
-</head>
 
 <body class="easyui-layout">
 	<div data-options="region:'north',border:false" style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
@@ -162,28 +143,17 @@ var csrftoken = getCookie('csrftoken');
 	<div data-options="region:'east',split:true,collapsed:true,title:'East'" style="width:100px;padding:10px;">其他</div>
 	
 	<div data-options="region:'center',title:'监控信息'">
-	    
-		<table id='service-table' class="easyui-datagrid" toolbar="#tb"
+        <table id='service-table' class="easyui-datagrid" toolbar="#tb"
 					data-options="border:false,singleSelect:true,fit:true,view:groupview,
                 groupField:'type',
                 groupFormatter:function(value,rows){
                     return value + ' - ' + rows.length + ' Item(s)';
-                },fitColumns:true,onLoadSuccess:function(data){ MergeCells('service-table','itemid');}">
-				<thead>
-					<tr>
-						<th data-options="field:'itemid'" width="50" sortable="true">主机</th>
-						<th data-options="field:'productid'" width="70">服务</th>
-						<!-- <th data-options="field:'listprice'" width="30">状态</th> -->
-						<th data-options="field:'unitcost'" width="80">上次查看</th>
-						<th data-options="field:'duration'" width="70">持续时间</th>
-						<th data-options="field:'attr1'" width="180">状态信息</th>
-						<th data-options="field:'status'" width="220">详细运行数据</th>
-					</tr>
-				</thead>
+                },fitColumns:true" >
 				<tbody>
-                        {% for service in service %}
-                        <tr>
+                {% for service in service %}
+                        <td>{{ service.Owner }}</td>
                         <td class='detail'>
+
                         {% if service.ServiceName != 'N/A' %}
                             <a href="{% url 'hostdetail' service.HostId %}">{{service.HostName}}</a></td>
                         {% else %}
@@ -196,8 +166,33 @@ var csrftoken = getCookie('csrftoken');
                         <td>{{service.PerformanceData}}</td>
                         </tr>
                         {% endfor %}
-
+                </tbody>
 			</table>
 	</div>
+<script language="javascript">
+    $("#service-table").datagrid({
+        remoteSort:false,
+        columns: [[
+            {field: 'owner', title: '所有者', width: 60, sortable: true, remoteSort:false,
+                sorter:function(a,b){
+                    console.info("here");
+                    return (a > b ? 1 : -1);
+                }},
+            {field: 'HostName', title: '主机名', width: 70, align: 'left', sortable: true, remoteSort:false},
+            {field: 'ServiceName', title: '监控类型', width: 70, align: 'left'},
+            {field: 'LastCheck', title: '上次检查', width: 70, align: 'left'},
+            {field: 'Duration', title: '持续时间', width: 70, align: 'left'},
+            {field: 'Status', title: '当前状态', width: 120},
+            {field: 'DetailedInfo', title: '详细数据', width: 120}
+        ]],
+        onLoadSuccess: function (data) {
+            MergeCells('service-table','HostName');
+            MergeCells('service-table','owner');
+        }
+    });
+
+    $("#service-table").datagrid('sort', 'HostName');	// sort on a column
+
+</script>
 </body>
 </html>

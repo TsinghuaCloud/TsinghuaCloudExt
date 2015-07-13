@@ -35,76 +35,6 @@ function cache_clear()
     alert('refresh');
 }
 
-function doSearch(){
-    var prefix= get_site_prefix();
-    $.ajax({
-        type: "POST",
-        url: prefix + "doSearch/", 
-        data: { 
-            service: $('#itemid').val(),
-            host: $('#productid').val(),
-        },
-    });
-}
-/**
-        * EasyUI DataGrid根据字段动态合并单元格
-        * @param fldList 要合并table的id
-        * @param fldList 要合并的列,用逗号分隔(例如："name,department,office");
-        */
-        function MergeCells(tableID, fldList) {
-            
-            var Arr = fldList.split(",");
-            var dg = $('#' + tableID);
-            var fldName;
-            var RowCount = dg.datagrid("getRows").length;
-            var span;
-            var PerValue = "";
-            var CurValue = "";
-            var length = Arr.length - 1;
-            var test = [];
-            for (i=72;i>=30;i--){
-                var k=2*i;
-                test.push("{"+'{'+'pro.'+k+"}}");
-             
-            }
-            //alert(test);
-            for (i = length; i >= 0; i--) {
-                fldName = Arr[i];
-                PerValue = "";
-                span = 1;
-                for (row = 0; row <= RowCount; row++) {
-                    if (row == RowCount) {
-                        CurValue = "";
-                    }
-                    else {
-                        CurValue1 = dg.datagrid("getRows")[row][fldName].split('>');
-                        CurValue = CurValue1[1];
-                 
-                        
-                        
-                    }
-                    if (PerValue == CurValue) {
-                        span += 1;
-                    }
-                    else {
-                        var index = row - span;
-                        dg.datagrid('mergeCells', {
-                            index: index,
-                            field: fldName,
-                            rowspan: span,
-                            colspan: null
-                        });
-                        span = 1;
-                        PerValue = CurValue;
-                    }
-                }
-            }
-             $('.datagrid-td-merged').find('a').css('font-size','15px');
-             $('.datagrid-td-merged').css('background-color','#eadfd9'); 
-             
-             
-         }
-        
 $(function () {
 var csrftoken = getCookie('csrftoken'); 
     $(document).ready(function(){
@@ -174,14 +104,14 @@ var csrftoken = getCookie('csrftoken');
         </div>
         <a id="button" class="easyui-linkbutton" data-options="iconCls:'icon-search'" style='position:absolulte;top:200px;left:60px'>查看教程</a>
         </div>
-        <div title="教程" style='width:800px;position:absolute;top:50px;left:300px;'>
+        <div title="教程" style='width:800px;position:relative;top:5%;left:15%;'>
         
         <p id='tutorial' style='position:relative;left:30px;'> <span id='picture' style='font-size:20px;'>请先选择系统</span></p>
         
-        <a id="button_first" href="/download_first" class="easyui-linkbutton" style='position:absolute;top:600px;left:500px;opacity:0;'>下载installation.sh</a>
-        <a id="button_second" href="/download_second" class="easyui-linkbutton" style='position:absolute;top:600px;left:620px;opacity:0;'>下载nagios-plug</a>
-        <a id="button_third" href="/download_third" class="easyui-linkbutton" style='position:absolute;top:600px;left:735px;opacity:0;'>下载nrpe</a>
-        <a id="button_continue" href="/start_input" class="easyui-linkbutton" style='position:absolute;top:600px;left:830px;opacity:0;'>Continue</a>
+        <a id="button_first" href="/download_first" class="easyui-linkbutton" style='position:relative;left:5%;opacity:0;'>下载installation.sh</a>
+        <a id="button_second" href="/download_second" class="easyui-linkbutton" style='position:relative;left:5%;opacity:0;'>下载nagios-plug</a>
+        <a id="button_third" href="/download_third" class="easyui-linkbutton" style='position:relative;left:5%;opacity:0;'>下载nrpe</a>
+        <a id="button_continue" href="/start_input" class="easyui-linkbutton" style='position:relative;left:5%;opacity:0;'>Continue</a>
         </div>
     </div>
         

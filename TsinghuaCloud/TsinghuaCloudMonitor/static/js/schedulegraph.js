@@ -1,11 +1,11 @@
 var canvas = document.getElementById('canvas');
 var graph = new Q.Graph(canvas);
+var old_result = "";
 
 action = function(){
     $('#monitor-table').datagrid({
         url:'scheduledatatable/'
     });
-    console.info("123");
 };
 setInterval("action()", 3000);
 setInterval("tenants()", 3000);
@@ -50,27 +50,40 @@ tenants = function () {
     $.ajax({
         url: 'scheduledata/',
         success: function (result) {
-            graph_init();
-            console.info("Init Complete");
-            var mainNode = graph.createNode("监控服务器", -150, -110);
-            mainNode.size = {width: 50};
-            mainNode.image = STATIC_URL + "img/server.jpg";
-            var len = result.length;
-            console.info(result);
-            var cur_left = -350;
-            var server = [];
-            for (var k = 0; k < len; k++) {
-                server[k] = graph.createNode(result[k]['ServerName'], -200 + 150 * k, -10);
-                server[k].size = 20;
-                server[k].image = "Q-server";
-                graph.createEdge(mainNode, server[k]);
-                var host = [];
-                for (var i = 0; i < result[k]['Host'].length; i++){
-                    host[i] = graph.createNode(result[k]['Host'][i], cur_left, 80);
-                    cur_left += 100;
-                    graph.createEdge(server[k], host[i]);
+            if(JSON.stringify(result) != JSON.stringify(old_result)) {
+                old_result = result;
+                graph_init();
+                var mainNode = graph.createNode("监控服务器", -150, -110);
+                mainNode.size = {width: 50};
+                mainNode.image = STATIC_URL + "img/server.jpg";
+                var len = result.length;
+                var cur_left = -350;
+                var server = [];
+                for (var k = 0; k < len; k++) {
+                    server[k] = graph.createNode(result[k]['ServerName'], -200 + 150 * k, -10);
+                    server[k].size = 20;
+                    server[k].image = "Q-server";
+                    graph.createEdge(mainNode, server[k]);
+                    var host = [];
+                    for (var i = 0; i < result[k]['Host'].length; i++) {
+                        host[i] = graph.createNode(result[k]['Host'][i]['HostName'], cur_left, 80);
+                        host[i].url = '/hostdetail/' + result[k]['Host'][i]['HostId'];
+                        host[i].clickable = true;
+                        cur_left += 100;
+                        graph.createEdge(server[k], host[i]);
+                    }
                 }
             }
         }
     })
 };
+
+graph.addCustomInteraction({
+    onclick: function (evt, graph) {
+        Q.log("click");
+        var ui = graph.getUIByMouseEvent(evt);
+        if (ui && ui.data.clickable) {
+             window.location.href = ui.data.url;
+        }
+    }
+});

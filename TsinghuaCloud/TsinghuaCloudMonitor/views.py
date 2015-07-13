@@ -215,7 +215,13 @@ def schedule_data(request):
     for monitor_item in monitor_list:
         for server_rec in server_table:
             if server_rec['ServerName'] == monitor_item.Server:
-                server_rec['Host'].append(monitor_item.Target_HostName)
+                host_rec = {'HostName': monitor_item.Target_HostName, 'HostId': ''}
+                cur_host_id = Host.objects.filter(HostName=monitor_item.Target_HostName)
+                if len(cur_host_id) > 0:
+                    host_rec['HostId'] = cur_host_id[0].id
+                else:
+                    host_rec['HostId'] = 0
+                server_rec['Host'].append(host_rec)
 
     print server_table
     return HttpResponse(json.dumps(server_table), content_type="application/json")
@@ -310,20 +316,15 @@ def monitor(request):
     usergroup = request.session['usergroup']
 
     # Get hosts belonging to username
-    monitor_host_list = Host.objects.all().values('id', 'HostName').filter(HostType='external')
+    monitor_host_list = Host.objects.all().values('id', 'HostName', 'Owner').filter(HostType='external')
     if usergroup == 'user':                                         # Users can only get records of his own hosts
         monitor_host_list = monitor_host_list.filter(Owner=username)
     host_count = len(monitor_host_list)
-    print "host_count = " + str(host_count)
 
     # Get service records for each host
-
     service_table = []
-    print "Run to 1"
     for k in range(0, host_count):
-        print "Run to 2"
         last_check_rec_list = Service.objects.values('HostId', 'ServiceName').filter(HostId=monitor_host_list[k].get('id')).distinct()
-        print "Run to 3"
         if len(last_check_rec_list) == 0:
             # Create empty service record
             service_na = Service()
@@ -334,17 +335,15 @@ def monitor(request):
             service_na.PluginOutput = 'N/A'
             service_na.HostId = monitor_host_list[k].get('id')
             service_na.HostName = monitor_host_list[k].get('HostName')
+            service_na.Owner = monitor_host_list[k].get('Owner')
             service_table.append(service_na)
         for single_last_check in last_check_rec_list:
-            print "Run to 4"
             cur_id = monitor_host_list[k].get('id')
             svc_name = single_last_check.get('ServiceName')
             service_record = Service.objects.all().filter(HostId=cur_id, ServiceName=svc_name).last()
-            print "Run to 5a"
+            service_record.Owner = monitor_host_list[k].get('Owner')
             service_table.append(service_record)
-            print "Run to 5b"
 
-    print "Run to 6"
     # print service
     return render(request, 'TsinghuaCloudMonitor/monitor.html', {'service': service_table, 'usergroup': usergroup})
 
@@ -523,7 +522,8 @@ def memory_external(request):
         memory_list.append(json_data)
 
     memory_json['totalpage'] = int(total_page)
-    memory_json['memorylist'] = memory_list
+    memory_json['total'] = end_pos - start_pos
+    memory_json['rows'] = memory_list
 
     return HttpResponse(json.dumps(memory_json), content_type="application/json")
 
@@ -634,7 +634,8 @@ def cpu_external(request):
         cpu_list.append(json_data)
 
     cpu_json['totalpage'] = int(total_page)
-    cpu_json['cpulist'] = cpu_list
+    cpu_json['rows'] = cpu_list
+    cpu_json['total'] = end_pos - start_pos
     return HttpResponse(json.dumps(cpu_json), content_type="application/json")
 
 def pro_external(request):
@@ -737,7 +738,8 @@ def pro_external(request):
         pro_list.append(json_data)
 
     pro_json['totalpage'] = int(total_page)
-    pro_json['prolist'] = pro_list
+    pro_json['rows'] = pro_list
+    pro_json['total'] = end_pos - start_pos
 
     return HttpResponse(json.dumps(pro_json), content_type="application/json")
 
@@ -853,7 +855,8 @@ def disk_external(request):
         disk_list.append(json_data)
 
     disk_json['totalpage'] = int(total_page)
-    disk_json['disklist'] = disk_list
+    disk_json['rows'] = disk_list
+    disk_json['total'] = end_pos - start_pos
 
     return HttpResponse(json.dumps(disk_json), content_type="application/json")
 
@@ -964,7 +967,8 @@ def eth_external(request):
         eth_list.append(json_data)
 
     eth_json['totalpage'] = int(total_page)
-    eth_json['ethlist'] = eth_list
+    eth_json['rows'] = eth_list
+    eth_json['total'] = end_pos - start_pos
 
     return HttpResponse(json.dumps(eth_json), content_type="application/json")
 
@@ -1192,32 +1196,76 @@ def start_input(request):
     if usergroup == 'admin':
         return HttpResponseRedirect('/hoststatus')
 
+    count = 0
+    error_tag = False
     errors = []
-    ip = None
-    hostname = None
+    schedule_item = []
     if request.method == 'POST':
-        if not request.POST.get('ip'):
-            errors.append("Please Enter IP address")
+        # Input validity check
+        if request.POST.get("count") == None or request.POST.get("count") == '':
+            errors.append("Invalid count")
         else:
-            ip = request.POST.get('ip')
-            print('dd')
-            if not request.POST.get('hostname'):
-                errors.append("Please Enter Hostname")
-            else:
-                hostname = request.POST.get('hostname')
-                exist_ip = Host.objects.filter(IP=ip)
+            count = int(request.POST.get("count"))
+
+            # Existence and validity check of each ip and hostname
+            for i in range(0, count):
+                cur_ip = request.POST.get('IP['+str(i)+']')
+                if cur_ip == None or cur_ip == '':
+                    errors.append("Please Enter IP address")
+                    break
+                else:
+                    print('ip validity success')
+
+                cur_host = request.POST.get('HostName['+str(i)+']')
+                if cur_host == None or cur_host == '':
+                    errors.append("Please Enter Hostname")
+                    break
+                else:
+                    print('host validity success')
+
+                # Check if ip or hostname exists in database (Integrity check)
+                exist_ip = Host.objects.filter(IP=str(cur_ip))
+                print exist_ip.count()
                 if len(exist_ip) > 0:
-                    errors.append("IP already exists")
-                exist_hostname = Host.objects.filter(HostName=hostname)
+                    errors.append("IP already exists: " + cur_ip)
+                    break
+                exist_ip = Schedule.objects.filter(IP=str(cur_ip))
+                if len(exist_ip) > 0:
+                    errors.append("IP already exists" + cur_ip)
+                    break
+                exist_hostname = Host.objects.filter(HostName=str(cur_host))
                 if len(exist_hostname) > 0:
-                    errors.append("Hostname already exists")
+                    errors.append("Hostname already exists" + cur_host)
+                    break
+                exist_hostname = Schedule.objects.filter(HostName=str(cur_host))
+                if len(exist_hostname) > 0:
+                    errors.append("Hostname already exists" + cur_host)
+                    break
+                schedule_item.append({'IP': cur_ip, 'HostName': cur_host})
+        if len(errors) != 0:
+            error_tag = True
 
-        print errors
+        # Check for repetition within input
+        print count
+        if error_tag == False:
+            for i in range (0, count):
+                if error_tag == False:
+                    for j in range(i + 1, count, 1):
+                        if schedule_item[i]['IP'] == schedule_item[j]['IP']:
+                            errors.append("Repeated IP: " + schedule_item[j]['IP'])
+                            error_tag = True
+                            break
+                        if schedule_item[i]['HostName'] == schedule_item[j]['HostName']:
+                            errors.append("Repeated HostName: " +  + schedule_item[j]['HostName'])
+                            error_tag = True
+                            break
 
-        if len(errors) == 0:
+        # Input has passed all validity tests, add them to database
+        if error_tag == False:
             now = time.time()
-            schedule = Schedule(IP=ip, HostName=hostname, ArrivingTime=now, Owner=request.session['username'])
-            schedule.save()
+            for schedule in schedule_item:
+                schedule = Schedule(IP=schedule['IP'], HostName=schedule['HostName'], ArrivingTime=now, Owner=request.session['username'])
+                schedule.save()
             print "Schedule Added"
             # p = sub.Popen('/home/django/TsinghuaCloud/TsinghuaCloud/schedule.py',stdout=sub.PIPE,shell=True)
             return HttpResponseRedirect('/hoststatus')

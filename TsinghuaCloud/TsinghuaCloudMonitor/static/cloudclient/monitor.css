@@ -2,10 +2,12 @@ body{
   background: #FCFCFC;
 }
 
-a:link{color:#170f18;}
-a:visited{color:#170f18; }
-a:active{color:#319ac6}
-a:hover{color:#319ac6}
+a:link{color: #dde0e2;}
+a:visited{color: #d6d6d6; }
+a:active{color: #ffffff
+}
+a:hover{color: #f9fffd
+}
 
 
 #cloud{

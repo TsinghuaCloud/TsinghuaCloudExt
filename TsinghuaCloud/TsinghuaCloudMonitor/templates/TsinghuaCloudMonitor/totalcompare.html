@@ -119,6 +119,21 @@
     {% endif %}
     <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
 </div>
+
+<div data-options="region:'east',split:true" title="详细信息" style="width:20%;">
+        <table class="easyui-datagrid" id="data-table">
+            <thead>
+            <tr>
+                <th data-options="field:'Name'" width="200">主机名</th>
+                <th data-options="field:'IP'" width="200">IP</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+
 <div data-options="region:'center',title:'全局监控图'" style="background:#F0F0F0;color:#000000;position:relative;">
     <div>
         <div style="color:#000066;padding-left: 10px">
@@ -225,26 +240,11 @@
 
         </script>
         {% endif %}
-        <div style="position:relative;height:600px;width:1300px">
+        <div style="position:center;height:85%;width:95%">
         <div id="data-chart"
-             style="height:600px;width:1000px;position:absolute;top:0;left:0; border:2px solid;border-color:#666666; "></div>
-        <div id='data-form' style='height:300px;width:280px;position:absolute;left:1003px'>
-            <table id='data-table' class="gridtable" toolbar="#tb"
-                   data-options="border:false,singleSelect:true,fit:true,fitColumns:true,onLoadSuccess:function(data){ MergeCells('data-table','itemid');}">
-                <thead>
-                <tr>
-                    <th data-options="field:'itemid'" width="60" sortable="true">主机</th>
-                    <th data-options="field:'productid'" width="70">已用用量KB</th>
-                    <th data-options="field:'listprice'" width="80">总量KB</th>
-                    <th data-options="field:'unitcost'" width="40">使用率</th>
-
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+             style="height:100%;width:100%;position:relative; border:2px solid;border-color:#666666; ">
         </div>
-    </div>
+        </div>
     <!-- ECharts单文件引入 -->
 
     <script src="{% static 'jquery-easyui-1/echarts.js'%}"></script>
@@ -258,89 +258,32 @@
             $.ajax({
                 url: '/memory_external/' + filter_string ,
                 success: function (result) {
+                    $("#data-table").datagrid({
+                        columns:[[
+                                {field:'name',title:'主机名',width:80},
+                                {field:'used',title:'已用用量/KB',width:80},
+                                {field:'total',title:'已使用量/KB',width:80},
+                                {field:'percentage',title:'使用率',width:80}
+                        ]],
+                        url:'/memory_external/'
+                    });
                     Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
-                    if (result.memorylist.length != 0) {
+                    if (result.total != 0) {
                         var memory_used_all = 0;
                         var memory_total_all = 0;
                         var memoryuse_name = [];
                         var memoryuse_used = [];
                         var memoryuse_total = [];
 
-                        // Delete old table info
-                        var data_table = document.getElementById("data-table");
-                        var old_head = data_table.getElementsByTagName("thead");
-                        old_head[0].innerHTML = "";
-
-                        // Create new table head
-                        var new_head_tr = document.createElement("tr");
-                        var new_head_th = [];
-                        new_head_th[0] = document.createElement("th");
-                        new_head_th[0].setAttribute("data-options", "field:'itemid'");
-                        new_head_th[0].setAttribute("width", 60);
-                        new_head_th[0].setAttribute("sortable", "true");
-                        new_head_th[0].textContent = "主机";
-
-                        new_head_th[1] = document.createElement("th");
-                        new_head_th[1].setAttribute("data-options", "field:'productid'");
-                        new_head_th[1].setAttribute("width", 70);
-                        new_head_th[1].textContent = "已用用量KB";
-
-                        new_head_th[2] = document.createElement("th");
-                        new_head_th[2].setAttribute("data-options", "field:'listprice'");
-                        new_head_th[2].setAttribute("width", 80);
-                        new_head_th[2].textContent = "总量KB";
-
-                        new_head_th[3] = document.createElement("th");
-                        new_head_th[3].setAttribute("data-options", "field:'unitcost'");
-                        new_head_th[3].setAttribute("width", 40);
-                        new_head_th[3].textContent = "使用率";
-
-                        new_head_tr.appendChild(new_head_th[0]);
-                        new_head_tr.appendChild(new_head_th[1]);
-                        new_head_tr.appendChild(new_head_th[2]);
-                        new_head_tr.appendChild(new_head_th[3]);
-                        old_head[0].appendChild(new_head_tr);
-
-                        var old_body = data_table.getElementsByTagName("tbody");
-                        old_body[0].remove();
-
-                        var new_data_table = document.createElement("tbody");
-                        var new_tr = [];
-                        var new_td = [];
-                        for (var i = 0; i < result.memorylist.length; i++) {
-
-                            memoryuse_name.push(result.memorylist[i].name);
-                            memoryuse_used.push(result.memorylist[i].used);
-                            memory_used_all = parseFloat(memory_used_all) + parseFloat(result.memorylist[i].used);
-                            memoryuse_total.push(result.memorylist[i].total);
-                            memory_total_all = parseFloat(memory_total_all) + parseFloat(result.memorylist[i].total);
-
-                            // Create new table elements
-                            new_tr[i] = document.createElement("tr");
-
-                            new_td[0] = document.createElement("td");
-                            new_td[0].textContent = result.memorylist[i].name;
-                            new_tr[i].appendChild(new_td[0]);
-
-                            new_td[1] = document.createElement("td");
-                            new_td[1].textContent = result.memorylist[i].used;
-                            new_tr[i].appendChild(new_td[1]);
-
-                            new_td[2] = document.createElement("td");
-                            new_td[2].textContent = result.memorylist[i].total;
-                            new_tr[i].appendChild(new_td[2]);
-
-                            new_td[3] = document.createElement("td");
-                            new_td[3].textContent = result.memorylist[i].percentage;
-                            new_tr[i].appendChild(new_td[3]);
-
-                            new_data_table.appendChild(new_tr[i]);
+                        for (var i = 0; i < result.total; i++) {
+                            memoryuse_name.push(result.rows[i].name);
+                            memoryuse_used.push(result.rows[i].used);
+                            memory_used_all = parseFloat(memory_used_all) + parseFloat(result.rows[i].used);
+                            memoryuse_total.push(result.rows[i].total);
+                            memory_total_all = parseFloat(memory_total_all) + parseFloat(result.rows[i].total);
                         }
-                        data_table.appendChild(new_data_table);
                         setMemory(memoryuse_name, memoryuse_used, memoryuse_total);
                     }
-
-
                     else {
                         setMemory(' ', ' ', ' ');
                     }
@@ -482,65 +425,29 @@
             $.ajax({
                 url: '/cpu_external/' + filter_string ,
                 success: function (result){
+                    $("#data-table").datagrid({
+                        columns:[[
+                                {field:'name',title:'主机名',width:80},
+                                {field:'used',title:'使用量',width:80},
+                                {field:'percentage',title:'使用率',width:80}
+                        ]],
+                        url:'/cpu_external/'
+                    });
+
                     Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
-                    if (result.cpulist.length != 0) {
+                    if (result.total != 0) {
                         var cpuuse_name = [];
                         var cpuuse_used = [];
                         var cpuuse_percentage = [];
                         var cpuuse_total = [];
 
-                        // Delete old table head info
-                        var data_table = document.getElementById("data-table");
-                        var old_head = data_table.getElementsByTagName("thead");
-                        old_head[0].innerHTML = "";
-
-                        // Create new table head
-                        var new_head_tr = document.createElement("tr");
-                        var new_head_th = [];
-                        new_head_th[0] = document.createElement("th");
-                        new_head_th[0].setAttribute("data-options", "field:'itemid'");
-                        new_head_th[0].setAttribute("width", 60);
-                        new_head_th[0].setAttribute("sortable", "true");
-                        new_head_th[0].textContent = "主机";
-
-                        new_head_th[1] = document.createElement("th");
-                        new_head_th[1].setAttribute("data-options", "field:'productid'");
-                        new_head_th[1].setAttribute("width", 70);
-                        new_head_th[1].textContent = "CPU利用率";
-
-                        new_head_tr.appendChild(new_head_th[0]);
-                        new_head_tr.appendChild(new_head_th[1]);
-                        old_head[0].appendChild(new_head_tr);
-
-                        // Delete old table info
-                        var old_body = data_table.getElementsByTagName("tbody");
-                        old_body[0].remove();
-
-                        // Prepare new table info
-                        var new_cpu_table = document.createElement("tbody");
-                        var new_tr = [];
-                        var new_td = [];
-
-                        for (var i = 0; i < result.cpulist.length; i++) {
-                            cpuuse_name.push(result.cpulist[i].name);
-                            cpuuse_used.push(result.cpulist[i].used);
-                            cpuuse_percentage.push(result.cpulist[i].percentage);
+                        for (var i = 0; i < result.total; i++) {
+                            cpuuse_name.push(result.rows[i].name);
+                            cpuuse_used.push(result.rows[i].used);
+                            cpuuse_percentage.push(result.rows[i].percentage);
                             cpuuse_total.push(0.999999);
-
-                            // Create new table elements
-                            new_tr[i] = document.createElement("tr");
-
-                            new_td[0] = document.createElement("td");
-                            new_td[0].textContent = result.cpulist[i].name;
-                            new_tr[i].appendChild(new_td[0]);
-
-                            new_td[1] = document.createElement("td");
-                            new_td[1].textContent = result.cpulist[i].percentage.toString();
-                            new_tr[i].appendChild(new_td[1]);
-
-                            new_cpu_table.appendChild(new_tr[i]);
                         }
-                        data_table.appendChild(new_cpu_table);
+
                         setCpu(cpuuse_name, cpuuse_used, cpuuse_percentage, cpuuse_total);
                     }
 
@@ -655,93 +562,33 @@
             $.ajax({
                 url: '/disk_external/' + filter_string ,
                 success: function (result) {
+                    $("#data-table").datagrid({
+                        columns:[[
+                                {field:'name',title:'主机名',width:80},
+                                {field:'used',title:'已用用量/KB',width:80},
+                                {field:'total',title:'已使用量/KB',width:80},
+                                {field:'percentage',title:'使用率',width:80}
+                        ]],
+                        url:'/disk_external/'
+                    });
                     Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
-                    if (result.disklist.length != 0) {
+                    if (result.total != 0) {
                         var disk_used_all = 0;
                         var disk_total_all = 0;
                         var diskuse_name = [];
                         var diskuse_used = [];
                         var diskuse_total = [];
 
-                        // Delete old table head info
-                        var data_table = document.getElementById("data-table");
-                        var old_head = data_table.getElementsByTagName("thead");
-                        old_head[0].innerHTML = "";
-
-                        // Create new table head
-                        var new_head_tr = document.createElement("tr");
-                        var new_head_th = [];
-                        new_head_th[0] = document.createElement("th");
-                        new_head_th[0].setAttribute("data-options", "field:'itemid'");
-                        new_head_th[0].setAttribute("width", 60);
-                        new_head_th[0].setAttribute("sortable", "true");
-                        new_head_th[0].textContent = "主机";
-
-                        new_head_th[1] = document.createElement("th");
-                        new_head_th[1].setAttribute("data-options", "field:'productid'");
-                        new_head_th[1].setAttribute("width", 70);
-                        new_head_th[1].textContent = "已用用量MB";
-
-                        new_head_th[2] = document.createElement("th");
-                        new_head_th[2].setAttribute("data-options", "field:'listprice'");
-                        new_head_th[2].setAttribute("width", 80);
-                        new_head_th[2].textContent = "总量MB";
-
-                        new_head_th[3] = document.createElement("th");
-                        new_head_th[3].setAttribute("data-options", "field:'unitcost'");
-                        new_head_th[3].setAttribute("width", 40);
-                        new_head_th[3].textContent = "使用率";
-
-                        new_head_tr.appendChild(new_head_th[0]);
-                        new_head_tr.appendChild(new_head_th[1]);
-                        new_head_tr.appendChild(new_head_th[2]);
-                        new_head_tr.appendChild(new_head_th[3]);
-                        old_head[0].appendChild(new_head_tr);
-
-                        // Delete old table info
-                        var old_body = data_table.getElementsByTagName("tbody");
-                        old_body[0].remove();
-
-                        // Prepare new table info
-                        var new_disk_table = document.createElement("tbody");
-                        var new_tr = [];
-                        var new_td = [];
-                        for (var i = 0; i < result.disklist.length; i++) {
-                            diskuse_name.push(result.disklist[i].name);
-                            diskuse_used.push(result.disklist[i].used);
-                            disk_used_all = parseFloat(disk_used_all) + parseFloat(result.disklist[i].used);
-                            diskuse_total.push(result.disklist[i].total);
-                            disk_total_all = parseFloat(disk_total_all) + parseFloat(result.disklist[i].total);
-
-                            // Create new table elements
-                            new_tr[i] = document.createElement("tr");
-
-                            new_td[0] = document.createElement("td");
-                            new_td[0].textContent = result.disklist[i].name;
-                            new_tr[i].appendChild(new_td[0]);
-
-                            new_td[1] = document.createElement("td");
-                            new_td[1].textContent = result.disklist[i].used;
-                            new_tr[i].appendChild(new_td[1]);
-
-                            new_td[2] = document.createElement("td");
-                            new_td[2].textContent = result.disklist[i].total.toString();
-                            new_tr[i].appendChild(new_td[2]);
-
-                            new_td[3] = document.createElement("td");
-                            new_td[3].textContent = result.disklist[i].percentage.toString();
-                            new_tr[i].appendChild(new_td[3]);
-
-                            new_disk_table.appendChild(new_tr[i]);
+                        for (var i = 0; i < result.total; i++) {
+                            diskuse_name.push(result.rows[i].name);
+                            diskuse_used.push(result.rows[i].used);
+                            disk_used_all = parseFloat(disk_used_all) + parseFloat(result.rows[i].used);
+                            diskuse_total.push(result.rows[i].total);
+                            disk_total_all = parseFloat(disk_total_all) + parseFloat(result.rows[i].total);
                         }
-
-                        data_table.appendChild(new_disk_table);
-
-                            // Draw Charts based on records received
+                        // Draw Charts based on records received
                         setDisk(diskuse_name, diskuse_used, diskuse_total);
                     }
-
-
                     else {
                         setDisk(' ', ' ', ' ');
                     }
@@ -877,65 +724,25 @@
             $.ajax({
                 url: '/pro_external/' + filter_string ,
                 success: function (result) {
+                    $("#data-table").datagrid({
+                        columns:[[
+                                {field:'name',title:'主机名',width:80},
+                                {field:'used',title:'使用量',width:80}
+                        ]],
+                        url:'/pro_external/'
+                    });
                     Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
-                    if (result.prolist.length != 0) {
-                        var prouse_name = [];
-                        var prouse_used = [];
-                        var prouse_percentage = [];
-                        var prouse_total = [];
+                    var prouse_name = [];
+                    var prouse_used = [];
+                    var prouse_total = [];
 
-                        // Delete old table head info
-                        var data_table = document.getElementById("data-table");
-                        var old_head = data_table.getElementsByTagName("thead");
-                        old_head[0].innerHTML = "";
-
-                        // Create new table head
-                        var new_head_tr = document.createElement("tr");
-                        var new_head_th = [];
-                        new_head_th[0] = document.createElement("th");
-                        new_head_th[0].setAttribute("data-options", "field:'itemid'");
-                        new_head_th[0].setAttribute("width", 60);
-                        new_head_th[0].setAttribute("sortable", "true");
-                        new_head_th[0].textContent = "主机";
-
-                        new_head_th[1] = document.createElement("th");
-                        new_head_th[1].setAttribute("data-options", "field:'productid'");
-                        new_head_th[1].setAttribute("width", 70);
-                        new_head_th[1].textContent = "CPU利用率";
-
-                        new_head_tr.appendChild(new_head_th[0]);
-                        new_head_tr.appendChild(new_head_th[1]);
-                        old_head[0].appendChild(new_head_tr);
-
-                        // Delete old table info
-                        var old_body = data_table.getElementsByTagName("tbody");
-                        old_body[0].remove();
-
-                        // Prepare new table info
-                        var new_pro_table = document.createElement("tbody");
-                        var new_tr = [];
-                        var new_td = [];
-
-                        for (var i = 0; i < result.prolist.length; i++) {
-                            prouse_name.push(result.prolist[i].name);
-                            prouse_used.push(result.prolist[i].used);
+                    if (result.total != 0) {
+                        for (var i = 0; i < result.total; i++) {
+                            prouse_name.push(result.rows[i].name);
+                            prouse_used.push(result.rows[i].used);
                             prouse_total.push(0.999999);
-
-                            // Create new table elements
-                            new_tr[i] = document.createElement("tr");
-
-                            new_td[0] = document.createElement("td");
-                            new_td[0].textContent = result.prolist[i].name;
-                            new_tr[i].appendChild(new_td[0]);
-
-                            new_td[1] = document.createElement("td");
-                            new_td[1].textContent = result.prolist[i].used;
-                            new_tr[i].appendChild(new_td[1]);
-
-                            new_pro_table.appendChild(new_tr[i]);
                         }
-                        data_table.appendChild(new_pro_table);
-                        setPro(prouse_name, prouse_used, prouse_percentage, prouse_total);
+                        setPro(prouse_name, prouse_used, prouse_total);
                     }
                     else {
                         setPro(' ', ' ', ' ');
@@ -1028,77 +835,26 @@
             $.ajax({
                 url: '/eth_external/' + filter_string,
                 success: function (result) {
+                    $("#data-table").datagrid({
+                        columns:[[
+                                {field:'name',title:'主机名',width:80},
+                                {field:'in',title:'In (Kbps)',width:80},
+                                {field:'out',title:'In (Kbps)',width:80},
+                        ]],
+                        url:'/pro_external/'
+                    });
                     Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
-                    if (result.ethlist.length != 0) {
+                    if (result.total != 0) {
                         var eth_in = [];
                         var eth_name = [];
                         var eth_out = [];
-
-                        // Delete old table head info
-                        var data_table = document.getElementById("data-table");
-                        var old_head = data_table.getElementsByTagName("thead");
-                        old_head[0].innerHTML = "";
-
-                        // Create new table head
-                        var new_head_tr = document.createElement("tr");
-                        var new_head_th = [];
-                        new_head_th[0] = document.createElement("th");
-                        new_head_th[0].setAttribute("data-options", "field:'itemid'");
-                        new_head_th[0].setAttribute("width", 60);
-                        new_head_th[0].setAttribute("sortable", "true");
-                        new_head_th[0].textContent = "主机";
-
-                        new_head_th[1] = document.createElement("th");
-                        new_head_th[1].setAttribute("data-options", "field:'productid'");
-                        new_head_th[1].setAttribute("width", 70);
-                        new_head_th[1].textContent = "In (Kbps)";
-
-                        new_head_th[2] = document.createElement("th");
-                        new_head_th[2].setAttribute("data-options", "field:'listprice'");
-                        new_head_th[2].setAttribute("width", 70);
-                        new_head_th[2].textContent = "Out (Kbps)";
-
-
-                        new_head_tr.appendChild(new_head_th[0]);
-                        new_head_tr.appendChild(new_head_th[1]);
-                        new_head_tr.appendChild(new_head_th[2]);
-                        old_head[0].appendChild(new_head_tr);
-
-                        // Delete old table info
-                        var old_body = data_table.getElementsByTagName("tbody");
-                        old_body[0].remove();
-
-                        // Prepare new table info
-                        var new_eth_table = document.createElement("tbody");
-                        var new_tr = [];
-                        var new_td = [];
-
-                        for (var i = 0; i < result.ethlist.length; i++) {
-                            eth_name.push(result.ethlist[i].name);
-                            eth_in.push(result.ethlist[i].in);
-                            eth_out.push(result.ethlist[i].out);
-
-                            // Create new table elements
-                            new_tr[i] = document.createElement("tr");
-
-                            new_td[0] = document.createElement("td");
-                            new_td[0].textContent = result.ethlist[i].name;
-                            new_tr[i].appendChild(new_td[0]);
-
-                            new_td[1] = document.createElement("td");
-                            new_td[1].textContent = result.ethlist[i].in;
-                            new_tr[i].appendChild(new_td[1]);
-
-                            new_td[2] = document.createElement("td");
-                            new_td[2].textContent = result.ethlist[i].in;
-                            new_tr[i].appendChild(new_td[2]);
-                            new_eth_table.appendChild(new_tr[i]);
+                        for (var i = 0; i < result.total; i++) {
+                            eth_name.push(result.rows[i].name);
+                            eth_in.push(result.rows[i].in);
+                            eth_out.push(result.rows[i].out);
                         }
-                        data_table.appendChild(new_eth_table);
                         setEth(eth_name, eth_in, eth_out);
                     }
-
-
                     else {
                         setEth(' ', ' ', ' ');
                     }

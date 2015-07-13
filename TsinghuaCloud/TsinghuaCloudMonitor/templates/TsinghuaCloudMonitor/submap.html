@@ -1,0 +1,211 @@
+{% csrf_token %}
+{% load staticfiles %}
+
+<script>
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+// DONE DJANGO HACK
+
+function get_site_prefix(){
+    var href = $(location).attr("href");
+    return href
+}
+
+function cache_clear()
+    {
+    window.location.reload(true);
+    alert('refresh');
+}
+
+
+        
+$(function () {
+var csrftoken = getCookie('csrftoken'); 
+    $(document).ready(function(){
+     setInterval(function(){cache_clear()},1000000);
+     });
+      
+    $.ajaxSetup({
+        crossDomain: false, // obviates need for sameOrigin test
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+
+    // END DJANGO AJAX
+
+          
+});
+
+
+
+</script>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tsinghua Cloud - Monitor Page</title>
+<script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
+<script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
+</head>
+
+<body class="easyui-layout">
+	    <div data-options="region:'north',border:false" style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
+        <a href="/logout" class="easyui-linkbutton" style="background:#CCCCCC;width:60px;height:30px;position:relative;float:right;">登出</a>
+   </div>
+   <div data-options="region:'west',split:true,title:'菜单'" style="width:150px;padding:10px;">
+        <a href="/hoststatus" class="easyui-linkbutton" style="width:130px">首页</a>
+        <a href="/monitor" class="easyui-linkbutton" style="width:130px">详细信息</a>
+        <a href="/start_system" class="easyui-linkbutton" style="width:130px">网络服务</a>
+        <a href="/mapchart" class="easyui-linkbutton" style="width:130px">网络拓扑</a>
+        <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
+    </div>
+	
+	<div data-options="region:'center',title:'网络拓扑图'" style="background:#F0F0F0">
+	<div style="height: 650px;width:1300px;" id="subcanvas"/>
+<script type="text/javascript" src="{% static 'QuneeHTML5_V1.8/demos/lib/qunee-min.js'%}"></script>
+<!--<script type="text/javascript" src="../qunee.js?v=1.8"></script>-->
+<script type="text/javascript" src="{% static 'QuneeHTML5_V1.8/demos/js/common.js'%}"></script>
+<script type="text/javascript" src="{% static 'QuneeHTML5_V1.8/demos/js/graphs.js'%}"></script>
+<script type="text/javascript" src="{% static 'QuneeHTML5_V1.8/demos/js/demo.js'%}"></script>
+
+<link rel="stylesheet" href="{%static 'QuneeHTML5_V1.8/demos/js/codemirror/codemirror.css' %}">
+<script src="{% static 'QuneeHTML5_V1.8/demos/js/codemirror/codemirror.js'%}"></script>
+<script src="{% static 'QuneeHTML5_V1.8/demos/js/codemirror/javascript.js'%}"></script>
+<script>
+var graph = new Q.Graph(subcanvas);
+graph.zoomToOverview();
+var model = graph.graphModel;
+
+var idIndex = 0;
+function createNodeLinkToBus(bus, x, y, angle){
+    var node = graph.createNode("-" + idIndex, x, y);
+    node.image = Q.Graphs.server;
+    node.host = bus;
+    idIndex++;
+    var edge = createEdge(bus, node, angle);
+    return node;
+}
+
+function createEdge(a, b, angle){
+    var edge = graph.createEdge(a, b);
+    edge.setStyle(Q.Styles.ARROW_TO, false);
+    edge.angle = angle;
+    return edge;
+}
+
+function createBus(path){
+    var bus = new Q.Bus(null, path);
+    graph.graphModel.add(bus);
+    bus.setStyle(Q.Styles.SHAPE_STROKE, 5);
+    bus.setStyle(Q.Styles.SHAPE_FILL_COLOR, false);
+    return bus;
+}
+
+function createTerminal(name, x, y){
+    var node = graph.createNode(name, x, y);
+    node.image = Q.Shapes.getShape(Q.Consts.SHAPE_RECT, 30, 15);
+    node.setStyle(Q.Styles.SHAPE_FILL_COLOR, "#888");
+    return node;
+}
+
+
+var subnet_detail = new Array();
+var kk = 2;
+
+subnets= function (){
+ $.ajax({
+               url:'/subnets/',
+               data: { 
+                      tenantid: '{{tenantid}}',
+                     },
+               success: function(result){
+                        var len = result.length;
+                        //console.info(result);
+                        var bus_main = new Q.Bus();
+                        subnet_detail = [];
+                        graph.addElement(bus_main);
+                        bus_main.moveTo(-500,-300);
+                        bus_main.lineTo(-500,250);
+                        bus_main.setStyle(Q.Styles.SHAPE_STROKE, 10);                        
+                        for (var k=0;k<len;k++){
+                           var bus = new Q.Bus();
+                           //console.info(bus.id);
+                           graph.addElement(bus);
+                            bus.moveTo(-500+200*(k+1),-300);
+                            bus.lineTo(-500+200*(k+1),250);
+                            bus.setStyle(Q.Styles.SHAPE_STROKE, 5);
+                            var edge = graph.createEdge(bus,bus_main);
+                            var node = graph.createNode(result[k].name,-500+200*(k+1) ,250);
+                            node.image = Q.Shapes.getShape(Q.Consts.SHAPE_RECT, 60, 6);
+                            instances(result[k].id,bus.id)
+                        
+                        
+                    }
+                }
+        });
+};
+
+var f=0;
+instances= function (id,bus_id){
+ $.ajax({
+               url:'/instances/',
+               data: { 
+                      subnetid: id,
+                     },
+               async: false,
+               success: function(result){
+                        var bus = model.getById(bus_id);                       
+                        console.info(result);
+                        for(var i=0;i<result.length;i++){
+                        var node = graph.createNode(result[i].device_id, -400+200*(f+1), -300+50*i);
+                        var edge = graph.createEdge(bus, node);
+                        edge.angle = Math.PI / 5;
+                                                
+                        
+                        }
+                        f++;
+                        
+                            
+                    }
+                
+        });
+
+};
+
+if({{flag}}==1){
+   subnets();
+}   
+
+</script>
+ 
+	</div>
+</body>
+</html>

@@ -1,6 +1,20 @@
 {% csrf_token %}
 {% load staticfiles %}
 
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tsinghua Cloud - Monitor Page</title>
+<script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
+<script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
+<script src="{% static 'js/inputpage.js'%}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
+</head>
+
 <script>
     {% for error in errors %}
         alert("{{ error }}");
@@ -33,88 +47,12 @@ function get_site_prefix(){
     return href
 }
 
-function cache_clear()
-    {
-    window.location.reload(true);
-    alert('refresh');
-}
-
-function doSearch(){
-    var prefix= get_site_prefix();
-    $.ajax({
-        type: "POST",
-        url: prefix + "doSearch/", 
-        data: { 
-            service: $('#itemid').val(),
-            host: $('#productid').val(),
-        },
-    });
-}
-/**
-        * EasyUI DataGrid根据字段动态合并单元格
-        * @param fldList 要合并table的id
-        * @param fldList 要合并的列,用逗号分隔(例如："name,department,office");
-        */
-        function MergeCells(tableID, fldList) {
-            
-            var Arr = fldList.split(",");
-            var dg = $('#' + tableID);
-            var fldName;
-            var RowCount = dg.datagrid("getRows").length;
-            var span;
-            var PerValue = "";
-            var CurValue = "";
-            var length = Arr.length - 1;
-            var test = [];
-            for (i=72;i>=30;i--){
-                var k=2*i;
-                test.push("{"+'{'+'pro.'+k+"}}");
-             
-            }
-            //alert(test);
-            for (i = length; i >= 0; i--) {
-                fldName = Arr[i];
-                PerValue = "";
-                span = 1;
-                for (row = 0; row <= RowCount; row++) {
-                    if (row == RowCount) {
-                        CurValue = "";
-                    }
-                    else {
-                        CurValue1 = dg.datagrid("getRows")[row][fldName].split('>');
-                        CurValue = CurValue1[1];
-                 
-                        
-                        
-                    }
-                    if (PerValue == CurValue) {
-                        span += 1;
-                    }
-                    else {
-                        var index = row - span;
-                        dg.datagrid('mergeCells', {
-                            index: index,
-                            field: fldName,
-                            rowspan: span,
-                            colspan: null
-                        });
-                        span = 1;
-                        PerValue = CurValue;
-                    }
-                }
-            }
-             $('.datagrid-td-merged').find('a').css('font-size','15px');
-             $('.datagrid-td-merged').css('background-color','#eadfd9'); 
-             
-             
-         }
-        
 $(function () {
-var csrftoken = getCookie('csrftoken'); 
+var csrftoken = getCookie('csrftoken');
     $(document).ready(function(){
      setInterval(function(){cache_clear()},1000000);
      });
-      
+
     $.ajaxSetup({
         crossDomain: false, // obviates need for sameOrigin test
         beforeSend: function(xhr, settings) {
@@ -124,27 +62,11 @@ var csrftoken = getCookie('csrftoken');
         }
     });
     // END DJANGO AJAX
-  
-          
+
+
 });
 
-
-
 </script>
-
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Tsinghua Cloud - Monitor Page</title>
-<script src="{% static 'jquery-easyui-1/jquery.min.js'%}"></script>
-<script src="{% static 'jquery-easyui-1/jquery.easyui.min.js'%}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
-</head>
 
 <body class="easyui-layout">
     <div data-options="region:'north',border:false" style="height:60px;font-size:28px;color:#3C3C3C;background:#F5F5F5;padding:10px">清华云平台－监控模块
@@ -160,28 +82,29 @@ var csrftoken = getCookie('csrftoken');
         {% endif %}
         <a href="/totalcompare" class="easyui-linkbutton" style="width:130px">全局监控</a>
     </div>
-    
-    
-    <div data-options="region:'center',title:'注册申请'" >
-    
-        <form action=" " method="post" style='position:absolute;left:500px;top:200px;width:500px;'>
-        <p style="margin-bottom:20px">
-            <div>IP:</div>
-            <input class="easyui-textbox" name='ip' data-options="prompt:'192.0.0.1',validType:'number'" style="height:30px;width:60%">
-        </p>
-        <p style="margin-bottom:20px">
-            <div>Host Name:</div>
-            <input class="easyui-textbox" name='hostname' style="height:30px;width:60%">
-        </p>    
-        <p class="submit">
-            <input class="easyui-linkbutton" type="submit"  name="commit" value="确认" iconCls="icon-ok" style="height:40px;width:60%">
-        </p>
+
+    <div data-options="region: 'center',title:'注册申请'"  >
+        <div style="padding:100px 100px 100px 100px">
+        <form id="ff" method="post" >
+            <input type="hidden" name="count" value="0">
+            <table id="ip-table[0]" cellpadding="2">
+                <tr>
+                    <td>Name:</td>
+                    <td style="padding-left:10px"><input class="easyui-textbox" type="text" info="HostName"></input></td>
+                    <td style="padding-left:10px">IP: </td>
+                    <td style="padding-left:10px"><input class="easyui-textbox" type="text" info="IP"></input></td>
+                    <td style="padding-left:10px">   </td>
+                    <td class="easyui-linkbutton" onclick="destroyElement(0)">删除</td>
+                </tr>
+            </table>
         </form>
-        
-        
+        <div style="text-align:center;padding:5px">
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="addForm()">添加条目</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">确认</a>
+        </div>
+    </div>
 
     </div>
-        
-    </div>
+
 </body>
 </html>

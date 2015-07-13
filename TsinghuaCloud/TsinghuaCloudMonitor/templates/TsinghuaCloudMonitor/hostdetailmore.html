@@ -1,0 +1,33 @@
+{% load staticfiles %}
+<script src="{% static 'cloudclient/jquery-2.1.1.js'%}"></script>
+
+
+<script src="{% static 'cloudclient/monitor.js'%}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
+
+
+<a href="/monitor">back</a>
+<label>Host Details And Services Charts</label>
+<div class="container">
+<div class="tabWrap">
+  <table class="gridtable">
+    <thead>
+      <tr>
+        <th class='detail'>Host</th>
+        <th>IP</th>
+        <th>Owner</th>
+        <th>Info</th>
+                
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td class='detail'>{{host.Alias}}</td>
+        <td class='ip'>{{host.IP}}</td>
+        <td class='owner'>{{host.Owner}}</td>
+        <td class='info'>{{host.Info}}</td>
+        </tr>
+    </tbody>
+  </table>
+</div>
+
