@@ -265,7 +265,7 @@
                                 {field:'total',title:'已使用量/KB',width:80},
                                 {field:'percentage',title:'使用率',width:80}
                         ]],
-                        url:'/memory_external/'
+                        url:'/memory_external/'+ filter_string
                     });
                     Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
                     if (result.total != 0) {
@@ -431,7 +431,7 @@
                                 {field:'used',title:'使用量',width:80},
                                 {field:'percentage',title:'使用率',width:80}
                         ]],
-                        url:'/cpu_external/'
+                        url:'/cpu_external/' + filter_string ,
                     });
 
                     Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
@@ -569,7 +569,7 @@
                                 {field:'total',title:'已使用量/KB',width:80},
                                 {field:'percentage',title:'使用率',width:80}
                         ]],
-                        url:'/disk_external/'
+                        url:'/disk_external/' + filter_string ,
                     });
                     Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
                     if (result.total != 0) {
@@ -729,7 +729,7 @@
                                 {field:'name',title:'主机名',width:80},
                                 {field:'used',title:'使用量',width:80}
                         ]],
-                        url:'/pro_external/'
+                        url: '/pro_external/' + filter_string ,
                     });
                     Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
                     var prouse_name = [];
@@ -839,9 +839,9 @@
                         columns:[[
                                 {field:'name',title:'主机名',width:80},
                                 {field:'in',title:'In (Kbps)',width:80},
-                                {field:'out',title:'In (Kbps)',width:80},
+                                {field:'out',title:'Out (Kbps)',width:80}
                         ]],
-                        url:'/pro_external/'
+                        url: '/eth_external/' + filter_string,
                     });
                     Pagination.Init( document.getElementById('pagination'), {size: result.totalpage, page: Pagination.page, step: 1});
                     if (result.total != 0) {
