@@ -144,11 +144,8 @@ var csrftoken = getCookie('csrftoken');
 	
 	<div data-options="region:'center',title:'监控信息'">
         <table id='service-table' class="easyui-datagrid" toolbar="#tb"
-					data-options="border:false,singleSelect:true,fit:true,view:groupview,
-                groupField:'type',
-                groupFormatter:function(value,rows){
-                    return value + ' - ' + rows.length + ' Item(s)';
-                },fitColumns:true" >
+					data-options="border:false,singleSelect:true,fit:true,
+                fitColumns:true" >
 				<tbody>
                 {% for service in service %}
                         <td>{{ service.Owner }}</td>
@@ -174,7 +171,7 @@ var csrftoken = getCookie('csrftoken');
         remoteSort:false,
         multiSort:true,
         columns: [[
-            {field: 'owner', title: '所有者', width: 60, sortable: true, remoteSort:false},
+            {field: 'owner', title: '所有者', width: 60, sortable: true, remoteSort:false, hidden:true},
             {field: 'HostName', title: '主机名', width: 70, align: 'left', sortable: true, remoteSort:false},
             {field: 'ServiceName', title: '监控类型', width: 70, align: 'left'},
             {field: 'LastCheck', title: '上次检查', width: 70, align: 'left'},
@@ -182,8 +179,17 @@ var csrftoken = getCookie('csrftoken');
             {field: 'Status', title: '当前状态', width: 120},
             {field: 'DetailedInfo', title: '详细数据', width: 120}
         ]],
+        {% if usergroup == 'admin' %}
+        groupField:'owner',
+        view:groupview,
+        groupFormatter:function(value,rows){
+                    return value + ' - ' + rows.length + ' Item(s)';
+                },
+        {% endif %}
         onLoadSuccess: function (data) {
+            {% if usergroup == 'admin' %}
             MergeCells('service-table','owner');
+            {% endif %}
             MergeCells('service-table','HostName');
         }
     });

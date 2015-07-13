@@ -119,8 +119,10 @@
             }
         });
         // END DJANGO AJAX
+        {% if usergroup == 'admin' %}
         $("#service-table").datagrid('sort', 'Owner');	// sort on a column
         MergeCells('service-table','Owner');
+        {% endif %}
     });
 
 
@@ -147,17 +149,22 @@
 <div data-options="region:'center',title:'各主机情况'">
 
     <table id='service-table' class="easyui-datagrid" toolbar="#tb"
-           data-options="border:false,singleSelect:true,fit:true,view:groupview,
-                groupField:'type',
-                remoteSort:false,
+           data-options="border:false,singleSelect:true,fit:true,
+           {% if usergroup == 'admin' %}
+                view:groupview,
+                groupField:'Owner',
                 groupFormatter:function(value,rows){
                     return value + ' - ' + rows.length + ' Item(s)';
                 },
+            {% endif %}
+                remoteSort:false,
                 fitColumns:true
                 ">
         <thead>
         <tr>
-            <th data-options="field:'Owner'" width="50" sortable="true">主机名</th>
+            {% if usergroup == 'admin' %}
+            <th data-options="field:'Owner'" width="50" sortable="true" hidden="true">用户名</th>
+            {% endif %}
             <th data-options="field:'itemid'" width="50" sortable="true">主机名</th>
             <th data-options="field:'listprice'" width="50">状态</th>
             <th data-options="field:'unitcost'" width="80">上次监控时间</th>
@@ -170,7 +177,9 @@
         {% for host in host %}
 
             <tr>
+            {% if usergroup == 'admin' %}
                 <td>{{ host.Owner }}</td>
+            {% endif %}
                 {% if host.HostId != 0 %}
                     <td class='detail'><a href="{% url 'hostdetail' host.HostId %}"
                                           style="color:white">{{ host.HostName }}</a></td>
