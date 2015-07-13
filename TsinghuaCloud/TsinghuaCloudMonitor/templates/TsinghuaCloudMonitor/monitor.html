@@ -45,7 +45,7 @@ function get_site_prefix(){
 }
 
 function cache_clear()
-    {
+{
     window.location.reload(true);
     alert('refresh');
 }
@@ -172,12 +172,9 @@ var csrftoken = getCookie('csrftoken');
 <script language="javascript">
     $("#service-table").datagrid({
         remoteSort:false,
+        multiSort:true,
         columns: [[
-            {field: 'owner', title: '所有者', width: 60, sortable: true, remoteSort:false,
-                sorter:function(a,b){
-                    console.info("here");
-                    return (a > b ? 1 : -1);
-                }},
+            {field: 'owner', title: '所有者', width: 60, sortable: true, remoteSort:false},
             {field: 'HostName', title: '主机名', width: 70, align: 'left', sortable: true, remoteSort:false},
             {field: 'ServiceName', title: '监控类型', width: 70, align: 'left'},
             {field: 'LastCheck', title: '上次检查', width: 70, align: 'left'},
@@ -186,12 +183,14 @@ var csrftoken = getCookie('csrftoken');
             {field: 'DetailedInfo', title: '详细数据', width: 120}
         ]],
         onLoadSuccess: function (data) {
-            MergeCells('service-table','HostName');
             MergeCells('service-table','owner');
+            MergeCells('service-table','HostName');
         }
     });
 
+    $("#service-table").datagrid('sort', 'owner');	// sort on a column
     $("#service-table").datagrid('sort', 'HostName');	// sort on a column
+
 
 </script>
 </body>

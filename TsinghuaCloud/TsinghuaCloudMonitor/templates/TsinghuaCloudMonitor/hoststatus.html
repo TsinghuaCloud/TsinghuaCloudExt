@@ -1,6 +1,20 @@
 {% csrf_token %}
 {% load staticfiles %}
 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Tsinghua Cloud - HostStatus Page</title>
+    <script src="{% static 'jquery-easyui-1/jquery.min.js' %}"></script>
+    <script src="{% static 'jquery-easyui-1/jquery.easyui.min.js' %}"></script>
+    <script src="{% static 'js/group.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
+</head>
+
 <script>
     function getCookie(name) {
         var cookieValue = null;
@@ -45,56 +59,48 @@
             },
         });
     }
-    /**
-     * EasyUI DataGrid根据字段动态合并单元格
-     * @param fldList 要合并table的id
-     * @param fldList 要合并的列,用逗号分隔(例如："name,department,office");
-     */
-    function MergeCells(tableID, fldList) {
-
-        var Arr = fldList.split(",");
-        var dg = $('#' + tableID);
-        var fldName;
-        var RowCount = dg.datagrid("getRows").length;
-        var span;
-        var PerValue = "";
-        var CurValue = "";
-        var length = Arr.length - 1;
-        for (i = length; i >= 0; i--) {
-            fldName = Arr[i];
-            PerValue = "";
-            span = 1;
-            for (row = 0; row <= RowCount; row++) {
-                if (row == RowCount) {
-                    CurValue = "";
-                }
-                else {
-                    CurValue1 = dg.datagrid("getRows")[row][fldName].split('>');
-                    CurValue = CurValue1[1];
-
-
-                }
-                if (PerValue == CurValue) {
-                    span += 1;
-                }
-                else {
-                    var index = row - span;
-                    dg.datagrid('mergeCells', {
-                        index: index,
-                        field: fldName,
-                        rowspan: span,
-                        colspan: null
-                    });
-                    span = 1;
-                    PerValue = CurValue;
+/**
+        * EasyUI DataGrid根据字段动态合并单元格
+        * @param fldList 要合并table的id
+        * @param fldList 要合并的列,用逗号分隔(例如："name,department,office");
+        */
+        function MergeCells(tableID, fldList) {
+            var Arr = fldList.split(",");
+            var dg = $('#' + tableID);
+            var fldName;
+            var RowCount = dg.datagrid("getRows").length;
+            var span;
+            var PerValue = "";
+            var CurValue = "";
+            var length = Arr.length - 1;
+            for (i = length; i >= 0; i--) {
+                fldName = Arr[i];
+                PerValue = "";
+                span = 1;
+                for (row = 0; row <= RowCount; row++) {
+                    if (row == RowCount) {
+                        CurValue = "";
+                    }
+                    else {
+                        CurValue = dg.datagrid("getRows")[row][fldName];
+                    }
+                    if (PerValue == CurValue) {
+                        span += 1;
+                    }
+                    else {
+                        var index = row - span;
+                        dg.datagrid('mergeCells', {
+                            index: index,
+                            field: fldName,
+                            rowspan: span,
+                            colspan: null
+                        });
+                        span = 1;
+                        PerValue = CurValue;
+                    }
                 }
             }
         }
-        $('.datagrid-td-merged').find('a').css('font-size', '15px');
-        $('.datagrid-td-merged').css('background-color', '#7B7B7B');
-
-
-    }
 
     $(function () {
         var csrftoken = getCookie('csrftoken');
@@ -113,27 +119,12 @@
             }
         });
         // END DJANGO AJAX
-
-
+        $("#service-table").datagrid('sort', 'Owner');	// sort on a column
+        MergeCells('service-table','Owner');
     });
 
 
 </script>
-
-
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Tsinghua Cloud - HostStatus Page</title>
-    <script src="{% static 'jquery-easyui-1/jquery.min.js' %}"></script>
-    <script src="{% static 'jquery-easyui-1/jquery.easyui.min.js' %}"></script>
-    <script src="{% static 'js/group.js' %}"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'cloudclient/monitor.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/icon.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/themes/black/easyui.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'jquery-easyui-1/demo/demo.css' %}">
-</head>
 
 <body class="easyui-layout">
 <div data-options="region:'north',border:false"
@@ -158,11 +149,15 @@
     <table id='service-table' class="easyui-datagrid" toolbar="#tb"
            data-options="border:false,singleSelect:true,fit:true,view:groupview,
                 groupField:'type',
+                remoteSort:false,
                 groupFormatter:function(value,rows){
                     return value + ' - ' + rows.length + ' Item(s)';
-                },fitColumns:true,onLoadSuccess:function(data){ MergeCells('service-table','itemid');}">
+                },
+                fitColumns:true
+                ">
         <thead>
         <tr>
+            <th data-options="field:'Owner'" width="50" sortable="true">主机名</th>
             <th data-options="field:'itemid'" width="50" sortable="true">主机名</th>
             <th data-options="field:'listprice'" width="50">状态</th>
             <th data-options="field:'unitcost'" width="80">上次监控时间</th>
@@ -175,6 +170,7 @@
         {% for host in host %}
 
             <tr>
+                <td>{{ host.Owner }}</td>
                 {% if host.HostId != 0 %}
                     <td class='detail'><a href="{% url 'hostdetail' host.HostId %}"
                                           style="color:white">{{ host.HostName }}</a></td>

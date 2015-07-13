@@ -387,12 +387,11 @@ def hoststatus(request):
     usergroup = request.session['usergroup']
 
     # Get hosts belonging to username
-    host_list = Host.objects.all().values('id', 'HostName').filter(HostType='external')
+    host_list = Host.objects.all().values('id', 'HostName', 'Owner').filter(HostType='external')
     if usergroup == 'user':                                         # Users can only get records of his own hosts
         host_list = host_list.filter(Owner=username)
     host_count = len(host_list)
 
-    print "Run to 1"
     # Get status records for each host
     host_status_rec_obj = []
     for cur_host in host_list:
@@ -405,9 +404,12 @@ def hoststatus(request):
             empty_status_rec.LastCheck = 'N/A'
             empty_status_rec.PluginOutput = 'N/A'
             empty_status_rec.Duration = '0'
+            empty_status_rec.Owner = cur_host.get('Owner')
+            print empty_status_rec.Owner
             host_status_rec_obj.append(empty_status_rec)
-            print "added"
         else:
+            check_record.Owner = cur_host.get('Owner')
+            print check_record.Owner
             host_status_rec_obj.append(check_record)
 
     return render(request, 'TsinghuaCloudMonitor/hoststatus.html', {'host': host_status_rec_obj, 'usergroup': usergroup})
