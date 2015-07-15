@@ -202,7 +202,7 @@ def schedule_data(request):
     host_list = Host.objects.values('HostName').filter(HostType='external')
 
     # Get all monitor servers
-    nagios_monitors = Nagios.objects.values('Server').distinct()
+    nagios_monitors = Nagios.objects.values('Server').distinct().order_by('Server')
     print "nagios servers = " + str(len(nagios_monitors))
 
     # Monitor server records stored in server_table
@@ -245,7 +245,7 @@ def schedule_data_table(request):
     host_list = Host.objects.values('HostName').filter(HostType='external')
 
     # Get all monitor servers
-    nagios_monitors = Nagios.objects.values('Server').distinct()
+    nagios_monitors = Nagios.objects.values('Server').distinct().order_by('Server')
 
     # Monitor server records stored in server_table
     json_result = {'total': 0, 'rows':[]}
@@ -629,9 +629,9 @@ def cpu_external(request):
                 cpu_used = '0.0'
                 cpu_perc = '0.0%'
             else:
-                p = re.compile(r'0\.\d+')
-                cpu_used = p.findall(latest_check.PerformanceData)[0]
-                cpu_perc = format(float(cpu_used), '.2%')
+                p = re.search(r'(\d+)\.(\d*)', latest_check.PerformanceData)
+                cpu_used = p.group(0)
+                cpu_perc = format(float(cpu_used)/100, '.2%')
         json_data = {'name': cpu_name, 'used': cpu_used, 'percentage': cpu_perc}
         cpu_list.append(json_data)
 

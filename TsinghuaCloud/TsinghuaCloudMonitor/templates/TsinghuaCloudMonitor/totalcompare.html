@@ -428,7 +428,6 @@
                     $("#data-table").datagrid({
                         columns:[[
                                 {field:'name',title:'主机名',width:80},
-                                {field:'used',title:'使用量',width:80},
                                 {field:'percentage',title:'使用率',width:80}
                         ]],
                         url:'/cpu_external/' + filter_string ,
@@ -448,7 +447,7 @@
                             cpuuse_total.push(0.999999);
                         }
 
-                        setCpu(cpuuse_name, cpuuse_used, cpuuse_percentage, cpuuse_total);
+                        setCpu(cpuuse_name, cpuuse_used, cpuuse_total);
                     }
 
 
@@ -459,7 +458,7 @@
             });
         };
 
-        setCpu = function (cpuuse_name, cpuuse_used, cpuuse_percentage, cpuuse_total) {
+        setCpu = function (cpuuse_name, cpuuse_used, cpuuse_total) {
             // 路径配置
             require.config({
                 paths: {
