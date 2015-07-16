@@ -84,7 +84,9 @@
             $("#process_halfday").show();
             $("#process_oneday").hide();
             $("#process_oneweek").hide();
-
+            $("#ethernet_halfday").show();
+            $("#ethernet_oneday").hide();
+            $("#ethernet_oneweek").hide();
 
             $("#halfday").click(function () {
                 $("#memory_halfday").show();
@@ -99,6 +101,9 @@
                 $("#process_halfday").show();
                 $("#process_oneday").hide();
                 $("#process_oneweek").hide();
+                $("#ethernet_halfday").show();
+                $("#ethernet_oneday").hide();
+                $("#ethernet_oneweek").hide();
             });
 
             $("#oneday").click(function () {
@@ -114,6 +119,9 @@
                 $("#process_halfday").hide();
                 $("#process_oneday").show();
                 $("#process_oneweek").hide();
+                $("#ethernet_halfday").hide();
+                $("#ethernet_oneday").show();
+                $("#ethernet_oneweek").hide();
             });
 
             $("#oneweek").click(function () {
@@ -129,6 +137,9 @@
                 $("#process_halfday").hide();
                 $("#process_oneday").hide();
                 $("#process_oneweek").show();
+                $("#ethernet_halfday").hide();
+                $("#ethernet_oneday").hide();
+                $("#ethernet_oneweek").show();
             });
 
 
@@ -186,9 +197,6 @@
     <a id="halfday" class="easyui-linkbutton" style="width:130px">12小时</a>
     <a id="oneday" class="easyui-linkbutton" style="width:130px">一天</a>
     <a id="oneweek" class="easyui-linkbutton" style="width:130px">一周</a>
-    <a id="onemonth" class="easyui-linkbutton" style="width:130px">一月</a>
-
-
     <div id="memory_halfday" style="height:400px;width:900px;"></div>
     <!-- ECharts单文件引入 -->
     <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
@@ -1563,6 +1571,393 @@
                                 name: 'Used',
                                 type: 'line',
                                 data: [{{pro.1980}}, {{pro.1944}}, {{pro.1908}}, {{pro.1872}}, {{pro.1836}}, {{pro.1800}}, {{pro.1764}}, {{pro.1728}}, {{pro.1692}}, {{pro.1656}}, {{pro.1620}}, {{pro.1584}}, {{pro.1548}}, {{pro.1512}}, {{pro.1476}}, {{pro.1440}}, {{pro.1404}}, {{pro.1368}}, {{pro.1332}}, {{pro.1296}}, {{pro.1260}}, {{pro.1224}}, {{pro.1188}}, {{pro.1152}}, {{pro.1116}}, {{pro.1080}}, {{pro.1044}}, {{pro.1008}}, {{pro.972}}, {{pro.936}}, {{pro.900}}, {{pro.864}}, {{pro.828}}, {{pro.792}}, {{pro.756}}, {{pro.720}}, {{pro.684}}, {{pro.648}}, {{pro.612}}, {{pro.576}}, {{pro.540}}, {{pro.504}}, {{pro.468}}, {{pro.432}}, {{pro.396}}, {{pro.360}}, {{pro.324}}, {{pro.288}}, {{pro.252}}, {{pro.216}}, {{pro.180}}, {{pro.144}}, {{pro.108}}, {{pro.72}}, {{pro.36}}, {{pro.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
+        );
+
+    </script>
+    
+    <div id="ethernet_halfday" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
+
+
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            // END DJANGO AJAX
+
+        });
+        // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+        // 使用
+        require(
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('ethernet_halfday'));
+                    var option = {
+                        title: {
+                            text: 'Ethernet Connections',
+                            subtext: 'Host'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['In(Kbps)', 'Out(Kbps)']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        calculable: true,
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{ethernet_timestamp.144}}', '{{ethernet_timestamp.142}}', '{{ethernet_timestamp.140}}', '{{ethernet_timestamp.138}}', '{{ethernet_timestamp.136}}', '{{ethernet_timestamp.134}}', '{{ethernet_timestamp.132}}', '{{ethernet_timestamp.130}}', '{{ethernet_timestamp.128}}', '{{ethernet_timestamp.126}}', '{{ethernet_timestamp.124}}', '{{ethernet_timestamp.122}}', '{{ethernet_timestamp.120}}', '{{ethernet_timestamp.118}}', '{{ethernet_timestamp.116}}', '{{ethernet_timestamp.114}}', '{{ethernet_timestamp.112}}', '{{ethernet_timestamp.110}}', '{{ethernet_timestamp.108}}', '{{ethernet_timestamp.106}}', '{{ethernet_timestamp.104}}', '{{ethernet_timestamp.102}}', '{{ethernet_timestamp.100}}', '{{ethernet_timestamp.98}}', '{{ethernet_timestamp.96}}', '{{ethernet_timestamp.94}}', '{{ethernet_timestamp.92}}', '{{ethernet_timestamp.90}}', '{{ethernet_timestamp.88}}', '{{ethernet_timestamp.86}}', '{{ethernet_timestamp.84}}', '{{ethernet_timestamp.82}}', '{{ethernet_timestamp.80}}', '{{ethernet_timestamp.78}}', '{{ethernet_timestamp.76}}', '{{ethernet_timestamp.74}}', '{{ethernet_timestamp.72}}', '{{ethernet_timestamp.70}}', '{{ethernet_timestamp.68}}', '{{ethernet_timestamp.66}}', '{{ethernet_timestamp.64}}', '{{ethernet_timestamp.62}}', '{{ethernet_timestamp.60}}', '{{ethernet_timestamp.58}}', '{{ethernet_timestamp.56}}', '{{ethernet_timestamp.54}}', '{{ethernet_timestamp.52}}', '{{ethernet_timestamp.50}}', '{{ethernet_timestamp.48}}', '{{ethernet_timestamp.46}}', '{{ethernet_timestamp.44}}', '{{ethernet_timestamp.42}}', '{{ethernet_timestamp.40}}', '{{ethernet_timestamp.38}}', '{{ethernet_timestamp.36}}', '{{ethernet_timestamp.34}}', '{{ethernet_timestamp.32}}', '{{ethernet_timestamp.30}}', '{{ethernet_timestamp.28}}', '{{ethernet_timestamp.26}}', '{{ethernet_timestamp.24}}', '{{ethernet_timestamp.22}}', '{{ethernet_timestamp.20}}', '{{ethernet_timestamp.18}}', '{{ethernet_timestamp.16}}', '{{ethernet_timestamp.14}}', '{{ethernet_timestamp.12}}', '{{ethernet_timestamp.10}}', '{{ethernet_timestamp.8}}', '{{ethernet_timestamp.6}}', '{{ethernet_timestamp.4}}', '{{ethernet_timestamp.2}}', '{{ethernet_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} '
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'In(Kbps)',
+                                type: 'line',
+                                data: [{{ethernet_in.144}}, {{ethernet_in.142}}, {{ethernet_in.140}}, {{ethernet_in.138}}, {{ethernet_in.136}}, {{ethernet_in.134}}, {{ethernet_in.132}}, {{ethernet_in.130}}, {{ethernet_in.128}}, {{ethernet_in.126}}, {{ethernet_in.124}}, {{ethernet_in.122}}, {{ethernet_in.120}}, {{ethernet_in.118}}, {{ethernet_in.116}}, {{ethernet_in.114}}, {{ethernet_in.112}}, {{ethernet_in.110}}, {{ethernet_in.108}}, {{ethernet_in.106}}, {{ethernet_in.104}}, {{ethernet_in.102}}, {{ethernet_in.100}}, {{ethernet_in.98}}, {{ethernet_in.96}}, {{ethernet_in.94}}, {{ethernet_in.92}}, {{ethernet_in.90}}, {{ethernet_in.88}}, {{ethernet_in.86}}, {{ethernet_in.84}}, {{ethernet_in.82}}, {{ethernet_in.80}}, {{ethernet_in.78}}, {{ethernet_in.76}}, {{ethernet_in.74}}, {{ethernet_in.72}}, {{ethernet_in.70}}, {{ethernet_in.68}}, {{ethernet_in.66}}, {{ethernet_in.64}}, {{ethernet_in.62}}, {{ethernet_in.60}}, {{ethernet_in.58}}, {{ethernet_in.56}}, {{ethernet_in.54}}, {{ethernet_in.52}}, {{ethernet_in.50}}, {{ethernet_in.48}}, {{ethernet_in.46}}, {{ethernet_in.44}}, {{ethernet_in.42}}, {{ethernet_in.40}}, {{ethernet_in.38}}, {{ethernet_in.36}}, {{ethernet_in.34}}, {{ethernet_in.32}}, {{ethernet_in.30}}, {{ethernet_in.28}}, {{ethernet_in.26}}, {{ethernet_in.24}}, {{ethernet_in.22}}, {{ethernet_in.20}}, {{ethernet_in.18}}, {{ethernet_in.16}}, {{ethernet_in.14}}, {{ethernet_in.12}}, {{ethernet_in.10}}, {{ethernet_in.8}}, {{ethernet_in.6}}, {{ethernet_in.4}}, {{ethernet_in.2}}, {{ethernet_in.0}}],
+                                markPoint: {
+                                    data: [
+                                        {type: 'max', name: '最大值'},
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+                            {
+                                name: 'Out(Kbps)',
+                                type: 'line',
+                                data: [{{ethernet_out.144}}, {{ethernet_out.142}}, {{ethernet_out.140}}, {{ethernet_out.138}}, {{ethernet_out.136}}, {{ethernet_out.134}}, {{ethernet_out.132}}, {{ethernet_out.130}}, {{ethernet_out.128}}, {{ethernet_out.126}}, {{ethernet_out.124}}, {{ethernet_out.122}}, {{ethernet_out.120}}, {{ethernet_out.118}}, {{ethernet_out.116}}, {{ethernet_out.114}}, {{ethernet_out.112}}, {{ethernet_out.110}}, {{ethernet_out.108}}, {{ethernet_out.106}}, {{ethernet_out.104}}, {{ethernet_out.102}}, {{ethernet_out.100}}, {{ethernet_out.98}}, {{ethernet_out.96}}, {{ethernet_out.94}}, {{ethernet_out.92}}, {{ethernet_out.90}}, {{ethernet_out.88}}, {{ethernet_out.86}}, {{ethernet_out.84}}, {{ethernet_out.82}}, {{ethernet_out.80}}, {{ethernet_out.78}}, {{ethernet_out.76}}, {{ethernet_out.74}}, {{ethernet_out.72}}, {{ethernet_out.70}}, {{ethernet_out.68}}, {{ethernet_out.66}}, {{ethernet_out.64}}, {{ethernet_out.62}}, {{ethernet_out.60}}, {{ethernet_out.58}}, {{ethernet_out.56}}, {{ethernet_out.54}}, {{ethernet_out.52}}, {{ethernet_out.50}}, {{ethernet_out.48}}, {{ethernet_out.46}}, {{ethernet_out.44}}, {{ethernet_out.42}}, {{ethernet_out.40}}, {{ethernet_out.38}}, {{ethernet_out.36}}, {{ethernet_out.34}}, {{ethernet_out.32}}, {{ethernet_out.30}}, {{ethernet_out.28}}, {{ethernet_out.26}}, {{ethernet_out.24}}, {{ethernet_out.22}}, {{ethernet_out.20}}, {{ethernet_out.18}}, {{ethernet_out.16}}, {{ethernet_out.14}}, {{ethernet_out.12}}, {{ethernet_out.10}}, {{ethernet_out.8}}, {{ethernet_out.6}}, {{ethernet_out.4}}, {{ethernet_out.2}}, {{ethernet_out.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
+        );
+
+    </script>
+
+    <div id="ethernet_oneday" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
+
+
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            // END DJANGO AJAX
+
+        });
+        // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+        // 使用
+        require(
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('ethernet_oneday'));
+                    var option = {
+                        title: {
+                            text: 'Ethernet Connections',
+                            subtext: 'Host'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['In(Kbps)', 'Out(Kbps)']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        calculable: true,
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{ethernet_timestamp.284}}', '{{ethernet_timestamp.280}}', '{{ethernet_timestamp.276}}', '{{ethernet_timestamp.272}}', '{{ethernet_timestamp.268}}', '{{ethernet_timestamp.264}}', '{{ethernet_timestamp.260}}', '{{ethernet_timestamp.256}}', '{{ethernet_timestamp.252}}', '{{ethernet_timestamp.248}}', '{{ethernet_timestamp.244}}', '{{ethernet_timestamp.240}}', '{{ethernet_timestamp.236}}', '{{ethernet_timestamp.232}}', '{{ethernet_timestamp.228}}', '{{ethernet_timestamp.224}}', '{{ethernet_timestamp.220}}', '{{ethernet_timestamp.216}}', '{{ethernet_timestamp.212}}', '{{ethernet_timestamp.208}}', '{{ethernet_timestamp.204}}', '{{ethernet_timestamp.200}}', '{{ethernet_timestamp.196}}', '{{ethernet_timestamp.192}}', '{{ethernet_timestamp.188}}', '{{ethernet_timestamp.184}}', '{{ethernet_timestamp.180}}', '{{ethernet_timestamp.176}}', '{{ethernet_timestamp.172}}', '{{ethernet_timestamp.168}}', '{{ethernet_timestamp.164}}', '{{ethernet_timestamp.160}}', '{{ethernet_timestamp.156}}', '{{ethernet_timestamp.152}}', '{{ethernet_timestamp.148}}', '{{ethernet_timestamp.144}}', '{{ethernet_timestamp.140}}', '{{ethernet_timestamp.136}}', '{{ethernet_timestamp.132}}', '{{ethernet_timestamp.128}}', '{{ethernet_timestamp.124}}', '{{ethernet_timestamp.120}}', '{{ethernet_timestamp.116}}', '{{ethernet_timestamp.112}}', '{{ethernet_timestamp.108}}', '{{ethernet_timestamp.104}}', '{{ethernet_timestamp.100}}', '{{ethernet_timestamp.96}}', '{{ethernet_timestamp.92}}', '{{ethernet_timestamp.88}}', '{{ethernet_timestamp.84}}', '{{ethernet_timestamp.80}}', '{{ethernet_timestamp.76}}', '{{ethernet_timestamp.72}}', '{{ethernet_timestamp.68}}', '{{ethernet_timestamp.64}}', '{{ethernet_timestamp.60}}', '{{ethernet_timestamp.56}}', '{{ethernet_timestamp.52}}', '{{ethernet_timestamp.48}}', '{{ethernet_timestamp.44}}', '{{ethernet_timestamp.40}}', '{{ethernet_timestamp.36}}', '{{ethernet_timestamp.32}}', '{{ethernet_timestamp.28}}', '{{ethernet_timestamp.24}}', '{{ethernet_timestamp.20}}', '{{ethernet_timestamp.16}}', '{{ethernet_timestamp.12}}', '{{ethernet_timestamp.8}}', '{{ethernet_timestamp.4}}', '{{ethernet_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} '
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'In(Kbps)',
+                                type: 'line',
+                                data: [{{ethernet_in.284}}, {{ethernet_in.280}}, {{ethernet_in.276}}, {{ethernet_in.272}}, {{ethernet_in.268}}, {{ethernet_in.264}}, {{ethernet_in.260}}, {{ethernet_in.256}}, {{ethernet_in.252}}, {{ethernet_in.248}}, {{ethernet_in.244}}, {{ethernet_in.240}}, {{ethernet_in.236}}, {{ethernet_in.232}}, {{ethernet_in.228}}, {{ethernet_in.224}}, {{ethernet_in.220}}, {{ethernet_in.216}}, {{ethernet_in.212}}, {{ethernet_in.208}}, {{ethernet_in.204}}, {{ethernet_in.200}}, {{ethernet_in.196}}, {{ethernet_in.192}}, {{ethernet_in.188}}, {{ethernet_in.184}}, {{ethernet_in.180}}, {{ethernet_in.176}}, {{ethernet_in.172}}, {{ethernet_in.168}}, {{ethernet_in.164}}, {{ethernet_in.160}}, {{ethernet_in.156}}, {{ethernet_in.152}}, {{ethernet_in.148}}, {{ethernet_in.144}}, {{ethernet_in.140}}, {{ethernet_in.136}}, {{ethernet_in.132}}, {{ethernet_in.128}}, {{ethernet_in.124}}, {{ethernet_in.120}}, {{ethernet_in.116}}, {{ethernet_in.112}}, {{ethernet_in.108}}, {{ethernet_in.104}}, {{ethernet_in.100}}, {{ethernet_in.96}}, {{ethernet_in.92}}, {{ethernet_in.88}}, {{ethernet_in.84}}, {{ethernet_in.80}}, {{ethernet_in.76}}, {{ethernet_in.72}}, {{ethernet_in.68}}, {{ethernet_in.64}}, {{ethernet_in.60}}, {{ethernet_in.56}}, {{ethernet_in.52}}, {{ethernet_in.48}}, {{ethernet_in.44}}, {{ethernet_in.40}}, {{ethernet_in.36}}, {{ethernet_in.32}}, {{ethernet_in.28}}, {{ethernet_in.24}}, {{ethernet_in.20}}, {{ethernet_in.16}}, {{ethernet_in.12}}, {{ethernet_in.8}}, {{ethernet_in.4}}, {{ethernet_in.0}}],
+                                markPoint: {
+                                    data: [
+                                        {type: 'max', name: '最大值'},
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+                            {
+                                name: 'Out(Kbps)',
+                                type: 'line',
+                                data: [{{ethernet_out.284}}, {{ethernet_out.280}}, {{ethernet_out.276}}, {{ethernet_out.272}}, {{ethernet_out.268}}, {{ethernet_out.264}}, {{ethernet_out.260}}, {{ethernet_out.256}}, {{ethernet_out.252}}, {{ethernet_out.248}}, {{ethernet_out.244}}, {{ethernet_out.240}}, {{ethernet_out.236}}, {{ethernet_out.232}}, {{ethernet_out.228}}, {{ethernet_out.224}}, {{ethernet_out.220}}, {{ethernet_out.216}}, {{ethernet_out.212}}, {{ethernet_out.208}}, {{ethernet_out.204}}, {{ethernet_out.200}}, {{ethernet_out.196}}, {{ethernet_out.192}}, {{ethernet_out.188}}, {{ethernet_out.184}}, {{ethernet_out.180}}, {{ethernet_out.176}}, {{ethernet_out.172}}, {{ethernet_out.168}}, {{ethernet_out.164}}, {{ethernet_out.160}}, {{ethernet_out.156}}, {{ethernet_out.152}}, {{ethernet_out.148}}, {{ethernet_out.144}}, {{ethernet_out.140}}, {{ethernet_out.136}}, {{ethernet_out.132}}, {{ethernet_out.128}}, {{ethernet_out.124}}, {{ethernet_out.120}}, {{ethernet_out.116}}, {{ethernet_out.112}}, {{ethernet_out.108}}, {{ethernet_out.104}}, {{ethernet_out.100}}, {{ethernet_out.96}}, {{ethernet_out.92}}, {{ethernet_out.88}}, {{ethernet_out.84}}, {{ethernet_out.80}}, {{ethernet_out.76}}, {{ethernet_out.72}}, {{ethernet_out.68}}, {{ethernet_out.64}}, {{ethernet_out.60}}, {{ethernet_out.56}}, {{ethernet_out.52}}, {{ethernet_out.48}}, {{ethernet_out.44}}, {{ethernet_out.40}}, {{ethernet_out.36}}, {{ethernet_out.32}}, {{ethernet_out.28}}, {{ethernet_out.24}}, {{ethernet_out.20}}, {{ethernet_out.16}}, {{ethernet_out.12}}, {{ethernet_out.8}}, {{ethernet_out.4}}, {{ethernet_out.0}}],
+
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+
+                        ]
+                    };
+
+                    // 为echarts对象加载数据 
+                    myChart.setOption(option);
+                }
+        );
+
+    </script>
+
+    <div id="ethernet_oneweek" style="height:400px;width:900px;"></div>
+    <!-- ECharts单文件引入 -->
+    <script src="{% static 'jquery-easyui-1/echarts.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            var csrftoken = getCookie('csrftoken');
+
+
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            // END DJANGO AJAX
+
+        });
+        // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+        // 使用
+        require(
+                [
+                    'echarts',
+                    'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+
+                ],
+                function (ec) {
+                    // 基于准备好的dom，初始化echarts图表
+                    var myChart = ec.init(document.getElementById('ethernet_oneweek'));
+                    var option = {
+                        title: {
+                            text: 'Ethernet Connections',
+                            subtext: 'Host'
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['In(Kbps)', 'Out(Kbps)']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                dataZoom: {show: true},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        calculable: true,
+                        dataZoom: {
+                            show: true,
+                            realtime: true,
+                            //orient: 'vertical',   // 'horizontal'
+                            //x: 0,
+                            y: 36,
+                            //width: 400,
+                            height: 20,
+                            //backgroundColor: 'rgba(221,160,221,0.5)',
+                            //dataBackgroundColor: 'rgba(138,43,226,0.5)',
+                            //fillerColor: 'rgba(38,143,26,0.6)',
+                            //handleColor: 'rgba(128,43,16,0.8)',
+                            //xAxisIndex:[],
+                            //yAxisIndex:[],
+                            start: 80,
+                            end: 100
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['{{ethernet_timestamp.1980}}', '{{ethernet_timestamp.1944}}', '{{ethernet_timestamp.1908}}', '{{ethernet_timestamp.1872}}', '{{ethernet_timestamp.1836}}', '{{ethernet_timestamp.1800}}', '{{ethernet_timestamp.1764}}', '{{ethernet_timestamp.1728}}', '{{ethernet_timestamp.1692}}', '{{ethernet_timestamp.1656}}', '{{ethernet_timestamp.1620}}', '{{ethernet_timestamp.1584}}', '{{ethernet_timestamp.1548}}', '{{ethernet_timestamp.1512}}', '{{ethernet_timestamp.1476}}', '{{ethernet_timestamp.1440}}', '{{ethernet_timestamp.1404}}', '{{ethernet_timestamp.1368}}', '{{ethernet_timestamp.1332}}', '{{ethernet_timestamp.1296}}', '{{ethernet_timestamp.1260}}', '{{ethernet_timestamp.1224}}', '{{ethernet_timestamp.1188}}', '{{ethernet_timestamp.1152}}', '{{ethernet_timestamp.1116}}', '{{ethernet_timestamp.1080}}', '{{ethernet_timestamp.1044}}', '{{ethernet_timestamp.1008}}', '{{ethernet_timestamp.972}}', '{{ethernet_timestamp.936}}', '{{ethernet_timestamp.900}}', '{{ethernet_timestamp.864}}', '{{ethernet_timestamp.828}}', '{{ethernet_timestamp.792}}', '{{ethernet_timestamp.756}}', '{{ethernet_timestamp.720}}', '{{ethernet_timestamp.684}}', '{{ethernet_timestamp.648}}', '{{ethernet_timestamp.612}}', '{{ethernet_timestamp.576}}', '{{ethernet_timestamp.540}}', '{{ethernet_timestamp.504}}', '{{ethernet_timestamp.468}}', '{{ethernet_timestamp.432}}', '{{ethernet_timestamp.396}}', '{{ethernet_timestamp.360}}', '{{ethernet_timestamp.324}}', '{{ethernet_timestamp.288}}', '{{ethernet_timestamp.252}}', '{{ethernet_timestamp.216}}', '{{ethernet_timestamp.180}}', '{{ethernet_timestamp.144}}', '{{ethernet_timestamp.108}}', '{{ethernet_timestamp.72}}', '{{ethernet_timestamp.36}}', '{{ethernet_timestamp.0}}']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} '
+                                },
+                                scale: true
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'In(Kbps)',
+                                type: 'line',
+                                data: [{{ethernet_in.1980}}, {{ethernet_in.1944}}, {{ethernet_in.1908}}, {{ethernet_in.1872}}, {{ethernet_in.1836}}, {{ethernet_in.1800}}, {{ethernet_in.1764}}, {{ethernet_in.1728}}, {{ethernet_in.1692}}, {{ethernet_in.1656}}, {{ethernet_in.1620}}, {{ethernet_in.1584}}, {{ethernet_in.1548}}, {{ethernet_in.1512}}, {{ethernet_in.1476}}, {{ethernet_in.1440}}, {{ethernet_in.1404}}, {{ethernet_in.1368}}, {{ethernet_in.1332}}, {{ethernet_in.1296}}, {{ethernet_in.1260}}, {{ethernet_in.1224}}, {{ethernet_in.1188}}, {{ethernet_in.1152}}, {{ethernet_in.1116}}, {{ethernet_in.1080}}, {{ethernet_in.1044}}, {{ethernet_in.1008}}, {{ethernet_in.972}}, {{ethernet_in.936}}, {{ethernet_in.900}}, {{ethernet_in.864}}, {{ethernet_in.828}}, {{ethernet_in.792}}, {{ethernet_in.756}}, {{ethernet_in.720}}, {{ethernet_in.684}}, {{ethernet_in.648}}, {{ethernet_in.612}}, {{ethernet_in.576}}, {{ethernet_in.540}}, {{ethernet_in.504}}, {{ethernet_in.468}}, {{ethernet_in.432}}, {{ethernet_in.396}}, {{ethernet_in.360}}, {{ethernet_in.324}}, {{ethernet_in.288}}, {{ethernet_in.252}}, {{ethernet_in.216}}, {{ethernet_in.180}}, {{ethernet_in.144}}, {{ethernet_in.108}}, {{ethernet_in.72}}, {{ethernet_in.36}}, {{ethernet_in.0}}],
+                                markPoint: {
+                                    data: [
+                                        {type: 'max', name: '最大值'},
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+                            {
+                                name: 'Out(Kbps)',
+                                type: 'line',
+                                data: [{{ethernet_out.1980}}, {{ethernet_out.1944}}, {{ethernet_out.1908}}, {{ethernet_out.1872}}, {{ethernet_out.1836}}, {{ethernet_out.1800}}, {{ethernet_out.1764}}, {{ethernet_out.1728}}, {{ethernet_out.1692}}, {{ethernet_out.1656}}, {{ethernet_out.1620}}, {{ethernet_out.1584}}, {{ethernet_out.1548}}, {{ethernet_out.1512}}, {{ethernet_out.1476}}, {{ethernet_out.1440}}, {{ethernet_out.1404}}, {{ethernet_out.1368}}, {{ethernet_out.1332}}, {{ethernet_out.1296}}, {{ethernet_out.1260}}, {{ethernet_out.1224}}, {{ethernet_out.1188}}, {{ethernet_out.1152}}, {{ethernet_out.1116}}, {{ethernet_out.1080}}, {{ethernet_out.1044}}, {{ethernet_out.1008}}, {{ethernet_out.972}}, {{ethernet_out.936}}, {{ethernet_out.900}}, {{ethernet_out.864}}, {{ethernet_out.828}}, {{ethernet_out.792}}, {{ethernet_out.756}}, {{ethernet_out.720}}, {{ethernet_out.684}}, {{ethernet_out.648}}, {{ethernet_out.612}}, {{ethernet_out.576}}, {{ethernet_out.540}}, {{ethernet_out.504}}, {{ethernet_out.468}}, {{ethernet_out.432}}, {{ethernet_out.396}}, {{ethernet_out.360}}, {{ethernet_out.324}}, {{ethernet_out.288}}, {{ethernet_out.252}}, {{ethernet_out.216}}, {{ethernet_out.180}}, {{ethernet_out.144}}, {{ethernet_out.108}}, {{ethernet_out.72}}, {{ethernet_out.36}}, {{ethernet_out.0}}],
 
                                 markLine: {
                                     data: [

@@ -259,6 +259,7 @@ def schedule_data_table(request):
             cur_rec = {}
             cur_rec['Name'] = host.Target_HostName
             cur_rec['IP'] = host.Target_IP
+            cur_rec['Owner'] = Host.objects.filter(HostName = cur_rec['Name'])[0].Owner
             json_result['rows'].append(cur_rec)
         total_row += 1 + len(monitor_list)
 
@@ -1034,8 +1035,7 @@ def hostdetail(request, hostid):
                                 p.findall(memory[k].PerformanceData)[1] != p.findall(memory[k + 1].PerformanceData)[1]):
                         memory_used.append(p.findall(memory[k].PerformanceData)[1])
                         memory_timestamp.append(memory[k].LastCheck)
-    print memory_timestamp
-    print memory_used
+
     cpuload = Service.objects.filter(HostId=host.id, ServiceName='cpuload')
     p = re.compile(r'(\d+)\.(\d*)')
     cpu_one = []
@@ -1090,13 +1090,41 @@ def hostdetail(request, hostid):
         else:
             pro.append(p.findall(process[k].PerformanceData)[0])
             pro_timestamp.append(process[k].LastCheck)
+            
+    ethernetload = Service.objects.filter(HostId=host.id, ServiceName='Traffic_eth0')
+    p = re.compile(r'\d+')
+    ethernet_in = []
+    ethernet_out = []
+    ethernet_timestamp = []
+    for k in range(len(ethernetload) - 1, 0, -1):
+        if ethernetload[k].PerformanceData == '':
+            ethernet_in.append(0)
+            ethernet_out.append(0)
+            ethernet_timestamp.append(ethernetload[k].LastCheck)
+        else:
+            if k == (len(ethernetload) - 1):
+                ethernet_in.append(p.findall(ethernetload[k].PerformanceData)[0])
+                print p.findall(ethernetload[k].PerformanceData)[0]
+                ethernet_out.append(p.findall(ethernetload[k].PerformanceData)[5])
+                print p.findall(ethernetload[k].PerformanceData)[5]
+                ethernet_timestamp.append(ethernetload[k].LastCheck)
+
+            else:
+                if (ethernetload[k + 1].PerformanceData != '') and \
+                        (p.findall(ethernetload[k].PerformanceData)[0] != p.findall(ethernetload[k].PerformanceData)[5]):
+                    ethernet_in.append(p.findall(ethernetload[k].PerformanceData)[0])
+                    print p.findall(ethernetload[k].PerformanceData)[0]
+                    ethernet_out.append(p.findall(ethernetload[k].PerformanceData)[5])
+                    print p.findall(ethernetload[k].PerformanceData)[5]
+                    ethernet_timestamp.append(ethernetload[k].LastCheck)
 
     if host:
         return render_to_response('TsinghuaCloudMonitor/hostdetail.html',
                                   {'host': host, 'memory_total': memory_total, 'memory_used': memory_used,
                                    'memory_timestamp': memory_timestamp, 'cpu_one': cpu_one, 'cpu_five': cpu_five,
                                    'cpu_timestamp': cpu_timestamp, 'diskuse': diskuse, 'disk_timestamp': disk_timestamp,
-                                   'pro': pro, 'pro_timestamp': pro_timestamp, 'usergroup': usergroup})
+                                   'pro': pro, 'pro_timestamp': pro_timestamp,'ethernet_in':ethernet_in,
+                                   'ethernet_out':ethernet_out,'ethernet_timestamp':ethernet_timestamp, 'usergroup': usergroup})
     else:
         return HttpResponse("ERROR")
 
