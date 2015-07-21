@@ -38,6 +38,7 @@ class Host(models.Model):
     Info = models.CharField(max_length=50)
     NagiosServer = models.CharField(max_length=50)
     HostType = models.CharField(max_length=50)
+    Alias = models.CharField(max_length=50)
 
 class Schedule(models.Model):
     IP = models.CharField(max_length=50)

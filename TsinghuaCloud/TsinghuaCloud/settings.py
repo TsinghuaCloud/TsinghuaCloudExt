@@ -63,8 +63,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'monitorService',
         'USER': 'root',
-        'PASSWORD': 'tsinghua',
-        'HOST': '166.111.143.241',
+        'PASSWORD': 'cloud',
+        'HOST': '219.243.208.130',
         #django admin login: tsinghuacloud tsinghua
     }
 }
