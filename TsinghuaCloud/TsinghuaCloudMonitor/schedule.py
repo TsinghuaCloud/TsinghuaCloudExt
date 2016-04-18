@@ -7,8 +7,8 @@ import os
 import os.path
 import time
 
-host1='192.168.173.12'
-host2='192.168.173.13'
+host1='192.168.173.9'
+host2='192.168.173.10'
 port='22'
 username='root'
 passwd='ubuntu'
@@ -18,7 +18,7 @@ class DBConn:
     conn = None
     def connect(self):
         self.conn= MySQLdb.connect(
-            host='192.168.173.130',
+            host='192.168.173.253',
             port = 3306,
             user='root',
             passwd='cloud',

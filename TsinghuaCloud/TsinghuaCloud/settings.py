@@ -39,8 +39,7 @@ INSTALLED_APPS = (
     'TsinghuaCloudCompute',
     'TsinghuaCloudStorage',
     'TsinghuaCloudMonitor',
-    'TsinghuaCloudIndex',
-    'rest_framework',
+    'TsinghuaCloudIndex'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,7 +63,7 @@ DATABASES = {
         'NAME': 'monitorService',
         'USER': 'root',
         'PASSWORD': 'cloud',
-        'HOST': '219.243.208.130',
+        'HOST': '166.111.143.253',
         #django admin login: tsinghuacloud tsinghua
     }
 }
